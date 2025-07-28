@@ -27,6 +27,23 @@ Groups: Create, find, join, post, and comment within groups.
 Events: Create events, invite users, RSVP, post, and comment on event walls.
 
 
+## Project Structure
+
+```
+crispy-goggles/
+├── client/          # React frontend application
+│   ├── public/      # Static files
+│   ├── src/         # React source code
+│   └── package.json # Frontend dependencies
+├── server/          # Node.js backend application
+│   ├── index.js     # Express server entry point
+│   ├── .env         # Environment variables
+│   └── package.json # Backend dependencies
+├── package.json     # Root package.json with scripts
+├── README.md        # Project documentation
+└── .gitignore       # Git ignore rules
+```
+
 ## Technology Stack
 
 Frontend: React.js
@@ -48,35 +65,58 @@ Azure Account: Set up an Azure account to access Azure services.
  
 1. Clone the Repository
 
-
-```
-git clone https://github.com/msfe/crispy-googles.git  
-cd crispy-googles
+```bash
+git clone https://github.com/msfe/crispy-goggles.git  
+cd crispy-goggles
 ```
  
 2. Install Dependencies
 
-```
-npm install
+```bash
+# Install dependencies for all projects (root, client, and server)
+npm run install:all
+
+# Or install individually:
+# npm install          # Root dependencies
+# cd client && npm install  # Frontend dependencies
+# cd server && npm install  # Backend dependencies
 ```
 
 3. Configure Environment Variables
 
-Create a .env file in the root of the project with the following keys:
+Create a `.env` file in the `server` directory with the following keys:
 
-```
-AZURE_CIAM_CLIENT_ID=your_client_id  
-AZURE_CIAM_SECRET=your_secret  
-AZURE_COSMOS_DB_URI=your_cosmos_db_uri  
-AZURE_COSMOS_DB_KEY=your_cosmos_db_key
+```bash
+# Server Configuration
+PORT=5000
+
+# Database Configuration (configure when ready)
+# AZURE_COSMOS_DB_URI=your_cosmos_db_uri
+# AZURE_COSMOS_DB_KEY=your_cosmos_db_key
+
+# Authentication Configuration (configure when ready)
+# AZURE_CIAM_CLIENT_ID=your_client_id
+# AZURE_CIAM_SECRET=your_secret
 ```
 
 4. Run the Application
 
+```bash
+# Start backend server (production mode)
+npm run start:backend
+
+# Start backend server (development mode with auto-restart)
+npm run dev:backend
+
+# Start frontend (React development server)
+npm run start:frontend
+
+# Default start command (starts backend)
+npm start
 ```
-npm start  
-Your application should now be running on http://localhost:3000.
-```
+
+The backend server will be running on http://localhost:5000
+The frontend development server will be running on http://localhost:3000
 
 ## Usage
  

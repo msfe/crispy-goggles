@@ -5,7 +5,7 @@ This document outlines the key features, architecture, and development guideline
 ## MVP Features
  
 User Authentication and Management:
-Sign Up: Users can sign up using email/password or social accounts supported by Azure CIAM.
+Sign Up: Users can sign up using email/password or social accounts supported by Microsoft Entra External ID.
 User Roles: Global admin, group admin, and member roles.
 Profile Management: Users can set up profiles with name, bio, and optional contact details (visible to friends).
 Friendship Management:

@@ -1,6 +1,9 @@
-MVP Features
+# GitHub Copilot Instructions
  
-
+This document outlines the key features, architecture, and development guidelines for the project. It serves as a reference for developers and contributors to understand the project's scope and technical details.
+ 
+## MVP Features
+ 
 User Authentication and Management:
 Sign Up: Users can sign up using email/password or social accounts supported by Azure CIAM.
 User Roles: Global admin, group admin, and member roles.

@@ -1,8 +1,11 @@
-MVP Features
+# GitHub Copilot Instructions
  
-
+This document outlines the key features, architecture, and development guidelines for the project. It serves as a reference for developers and contributors to understand the project's scope and technical details.
+ 
+## MVP Features
+ 
 User Authentication and Management:
-Sign Up: Users can sign up using email/password or social accounts supported by Azure CIAM.
+Sign Up: Users can sign up using email/password or social accounts supported by Microsoft Entra External ID.
 User Roles: Global admin, group admin, and member roles.
 Profile Management: Users can set up profiles with name, bio, and optional contact details (visible to friends).
 Friendship Management:
@@ -30,7 +33,7 @@ State Management: Consider using Redux or Context API for state management.
 UI Components: Use libraries like Material-UI or Ant Design for consistent and reusable UI components.
 Backend:
 Framework: Node.js with Express.js for handling HTTP requests and building APIs.
-Authentication: Integrate Azure CIAM for secure authentication and user management.
+Authentication: Integrate Microsoft Entra External ID for secure authentication and user management.
 Database:
 Database Choice: Azure Cosmos DB for scalable and globally distributed data storage.
 Data Model: Consider using a NoSQL data model to handle user profiles, friendships, groups, posts, comments, and events efficiently.

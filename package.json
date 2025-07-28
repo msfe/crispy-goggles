@@ -5,10 +5,10 @@
   "private": true,
   "scripts": {
     "start": "npm run start:backend",
-    "start:frontend": "cd client && npm start",
+    "start:frontend": "cd client && npm run dev",
     "start:backend": "cd server && npm start",
     "dev": "npm run dev:backend",
-    "dev:frontend": "cd client && npm start",
+    "dev:frontend": "cd client && npm run dev",
     "dev:backend": "cd server && npm run dev",
     "install:all": "npm install && cd client && npm install && cd ../server && npm install",
     "build": "cd client && npm run build",
@@ -21,7 +21,8 @@
     "events",
     "react",
     "express",
-    "nodejs"
+    "nodejs",
+    "vite"
   ],
   "author": "",
   "license": "ISC",

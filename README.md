@@ -1,135 +1,170 @@
-# crispy-goggles
-**Stay in contact with friends and family without getting tracked.**
+# Crispy Goggles - Social Networking Platform
 
-This open-source project aims to create a social networking platform focused on groups and events without tracking users. The project is designed to be simple, privacy-focused, and scalable.
+A privacy-focused social networking platform focused on groups and events, built with modern web technologies.
 
-## Table of Contents
- 
+## 🏗️ Architecture
 
-* Project Overview
-* Features
-* Technology Stack
-* Getting Started
-* Prerequisites
-* Installation
-* Usage
-* Contributing
-
-## Project Overview
- 
-This project is a prototype of a social network platform similar to Facebook, with a primary focus on groups and events. It is designed to respect user privacy by avoiding tracking. Core functionalities include group creation, event management, and friendship interactions, with future scalability in mind.
-
-## Features
- 
-User Authentication: Secure sign-up and login using Azure CIAM.
-Friendship Management: Add and accept friend requests.
-Groups: Create, find, join, post, and comment within groups.
-Events: Create events, invite users, RSVP, post, and comment on event walls.
-
-
-## Project Structure
+This project uses a clean separation between frontend and backend:
 
 ```
 crispy-goggles/
-├── client/          # React frontend application
-│   ├── public/      # Static files
-│   ├── src/         # React source code
-│   └── package.json # Frontend dependencies
-├── server/          # Node.js backend application
-│   ├── index.js     # Express server entry point
-│   ├── .env         # Environment variables
-│   └── package.json # Backend dependencies
-├── package.json     # Root package.json with scripts
-├── README.md        # Project documentation
-└── .gitignore       # Git ignore rules
+├── client/          # React frontend with Vite
+├── server/          # Node.js Express backend  
+├── .github/         # GitHub workflows and documentation
+└── package.json     # Root-level scripts and configuration
 ```
 
-## Technology Stack
+## 🚀 Technology Stack
 
-Frontend: React.js
-Backend: Node.js with Express.js
-Database: Azure Cosmos DB
-Authentication: Azure CIAM
-Deployment: Azure App Service
+### Frontend
+- **Framework**: React 19 with Vite (modern replacement for Create React App)
+- **Build Tool**: Vite for fast development and optimized builds
+- **Testing**: Vitest with React Testing Library
+- **State Management**: Context API (with Redux consideration for complex state)
+- **UI Components**: Planned Material-UI or Ant Design integration
 
-## Getting Started
- 
-Follow these instructions to set up the project on your local machine for development and testing purposes.
+### Backend  
+- **Framework**: Node.js with Express.js
+- **Authentication**: Microsoft Entra External ID integration (planned)
+- **Database**: Azure Cosmos DB (planned)
+- **Environment**: dotenv for configuration management
 
-### Prerequisites
- 
-Node.js: Install Node.js from nodejs.org (V22 LTS)
-Azure Account: Set up an Azure account to access Azure services.
+### Infrastructure (Planned)
+- **Hosting**: Azure App Service
+- **Security**: HTTPS enforcement, Azure Key Vault for secrets
+- **Deployment**: Azure DevOps CI/CD pipeline
+- **Data Center**: Azure Central Sweden for compliance
 
-### Installation
- 
-1. Clone the Repository
+## 🎯 MVP Features
 
+### User Management
+- Sign up with email/password or social accounts (Microsoft Entra External ID)
+- User roles: Global admin, group admin, and member
+- Profile management with name, bio, and contact details
+
+### Social Features
+- **Friendship Management**: Send/accept friend requests
+- **Group Management**: Create, find, and join groups with tag-based search
+- **Event Management**: Create events, invite friends/groups, RSVP functionality
+- **Content Sharing**: Post and comment within groups and events
+
+## 🛠️ Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/msfe/crispy-goggles.git
+   cd crispy-goggles
+   ```
+
+2. **Install all dependencies**
+   ```bash
+   npm run install:all
+   ```
+
+   This command installs dependencies for:
+   - Root level workspace
+   - Client (React frontend)  
+   - Server (Express backend)
+
+## 🚀 Usage
+
+### Development Mode
+
+**Start the backend server:**
 ```bash
-git clone https://github.com/msfe/crispy-goggles.git  
-cd crispy-goggles
-```
- 
-2. Install Dependencies
-
-```bash
-# Install dependencies for all projects (root, client, and server)
-npm run install:all
-
-# Or install individually:
-# npm install          # Root dependencies
-# cd client && npm install  # Frontend dependencies
-# cd server && npm install  # Backend dependencies
-```
-
-3. Configure Environment Variables
-
-Create a `.env` file in the `server` directory with the following keys:
-
-```bash
-# Server Configuration
-PORT=5000
-
-# Database Configuration (configure when ready)
-# AZURE_COSMOS_DB_URI=your_cosmos_db_uri
-# AZURE_COSMOS_DB_KEY=your_cosmos_db_key
-
-# Authentication Configuration (configure when ready)
-# AZURE_CIAM_CLIENT_ID=your_client_id
-# AZURE_CIAM_SECRET=your_secret
-```
-
-4. Run the Application
-
-```bash
-# Start backend server (production mode)
-npm run start:backend
-
-# Start backend server (development mode with auto-restart)
 npm run dev:backend
-
-# Start frontend (React development server)
-npm run start:frontend
-
-# Default start command (starts backend)
-npm start
+# Server runs on http://localhost:5000 with auto-restart
 ```
 
-The backend server will be running on http://localhost:5000
-The frontend development server will be running on http://localhost:3000
+**Start the frontend development server:**
+```bash  
+npm run start:frontend
+# React app runs on http://localhost:3000 with hot-reload
+```
 
-## Usage
- 
+**Alternative development commands:**
+```bash
+npm run dev:frontend    # Same as start:frontend
+npm run dev            # Starts backend only
+```
 
-Frontend: Access the application via a web browser at `http://localhost:3000`.
-Backend API: Interact with the backend through RESTful API endpoints.
+### Production
 
-## Contributing
- 
-We welcome contributions from the community! Please follow these steps to contribute:
+**Build the frontend:**
+```bash
+npm run build
+# Creates optimized production build in client/dist/
+```
 
-1. Fork the repository.
-1. Create a feature branch (git checkout -b feature/your-feature).
-1. Commit your changes (git commit -m 'Add your feature').
-1. Push to the branch (git push origin feature/your-feature).
-1. Open a Pull Request.
+**Start production backend:**
+```bash
+npm run start:backend
+# Runs Express server in production mode
+```
+
+### Testing
+
+**Run frontend tests:**
+```bash
+npm test
+# Runs Vitest test suite with React Testing Library
+```
+
+## 🔧 Configuration
+
+### Environment Variables
+
+Create a `.env` file in the `server/` directory:
+
+```env
+PORT=5000
+NODE_ENV=development
+# Database connection strings (when implemented)
+# Authentication secrets (when implemented)
+```
+
+### Available API Endpoints
+
+- `GET /health` - Health check endpoint returning server status
+
+## 🧪 Testing
+
+The project includes a comprehensive testing setup:
+
+- **Frontend**: Vitest with React Testing Library for component testing
+- **Coverage**: Built-in coverage reporting with Vitest
+- **CI/CD**: Planned integration with Azure DevOps
+
+Run tests with:
+```bash
+npm test                    # Run all tests once
+cd client && npm test       # Interactive test mode
+```
+
+## 🔒 Security Features
+
+- Rate limiting on API endpoints (planned)
+- Input validation and sanitization (planned)  
+- Audit logging for monitoring (planned)
+- HTTPS enforcement (planned)
+- Azure Key Vault integration (planned)
+
+## 📈 Scalability Considerations
+
+- Stateless application design for horizontal scaling
+- Azure Load Balancer integration (planned)
+- Efficient NoSQL data modeling with Cosmos DB (planned)
+
+## 🤝 Contributing
+
+1. Follow the development guidelines in `.github/copilot-instructions.md`
+2. Run tests before submitting changes
+3. Use the provided npm scripts for consistent development experience
+
+## 📄 License
+
+ISC License - see LICENSE file for details.
+
+---
+
+**Note**: This project has migrated from Create React App to Vite for improved performance and future-proofing, following React team's recommendation to use modern build tools.

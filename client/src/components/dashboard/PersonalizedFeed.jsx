@@ -35,7 +35,7 @@ const PersonalizedFeed = ({ data, user }) => {
     }
   ];
 
-  const upcomingEvents = data.events.filter(event => event.rsvp !== 'no').slice(0, 2);
+  const upcomingEvents = data.events.filter(event => event.rsvp && event.rsvp !== 'no').slice(0, 2);
   const activeGroups = data.groups.slice(0, 3);
 
   return (

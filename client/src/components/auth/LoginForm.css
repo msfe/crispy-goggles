@@ -1,0 +1,202 @@
+/* Login Form Styles */
+.login-form-container {
+  max-width: 420px;
+  margin: 40px auto 0;
+  padding: 0;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #f5f5f5 0%, #ffffff 100%);
+  box-shadow: 0 20px 40px rgba(168, 97, 186, 0.1), 0 8px 16px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  border: 1px solid rgba(200, 162, 200, 0.2);
+}
+
+/* Header Section */
+.login-form-header {
+  background: linear-gradient(135deg, #a861ba 0%, #c8a2c8 100%);
+  padding: 40px 40px 30px;
+  text-align: center;
+  position: relative;
+}
+
+.login-form-header::before {
+  content: '';
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.login-form-header::after {
+  content: '';
+  position: absolute;
+  bottom: 10px;
+  left: 30px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(78, 204, 163, 0.3);
+}
+
+.login-form-title {
+  color: white;
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0 0 8px;
+  font-family: Helvetica Neue, Arial, sans-serif;
+  letter-spacing: -0.5px;
+}
+
+.login-form-subtitle {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 16px;
+  margin: 0;
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+/* Content Section */
+.login-form-content {
+  padding: 40px;
+}
+
+/* Error Message */
+.login-form-error {
+  color: #d32f2f;
+  margin-bottom: 24px;
+  padding: 16px;
+  background-color: #ffebee;
+  border: 1px solid #ffcdd2;
+  border-radius: 12px;
+  font-size: 14px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+/* Primary Button - Microsoft Login */
+.login-form-primary-button {
+  width: 100%;
+  padding: 18px 24px;
+  background-color: #4ecca3;
+  color: white;
+  border: none;
+  border-radius: 14px;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  line-height: 1.4;
+  outline: none;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  box-shadow: 0 8px 20px rgba(78, 204, 163, 0.3);
+  font-family: Helvetica Neue, Arial, sans-serif;
+  letter-spacing: 0.2px;
+}
+
+.login-form-primary-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.login-form-primary-button:not(:disabled):hover {
+  background-color: #45b893;
+  transform: translateY(-1px);
+  box-shadow: 0 12px 28px rgba(78, 204, 163, 0.4);
+}
+
+.login-form-primary-button:focus {
+  box-shadow: 0 8px 20px rgba(78, 204, 163, 0.4), 0 0 0 3px rgba(78, 204, 163, 0.2);
+}
+
+.login-form-primary-button:not(:disabled):active {
+  transform: translateY(0);
+}
+
+/* Microsoft Icon */
+.microsoft-icon {
+  width: 20px;
+  height: 20px;
+  fill: white;
+}
+
+/* Divider */
+.login-form-divider {
+  text-align: center;
+  margin: 32px 0;
+}
+
+.login-form-divider-line {
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, #b0b0b0 50%, transparent 100%);
+  position: relative;
+}
+
+.login-form-divider-text {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #f5f5f5;
+  padding: 0 16px;
+  color: #b0b0b0;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* Secondary Button - Create Account */
+.login-form-secondary-button {
+  width: 100%;
+  padding: 16px 24px;
+  background-color: transparent;
+  color: #a861ba;
+  border: 2px solid #a861ba;
+  border-radius: 14px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  line-height: 1.4;
+  outline: none;
+  font-family: Helvetica Neue, Arial, sans-serif;
+  letter-spacing: 0.2px;
+}
+
+.login-form-secondary-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.login-form-secondary-button:not(:disabled):hover {
+  background-color: #a861ba;
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(168, 97, 186, 0.25);
+}
+
+.login-form-secondary-button:focus {
+  box-shadow: 0 0 0 3px rgba(168, 97, 186, 0.2);
+}
+
+.login-form-secondary-button:not(:disabled):active {
+  transform: translateY(0);
+}
+
+/* Footer */
+.login-form-footer {
+  text-align: center;
+  margin-top: 32px;
+}
+
+.login-form-footer-text {
+  color: #b0b0b0;
+  font-size: 14px;
+  margin: 0;
+  line-height: 1.5;
+}

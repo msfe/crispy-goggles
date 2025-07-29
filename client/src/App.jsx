@@ -4,23 +4,16 @@ import logo from './logo.svg';
 import './App.css';
 import LoginForm from './components/auth/LoginForm';
 import SignupForm from './components/auth/SignupForm';
-import UserProfile from './components/auth/UserProfile';
+import Dashboard from './components/dashboard/Dashboard';
 
 function App() {
   const isAuthenticated = useIsAuthenticated();
   const [authMode, setAuthMode] = useState('login'); // 'login' or 'signup'
+  // Demo mode for showcase - remove this in production
+  const [demoMode, setDemoMode] = useState(false); 
 
-  if (isAuthenticated) {
-    return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1>Crispy Goggles</h1>
-          <p>Welcome to your privacy-focused social networking platform!</p>
-          <UserProfile />
-        </header>
-      </div>
-    );
+  if (isAuthenticated || demoMode) {
+    return <Dashboard />;
   }
 
   return (
@@ -48,6 +41,7 @@ function App() {
           <button
             onClick={() => setAuthMode('signup')}
             style={{
+              marginRight: '10px',
               padding: '8px 16px',
               backgroundColor: authMode === 'signup' ? '#107c10' : '#e1e1e1',
               color: authMode === 'signup' ? 'white' : 'black',
@@ -57,6 +51,19 @@ function App() {
             }}
           >
             Sign Up
+          </button>
+          <button
+            onClick={() => setDemoMode(true)}
+            style={{
+              padding: '8px 16px',
+              backgroundColor: '#a861ba',
+              color: 'white',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: 'pointer'
+            }}
+          >
+            View Dashboard Demo
           </button>
         </div>
         

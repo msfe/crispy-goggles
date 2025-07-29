@@ -18,7 +18,6 @@
         "ms-vscode.js-debug",
         "formulahendry.auto-rename-tag",
         "christian-kohler.npm-intellisense",
-        "ms-vscode.vscode-react-native",
         "burkeholland.simple-react-snippets"
       ],
       "settings": {

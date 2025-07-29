@@ -123,9 +123,9 @@
 .login-form-google-button {
   width: 100%;
   padding: 18px 24px;
-  background-color: white;
-  color: #333333;
-  border: 2px solid #e0e0e0;
+  background-color: #c8a2c8;
+  color: white;
+  border: none;
   border-radius: 14px;
   font-size: 18px;
   font-weight: 600;
@@ -138,7 +138,7 @@
   align-items: center;
   justify-content: center;
   gap: 12px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 20px rgba(200, 162, 200, 0.3);
   font-family: Helvetica Neue, Arial, sans-serif;
   letter-spacing: 0.2px;
 }
@@ -149,14 +149,13 @@
 }
 
 .login-form-google-button:not(:disabled):hover {
-  background-color: #f8f9fa;
-  border-color: #d0d0d0;
+  background-color: #b894b8;
   transform: translateY(-1px);
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 12px 28px rgba(200, 162, 200, 0.4);
 }
 
 .login-form-google-button:focus {
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1), 0 0 0 3px rgba(66, 133, 244, 0.2);
+  box-shadow: 0 8px 20px rgba(200, 162, 200, 0.3), 0 0 0 3px rgba(200, 162, 200, 0.2);
 }
 
 .login-form-google-button:not(:disabled):active {

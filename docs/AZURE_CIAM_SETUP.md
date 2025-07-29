@@ -1,5 +1,7 @@
 # Azure CIAM Setup Guide
 
+**IF YOU ARE USING CODESPACES THIS CONFIGURATION IS DONE FOR YOU***
+
 This guide walks you through setting up Azure Customer Identity and Access Management (CIAM) for the Crispy Goggles application.
 
 ## Prerequisites

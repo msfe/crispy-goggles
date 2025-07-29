@@ -4,23 +4,14 @@ import logo from './logo.svg';
 import './App.css';
 import LoginForm from './components/auth/LoginForm';
 import SignupForm from './components/auth/SignupForm';
-import UserProfile from './components/auth/UserProfile';
+import Dashboard from './components/dashboard/Dashboard';
 
 function App() {
   const isAuthenticated = useIsAuthenticated();
   const [authMode, setAuthMode] = useState('login'); // 'login' or 'signup'
 
   if (isAuthenticated) {
-    return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1>Crispy Goggles</h1>
-          <p>Welcome to your privacy-focused social networking platform!</p>
-          <UserProfile />
-        </header>
-      </div>
-    );
+    return <Dashboard />;
   }
 
   return (

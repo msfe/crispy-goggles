@@ -4,11 +4,11 @@ import App from './App.jsx';
 
 test('renders authentication interface', () => {
   render(<App />);
-  const appTitle = screen.getByText(/crispy goggles/i);
-  const microsoftSignInButton = screen.getByText(/sign in with microsoft/i);
-  const signUpTab = screen.getByRole('button', { name: /sign up/i });
+  const appTitle = screen.getAllByText(/crispy goggles/i)[0]; // Get the first occurrence (main title)
+  const microsoftSignInButton = screen.getByText(/continue with microsoft/i);
+  const createAccountButton = screen.getByText(/create account/i);
   
   expect(appTitle).toBeInTheDocument();
   expect(microsoftSignInButton).toBeInTheDocument();
-  expect(signUpTab).toBeInTheDocument();
+  expect(createAccountButton).toBeInTheDocument();
 });

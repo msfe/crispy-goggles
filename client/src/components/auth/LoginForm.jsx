@@ -1,13 +1,14 @@
 import React, { useState } from "react";
 import { useMsal } from "@azure/msal-react";
 import { loginRequest } from "../../config/authConfig";
+import "./LoginForm.css";
 
-const LoginForm = () => {
+const LoginForm = ({ showSignUp, setShowSignUp }) => {
   const { instance } = useMsal();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleLogin = async () => {
+  const handleMicrosoftLogin = async () => {
     setLoading(true);
     setError("");
 
@@ -21,62 +22,69 @@ const LoginForm = () => {
     }
   };
 
+  const handleSignUp = () => {
+    // For now, redirect to Microsoft signup since that's our auth system
+    handleMicrosoftLogin();
+  };
+
   return (
-    <div
-      style={{
-        maxWidth: "400px",
-        margin: "0 auto",
-        padding: "20px",
-        border: "1px solid #ddd",
-        borderRadius: "8px",
-        backgroundColor: "#f9f9f9",
-      }}
-    >
-      <h2 style={{ textAlign: "center", marginBottom: "20px" }}>Login</h2>
+    <div className="login-form-container">
+      {/* Header Section */}
+      <div className="login-form-header">
+        <h2 className="login-form-title">
+          Welcome Back
+        </h2>
+        <p className="login-form-subtitle">
+          Connect with your privacy-focused community
+        </p>
+      </div>
 
-      {error && (
-        <div
-          style={{
-            color: "red",
-            marginBottom: "15px",
-            padding: "10px",
-            backgroundColor: "#ffebee",
-            border: "1px solid #e57373",
-            borderRadius: "4px",
-          }}
+      {/* Content Section */}
+      <div className="login-form-content">
+        {error && (
+          <div className="login-form-error">
+            {error}
+          </div>
+        )}
+
+        {/* Primary Action */}
+        <button
+          onClick={handleMicrosoftLogin}
+          disabled={loading}
+          className="login-form-primary-button"
         >
-          {error}
+          {/* Microsoft Icon */}
+          <svg className="microsoft-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M11.4 24H0V12.6h11.4V24zM24 24H12.6V12.6H24V24zM11.4 11.4H0V0h11.4v11.4zM24 11.4H12.6V0H24v11.4z"/>
+          </svg>
+          {loading ? "Connecting..." : "Continue with Microsoft"}
+        </button>
+
+        {/* Divider */}
+        <div className="login-form-divider">
+          <div className="login-form-divider-line">
+            <span className="login-form-divider-text">
+              New to Crispy Goggles?
+            </span>
+          </div>
         </div>
-      )}
 
-      <button
-        onClick={handleLogin}
-        disabled={loading}
-        style={{
-          width: "100%",
-          padding: "12px",
-          backgroundColor: "#0078d4",
-          color: "white",
-          border: "none",
-          borderRadius: "4px",
-          fontSize: "16px",
-          cursor: loading ? "not-allowed" : "pointer",
-          opacity: loading ? 0.7 : 1,
-        }}
-      >
-        {loading ? "Signing in..." : "Sign in with Microsoft"}
-      </button>
+        {/* Secondary Action */}
+        <button
+          onClick={handleSignUp}
+          disabled={loading}
+          className="login-form-secondary-button"
+        >
+          Create Account
+        </button>
 
-      <p
-        style={{
-          textAlign: "center",
-          marginTop: "15px",
-          fontSize: "14px",
-          color: "#666",
-        }}
-      >
-        Don't have an account? Use the Sign Up button to create one.
-      </p>
+        {/* Footer */}
+        <div className="login-form-footer">
+          <p className="login-form-footer-text">
+            Secure authentication powered by Microsoft
+          </p>
+        </div>
+      </div>
     </div>
   );
 };

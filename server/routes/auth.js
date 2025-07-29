@@ -72,12 +72,13 @@ router.post('/validate-token', checkConfiguration, async (req, res) => {
 
     const response = await cca.acquireTokenByCode(tokenRequest);
     
-    // Return user info (remove sensitive token data for security)
+    // Return user info (explicitly exclude sensitive token data such as access tokens and refresh tokens)
     const userInfo = {
-      userId: response.account.homeAccountId,
-      username: response.account.username,
-      name: response.account.name,
+      userId: response.account.homeAccountId, // Unique identifier for the user
+      username: response.account.username, // User's username (often their email)
+      name: response.account.name, // User's display name
       email: response.account.username, // Email is typically in username for Azure CIAM
+      // Note: Sensitive fields like accessToken, refreshToken, and idToken are excluded for security
     };
 
     res.json({ 

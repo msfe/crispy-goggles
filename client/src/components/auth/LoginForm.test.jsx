@@ -19,15 +19,13 @@ test('renders login form with Microsoft sign-in button', () => {
   
   render(<LoginForm {...mockProps} />);
   
-  const emailInput = screen.getByPlaceholderText(/email or phone number/i);
-  const passwordInput = screen.getByPlaceholderText(/password/i);
-  const signInButton = screen.getByText(/^sign in$/i);
-  const microsoftSignInButton = screen.getByText(/sign in with microsoft/i);
-  const createAccountButton = screen.getByText(/create new account/i);
+  const welcomeText = screen.getByText(/welcome back/i);
+  const microsoftSignInButton = screen.getByText(/continue with microsoft/i);
+  const createAccountButton = screen.getByText(/create account/i);
+  const securityText = screen.getByText(/secure authentication powered by microsoft/i);
   
-  expect(emailInput).toBeInTheDocument();
-  expect(passwordInput).toBeInTheDocument();
-  expect(signInButton).toBeInTheDocument();
+  expect(welcomeText).toBeInTheDocument();
   expect(microsoftSignInButton).toBeInTheDocument();
   expect(createAccountButton).toBeInTheDocument();
+  expect(securityText).toBeInTheDocument();
 });

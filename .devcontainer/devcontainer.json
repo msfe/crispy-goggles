@@ -1,0 +1,56 @@
+{
+  "name": "Crispy Goggles Development Environment",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:1-20-bullseye",
+  
+  "features": {
+    "ghcr.io/devcontainers/features/git:1": {}
+  },
+  
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-vscode.vscode-typescript-next",
+        "bradlc.vscode-tailwindcss",
+        "esbenp.prettier-vscode",
+        "ms-vscode.vscode-eslint",
+        "ms-vscode.vscode-json",
+        "ms-vscode.extension-test-runner",
+        "ms-vscode.js-debug",
+        "formulahendry.auto-rename-tag",
+        "christian-kohler.npm-intellisense",
+        "ms-vscode.vscode-react-native",
+        "burkeholland.simple-react-snippets"
+      ],
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash",
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.codeActionsOnSave": {
+          "source.fixAll.eslint": "explicit"
+        },
+        "typescript.preferences.quoteStyle": "double",
+        "javascript.preferences.quoteStyle": "double"
+      }
+    }
+  },
+
+  "forwardPorts": [3000, 5000],
+  "portsAttributes": {
+    "3000": {
+      "label": "React Frontend",
+      "onAutoForward": "notify"
+    },
+    "5000": {
+      "label": "Express Backend", 
+      "onAutoForward": "notify"
+    }
+  },
+
+  "postCreateCommand": "npm run install:all",
+  
+  "onCreateCommand": "echo 'Welcome to Crispy Goggles! Run \"npm run dev:backend\" and \"npm run start:frontend\" in separate terminals to start development.'",
+  
+  "remoteUser": "node",
+  
+  "workspaceFolder": "/workspaces/crispy-goggles"
+}

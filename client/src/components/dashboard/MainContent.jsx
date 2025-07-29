@@ -1,7 +1,11 @@
 import React from 'react';
+import QuickActions from './QuickActions';
+import PersonalizedFeed from './PersonalizedFeed';
+import DiscoverySection from './DiscoverySection';
 
 const MainContent = ({ activeTab, setActiveTab, data, user }) => {
   const tabs = [
+    { id: 'home', label: 'Home', icon: '🏠' },
     { id: 'profile', label: 'My Profile', icon: '👤' },
     { id: 'friends', label: 'Friend Requests', icon: '👥' },
     { id: 'groups', label: 'Groups', icon: '📋' },
@@ -9,8 +13,68 @@ const MainContent = ({ activeTab, setActiveTab, data, user }) => {
     { id: 'activity', label: 'Recent Activity', icon: '📰' }
   ];
 
+  const handleQuickAction = (actionId) => {
+    console.log('Quick action triggered:', actionId);
+    // In a real app, this would navigate to the appropriate page or open a modal
+    switch (actionId) {
+      case 'create-post':
+        // Navigate to post creation or open modal
+        alert('Create Post feature would open here');
+        break;
+      case 'invite-friends':
+        // Navigate to friend invitation page
+        alert('Invite Friends feature would open here');
+        break;
+      case 'join-group':
+        setActiveTab('groups');
+        break;
+      case 'create-event':
+        // Navigate to event creation
+        alert('Create Event feature would open here');
+        break;
+      default:
+        break;
+    }
+  };
+
+  const handleJoinAction = (type, id) => {
+    console.log(`Joining ${type} with id:`, id);
+    alert(`${type === 'group' ? 'Join Group' : 'RSVP Event'} feature would execute here`);
+  };
+
+  const handleExplore = (type) => {
+    console.log('Exploring:', type);
+    if (type === 'groups') {
+      setActiveTab('groups');
+    } else if (type === 'events') {
+      setActiveTab('events');
+    }
+  };
+
   const renderTabContent = () => {
     switch (activeTab) {
+      case 'home':
+        return (
+          <div className="tab-content">
+            <div className="home-dashboard">
+              <div className="dashboard-welcome">
+                <h3>Welcome back, {user.name || 'User'}! 👋</h3>
+                <p>Here's what's happening in your community today.</p>
+              </div>
+              
+              <QuickActions onAction={handleQuickAction} />
+              
+              <div className="dashboard-main-content">
+                <div className="dashboard-left">
+                  <PersonalizedFeed data={data} user={user} />
+                </div>
+                <div className="dashboard-right">
+                  <DiscoverySection onJoin={handleJoinAction} onExplore={handleExplore} />
+                </div>
+              </div>
+            </div>
+          </div>
+        );
       case 'profile':
         return (
           <div className="tab-content">

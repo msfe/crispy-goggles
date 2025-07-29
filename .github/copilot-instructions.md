@@ -59,3 +59,70 @@ Development Guidelines
 
 Version Control: Use Git and set up a CI/CD pipeline with Azure DevOps for automated testing and deployment.
 Testing: Implement unit and integration tests to ensure code quality and functionality.
+
+## Colors
+
+### Primary Color
+Lavender Purple: #a861ba
+Usage: Primary buttons, highlights, and key interactive elements.
+### Secondary Color
+Soft Lilac: #c8a2c8
+Usage: Backgrounds for cards, secondary buttons, and hover effects.
+### Accent Color
+Cool Teal: #4ecca3
+Usage: Links, icons, and notification badges to add a pop of interest.
+### Neutral Base Colors
+Light Gray: #f5f5f5
+Usage: General background color for a clean and calming canvas.
+Medium Gray: #b0b0b0
+Usage: Text color for secondary information, borders, and dividers.
+### Dark Accent
+Charcoal Black: #333333
+Usage: Primary text color for strong contrast and readability.
+### Implementation Tips
+ 
+Balance: Use the lavender purple and soft lilac for large areas to maintain calmness while letting the teal accent add lively touches.
+Contrast: Ensure text and critical elements have sufficient contrast against backgrounds for accessibility. Follow WCAG AA standards, which require a minimum contrast ratio of 4.5:1 for normal text and 3:1 for large text.
+Consistency: Apply colors consistently across components to maintain a cohesive look.
+
+## Font Usage Guidelines
+ 
+
+Primary Font: Sans-serif
+ 
+
+Purpose: Sans-serif fonts are used for body text and primary content to ensure readability and a clean, modern appearance.
+Examples: Helvetica Neue, Arial, or system default sans-serif.
+Usage:
+Body Text: Use sans-serif for paragraphs, instructions, and general content.
+Headers: Apply sans-serif for headings and subheadings to maintain consistency and clarity.
+Alternative Font: Accent Serif
+ 
+
+Purpose: Serif fonts can be used sparingly for decorative purposes or to highlight special content, adding a touch of elegance.
+Examples: Georgia, Times New Roman.
+Usage:
+Quotes or Special Sections: Employ serif fonts in quotes, testimonials, or highlighted sections for visual contrast.
+Print Materials: Consider serif fonts for printed materials where a traditional look is desired.
+### Font Size and Weight
+ 
+
+Standard Body Text: 16px, normal weight for readability.
+Headers:
+Main Headers: 24px, bold weight for emphasis.
+Subheaders: 20px, semi-bold weight.
+### Line Height and Spacing
+ 
+
+Line Height: 1.5 for body text to ensure comfortable reading.
+Letter Spacing: Utilize slight letter spacing (e.g., 0.5px) for headers to enhance clarity.
+### Responsive Design
+ 
+
+Scaling: Ensure font sizes are scalable for different devices, maintaining readability across screens.
+Accessibility: Use sufficient contrast between text and background colors for accessibility compliance.
+### Consistency
+ 
+
+Uniform Application: Apply font styles consistently across all digital and print media to reinforce brand identity.
+Fallbacks: Always specify font fallbacks in CSS to ensure consistent appearance across various platforms.

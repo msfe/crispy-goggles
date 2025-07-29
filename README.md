@@ -50,6 +50,22 @@ crispy-goggles/
 
 ## 🛠️ Installation
 
+### Quick Start with GitHub Codespaces ⚡
+
+The fastest way to get started is using GitHub Codespaces:
+
+1. Click the green **"Code"** button on the GitHub repository
+2. Select the **"Codespaces"** tab
+3. Click **"Create codespace on main"**
+
+The development environment will be automatically configured with:
+- Node.js 20 runtime
+- All dependencies pre-installed
+- VS Code extensions for React/Node.js development
+- Port forwarding for frontend (3000) and backend (5000)
+
+### Traditional Local Setup
+
 1. **Clone the repository**
    ```bash
    git clone https://github.com/msfe/crispy-goggles.git

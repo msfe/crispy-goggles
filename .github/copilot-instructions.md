@@ -79,7 +79,7 @@ Usage: Text color for secondary information, borders, and dividers.
 ### Dark Accent
 Charcoal Black: #333333
 Usage: Primary text color for strong contrast and readability.
-Implementation Tips:
+### Implementation Tips
  
 Balance: Use the lavender purple and soft lilac for large areas to maintain calmness while letting the teal accent add lively touches.
 Contrast: Ensure text and critical elements have sufficient contrast against backgrounds for accessibility. Follow WCAG AA standards, which require a minimum contrast ratio of 4.5:1 for normal text and 3:1 for large text.
@@ -104,24 +104,24 @@ Examples: Georgia, Times New Roman.
 Usage:
 Quotes or Special Sections: Employ serif fonts in quotes, testimonials, or highlighted sections for visual contrast.
 Print Materials: Consider serif fonts for printed materials where a traditional look is desired.
-Font Size and Weight
+### Font Size and Weight
  
 
 Standard Body Text: 16px, normal weight for readability.
 Headers:
 Main Headers: 24px, bold weight for emphasis.
 Subheaders: 20px, semi-bold weight.
-Line Height and Spacing
+### Line Height and Spacing
  
 
 Line Height: 1.5 for body text to ensure comfortable reading.
 Letter Spacing: Utilize slight letter spacing (e.g., 0.5px) for headers to enhance clarity.
-Responsive Design
+### Responsive Design
  
 
 Scaling: Ensure font sizes are scalable for different devices, maintaining readability across screens.
 Accessibility: Use sufficient contrast between text and background colors for accessibility compliance.
-Consistency
+### Consistency
  
 
 Uniform Application: Apply font styles consistently across all digital and print media to reinforce brand identity.

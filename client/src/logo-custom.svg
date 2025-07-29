@@ -1,0 +1,38 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Goggles Frame -->
+  <g fill="none" stroke="#a861ba" stroke-width="8">
+    <!-- Left goggle -->
+    <circle cx="65" cy="100" r="45" />
+    <!-- Right goggle -->
+    <circle cx="135" cy="100" r="45" />
+    <!-- Bridge between goggles -->
+    <line x1="110" y1="100" x2="90" y2="100" stroke-width="6"/>
+    <!-- Left strap -->
+    <path d="M 20 100 Q 10 80 20 60 Q 30 40 45 45" stroke-linecap="round"/>
+    <!-- Right strap -->
+    <path d="M 180 100 Q 190 80 180 60 Q 170 40 155 45" stroke-linecap="round"/>
+  </g>
+  
+  <!-- Goggle lenses -->
+  <g fill="#4ecca3" opacity="0.7">
+    <!-- Left lens -->
+    <circle cx="65" cy="100" r="35" />
+    <!-- Right lens -->
+    <circle cx="135" cy="100" r="35" />
+  </g>
+  
+  <!-- Reflection highlights -->
+  <g fill="#ffffff" opacity="0.8">
+    <!-- Left lens highlight -->
+    <ellipse cx="55" cy="85" rx="12" ry="18" />
+    <!-- Right lens highlight -->
+    <ellipse cx="125" cy="85" rx="12" ry="18" />
+  </g>
+  
+  <!-- Small decorative dots -->
+  <g fill="#c8a2c8">
+    <circle cx="100" cy="60" r="3" />
+    <circle cx="85" cy="140" r="2" />
+    <circle cx="115" cy="140" r="2" />
+  </g>
+</svg>

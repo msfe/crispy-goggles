@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useIsAuthenticated } from '@azure/msal-react';
-import logo from './logo.svg';
+import logo from './logo-custom.svg';
 import './App.css';
 import LoginForm from './components/auth/LoginForm';
 import SignupForm from './components/auth/SignupForm';
@@ -17,35 +17,20 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <h1>Crispy Goggles</h1>
-        <p>Privacy-focused social networking platform</p>
+        <img src={logo} className="App-logo" alt="Crispy Goggles logo" />
+        <h1 className="App-title">Crispy Goggles</h1>
+        <p className="App-subtitle">Privacy-focused social networking platform</p>
         
-        <div style={{ marginBottom: '20px' }}>
+        <div className="App-auth-buttons">
           <button
             onClick={() => setAuthMode('login')}
-            style={{
-              marginRight: '10px',
-              padding: '8px 16px',
-              backgroundColor: authMode === 'login' ? '#0078d4' : '#e1e1e1',
-              color: authMode === 'login' ? 'white' : 'black',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer'
-            }}
+            className={`App-auth-button App-auth-button--signin ${authMode === 'login' ? 'active' : 'App-auth-button--inactive'}`}
           >
             Sign In
           </button>
           <button
             onClick={() => setAuthMode('signup')}
-            style={{
-              padding: '8px 16px',
-              backgroundColor: authMode === 'signup' ? '#107c10' : '#e1e1e1',
-              color: authMode === 'signup' ? 'white' : 'black',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer'
-            }}
+            className={`App-auth-button App-auth-button--signup ${authMode === 'signup' ? 'active' : 'App-auth-button--inactive'}`}
           >
             Sign Up
           </button>

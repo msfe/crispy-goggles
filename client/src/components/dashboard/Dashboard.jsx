@@ -9,11 +9,7 @@ import './Dashboard.css';
 
 const Dashboard = () => {
   const { accounts } = useMsal();
-  const account = accounts[0] || {
-    name: 'John Doe',
-    username: 'john.doe@example.com',
-    homeAccountId: 'demo-user-id'
-  }; // Fallback for demo mode
+  const account = accounts[0];
   const [activeTab, setActiveTab] = useState('profile');
   const [showNotifications, setShowNotifications] = useState(false);
 

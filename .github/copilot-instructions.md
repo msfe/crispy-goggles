@@ -59,3 +59,29 @@ Development Guidelines
 
 Version Control: Use Git and set up a CI/CD pipeline with Azure DevOps for automated testing and deployment.
 Testing: Implement unit and integration tests to ensure code quality and functionality.
+
+## Colors
+
+Primary Color
+Lavender Purple: #a861ba
+Usage: Primary buttons, highlights, and key interactive elements.
+Secondary Color
+Soft Lilac: #c8a2c8
+Usage: Backgrounds for cards, secondary buttons, and hover effects.
+Accent Color
+Cool Teal: #4ecca3
+Usage: Links, icons, and notification badges to add a pop of interest.
+Neutral Base Colors
+Light Gray: #f5f5f5
+Usage: General background color for a clean and calming canvas.
+Medium Gray: #b0b0b0
+Usage: Text color for secondary information, borders, and dividers.
+Dark Accent
+Charcoal Black: #333333
+Usage: Primary text color for strong contrast and readability.
+Implementation Tips:
+ 
+
+Balance: Use the lavender purple and soft lilac for large areas to maintain calmness while letting the teal accent add lively touches.
+Contrast: Ensure text and critical elements have sufficient contrast against backgrounds for accessibility.
+Consistency: Apply colors consistently across components to maintain a cohesive look.

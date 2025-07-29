@@ -10,7 +10,6 @@ import './Dashboard.css';
 const Dashboard = () => {
   const { accounts } = useMsal();
   const account = accounts[0];
-  const [activeTab, setActiveTab] = useState('home');
   const [showNotifications, setShowNotifications] = useState(false);
 
   // Mock data for demonstration
@@ -69,8 +68,6 @@ const Dashboard = () => {
           />
           
           <MainContent 
-            activeTab={activeTab}
-            setActiveTab={setActiveTab}
             data={mockData}
             user={mockAccount}
           />
@@ -101,8 +98,6 @@ const Dashboard = () => {
         />
         
         <MainContent 
-          activeTab={activeTab}
-          setActiveTab={setActiveTab}
           data={mockData}
           user={account}
         />

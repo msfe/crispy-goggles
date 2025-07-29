@@ -14,7 +14,7 @@ This guide walks you through setting up Azure Customer Identity and Access Manag
 3. Fill in the application details:
    - **Name**: `Crispy Goggles` (or your preferred name)
    - **Supported account types**: Select "Accounts in any organizational directory (Any Microsoft Entra ID tenant - Multitenant) and personal Microsoft accounts (e.g. Skype, Xbox)"
-   - **Redirect URI**: 
+   - **Redirect URI**:
      - Platform: **Single-page application (SPA)**
      - URI: `http://localhost:3000`
 
@@ -23,7 +23,7 @@ This guide walks you through setting up Azure Customer Identity and Access Manag
 After creating the application, note down the following values:
 
 - **Application (client) ID**: Found on the Overview page
-- **Directory (tenant) ID**: `869afa14-2d2f-4ddf-a6d9-8cb3977cb5d7` (already configured)
+- **Directory (tenant) ID**: `041f7012-c1ab-4c06-a346-f8d59ea82c37` (already configured)
 
 ## Step 3: Configure Authentication
 
@@ -62,7 +62,7 @@ NODE_ENV=development
 # Azure CIAM Configuration
 AZURE_CLIENT_ID=your_application_client_id_here
 AZURE_CLIENT_SECRET=your_client_secret_here
-AZURE_TENANT_ID=869afa14-2d2f-4ddf-a6d9-8cb3977cb5d7
+AZURE_TENANT_ID=041f7012-c1ab-4c06-a346-f8d59ea82c37
 AZURE_CLOUD_INSTANCE=https://crispygoggles.ciamlogin.com/
 AZURE_REDIRECT_URI=http://localhost:3000
 
@@ -76,7 +76,7 @@ Create a `.env` file in the `client` directory using the template:
 ```env
 # Copy from client/.env.example
 VITE_AZURE_CLIENT_ID=your_application_client_id_here
-VITE_AZURE_TENANT_ID=869afa14-2d2f-4ddf-a6d9-8cb3977cb5d7
+VITE_AZURE_TENANT_ID=041f7012-c1ab-4c06-a346-f8d59ea82c37
 VITE_AZURE_CLOUD_INSTANCE=https://crispygoggles.ciamlogin.com/
 VITE_AZURE_REDIRECT_URI=http://localhost:3000
 
@@ -94,9 +94,9 @@ VITE_API_BASE_URL=http://localhost:5000
 
 The following endpoints are configured:
 
-- **Authority URL**: `https://crispygoggles.ciamlogin.com/869afa14-2d2f-4ddf-a6d9-8cb3977cb5d7`
-- **OAuth 2.0 Authorization**: `https://crispygoggles.ciamlogin.com/869afa14-2d2f-4ddf-a6d9-8cb3977cb5d7/oauth2/v2.0/authorize`
-- **OAuth 2.0 Token**: `https://crispygoggles.ciamlogin.com/869afa14-2d2f-4ddf-a6d9-8cb3977cb5d7/oauth2/v2.0/token`
+- **Authority URL**: `https://crispygoggles.ciamlogin.com/041f7012-c1ab-4c06-a346-f8d59ea82c37`
+- **OAuth 2.0 Authorization**: `https://crispygoggles.ciamlogin.com/041f7012-c1ab-4c06-a346-f8d59ea82c37/oauth2/v2.0/authorize`
+- **OAuth 2.0 Token**: `https://crispygoggles.ciamlogin.com/041f7012-c1ab-4c06-a346-f8d59ea82c37/oauth2/v2.0/token`
 
 ## API Endpoints
 

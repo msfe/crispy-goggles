@@ -167,7 +167,7 @@ const LoginForm = ({ showSignUp, setShowSignUp }) => {
           }}
         >
           {/* Microsoft Icon */}
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="white" aria-hidden="true">
             <path d="M11.4 24H0V12.6h11.4V24zM24 24H12.6V12.6H24V24zM11.4 11.4H0V0h11.4v11.4zM24 11.4H12.6V0H24v11.4z"/>
           </svg>
           {loading ? "Connecting..." : "Continue with Microsoft"}

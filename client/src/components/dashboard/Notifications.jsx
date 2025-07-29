@@ -53,7 +53,7 @@ const Notifications = ({ notifications, isVisible, onClose }) => {
         </div>
         
         <div className="notifications-footer">
-          <a href="#notifications" className="view-all-link">View All Notifications</a>
+          <Link to="/notifications" className="view-all-link">View All Notifications</Link>
         </div>
       </div>
     </>

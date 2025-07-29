@@ -37,7 +37,7 @@ const MainContent = ({ activeTab, setActiveTab, data, user }) => {
                 {data.friendRequests.map((request) => (
                   <div key={request.id} className="friend-request-item">
                     <div className="friend-info">
-                      <div className="friend-avatar">{request.name[0]}</div>
+                      <div className="friend-avatar">{request.name ? request.name[0] : '?'}</div>
                       <div>
                         <h4>{request.name}</h4>
                         <p>{request.mutualFriends} mutual friends</p>

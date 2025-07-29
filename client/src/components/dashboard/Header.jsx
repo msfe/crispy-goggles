@@ -23,18 +23,18 @@ const Header = ({ onNotificationsToggle, notificationCount }) => {
       <div className="header-container">
         {/* Logo */}
         <div className="header-logo">
-          <a href="#" className="logo-link">
+          <a href="/" className="logo-link">
             <span className="logo-text">Crispy Goggles</span>
           </a>
         </div>
 
         {/* Navigation Menu */}
         <nav className="header-nav">
-          <a href="#profile" className="nav-link">Profile</a>
-          <a href="#friends" className="nav-link">Friends</a>
-          <a href="#groups" className="nav-link">Groups</a>
-          <a href="#events" className="nav-link">Events</a>
-          <a href="#settings" className="nav-link">Settings</a>
+          <Link to="/profile" className="nav-link">Profile</Link>
+          <Link to="/friends" className="nav-link">Friends</Link>
+          <Link to="/groups" className="nav-link">Groups</Link>
+          <Link to="/events" className="nav-link">Events</Link>
+          <Link to="/settings" className="nav-link">Settings</Link>
         </nav>
 
         {/* Search Bar */}

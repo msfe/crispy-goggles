@@ -2,7 +2,7 @@ import React from 'react';
 
 const UserOverview = ({ user, stats }) => {
   const getInitials = (name) => {
-    if (!name) return 'U';
+    if (typeof name !== 'string' || !name.trim()) return 'U';
     return name.split(' ').map(n => n[0]).join('').toUpperCase();
   };
 

@@ -5,6 +5,7 @@ import UserOverview from './UserOverview';
 import Notifications from './Notifications';
 import MainContent from './MainContent';
 import Footer from './Footer';
+import DatabaseStatus from '../database/DatabaseStatus';
 import './Dashboard.css';
 
 const Dashboard = () => {
@@ -61,6 +62,8 @@ const Dashboard = () => {
             stats={mockData.stats}
           />
           
+          <DatabaseStatus />
+          
           <Notifications 
             notifications={mockData.notifications}
             isVisible={showNotifications}
@@ -90,6 +93,8 @@ const Dashboard = () => {
           user={account} 
           stats={mockData.stats}
         />
+        
+        <DatabaseStatus />
         
         <Notifications 
           notifications={mockData.notifications}

@@ -7,11 +7,17 @@
     "dev": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": ["social-network", "express", "backend"],
+  "keywords": [
+    "social-network",
+    "express",
+    "backend"
+  ],
   "author": "",
   "license": "ISC",
   "description": "Backend server for crispy-goggles social networking platform",
   "dependencies": {
+    "@azure/msal-node": "^3.6.4",
+    "axios": "^1.11.0",
     "cors": "^2.8.5",
     "dotenv": "^17.2.1",
     "express": "^5.1.0"

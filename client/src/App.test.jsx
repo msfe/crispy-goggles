@@ -6,9 +6,9 @@ test('renders authentication interface', () => {
   render(<App />);
   const appTitle = screen.getByText(/crispy goggles/i);
   const microsoftSignInButton = screen.getByText(/sign in with microsoft/i);
-  const signUpTab = screen.getByRole('button', { name: /sign up/i });
+  const createAccountButton = screen.getByText(/create new account/i);
   
   expect(appTitle).toBeInTheDocument();
   expect(microsoftSignInButton).toBeInTheDocument();
-  expect(signUpTab).toBeInTheDocument();
+  expect(createAccountButton).toBeInTheDocument();
 });

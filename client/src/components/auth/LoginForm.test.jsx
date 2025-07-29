@@ -12,13 +12,22 @@ vi.mock('@azure/msal-react', () => ({
 }));
 
 test('renders login form with Microsoft sign-in button', () => {
-  render(<LoginForm />);
+  const mockProps = {
+    showSignUp: false,
+    setShowSignUp: vi.fn()
+  };
   
-  const heading = screen.getByText(/login/i);
-  const signInButton = screen.getByText(/sign in with microsoft/i);
-  const helpText = screen.getByText(/don't have an account/i);
+  render(<LoginForm {...mockProps} />);
   
-  expect(heading).toBeInTheDocument();
+  const emailInput = screen.getByPlaceholderText(/email or phone number/i);
+  const passwordInput = screen.getByPlaceholderText(/password/i);
+  const signInButton = screen.getByText(/^sign in$/i);
+  const microsoftSignInButton = screen.getByText(/sign in with microsoft/i);
+  const createAccountButton = screen.getByText(/create new account/i);
+  
+  expect(emailInput).toBeInTheDocument();
+  expect(passwordInput).toBeInTheDocument();
   expect(signInButton).toBeInTheDocument();
-  expect(helpText).toBeInTheDocument();
+  expect(microsoftSignInButton).toBeInTheDocument();
+  expect(createAccountButton).toBeInTheDocument();
 });

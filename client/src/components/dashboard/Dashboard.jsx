@@ -10,7 +10,6 @@ import './Dashboard.css';
 const Dashboard = () => {
   const { accounts } = useMsal();
   const account = accounts[0];
-  const [activeTab, setActiveTab] = useState('profile');
   const [showNotifications, setShowNotifications] = useState(false);
 
   // Mock data for demonstration
@@ -43,7 +42,40 @@ const Dashboard = () => {
   };
 
   if (!account) {
-    return <div>Loading...</div>;
+    // Provide mock account data for development mode
+    const mockAccount = {
+      name: 'John Doe',
+      username: 'john.doe@example.com'
+    };
+    
+    return (
+      <div className="dashboard">
+        <Header 
+          onNotificationsToggle={() => setShowNotifications(!showNotifications)}
+          notificationCount={mockData.notifications.length}
+        />
+        
+        <div className="dashboard-content">
+          <UserOverview 
+            user={mockAccount} 
+            stats={mockData.stats}
+          />
+          
+          <Notifications 
+            notifications={mockData.notifications}
+            isVisible={showNotifications}
+            onClose={() => setShowNotifications(false)}
+          />
+          
+          <MainContent 
+            data={mockData}
+            user={mockAccount}
+          />
+        </div>
+        
+        <Footer />
+      </div>
+    );
   }
 
   return (
@@ -66,8 +98,6 @@ const Dashboard = () => {
         />
         
         <MainContent 
-          activeTab={activeTab}
-          setActiveTab={setActiveTab}
           data={mockData}
           user={account}
         />

@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
-import { useMsal } from '@azure/msal-react';
+import React, { useState } from "react";
+import { useMsal } from "@azure/msal-react";
 
 const Header = ({ onNotificationsToggle, notificationCount }) => {
   const { instance } = useMsal();
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
 
   const handleLogout = () => {
     instance.logoutRedirect({
@@ -15,7 +15,7 @@ const Header = ({ onNotificationsToggle, notificationCount }) => {
   const handleSearch = (e) => {
     e.preventDefault();
     // Placeholder for search functionality
-    console.log('Search query:', searchQuery);
+    console.log("Search query:", searchQuery);
   };
 
   return (
@@ -23,18 +23,28 @@ const Header = ({ onNotificationsToggle, notificationCount }) => {
       <div className="header-container">
         {/* Logo */}
         <div className="header-logo">
-          <a href="/" className="logo-link">
+          <a href="#" className="logo-link">
             <span className="logo-text">Crispy Goggles</span>
           </a>
         </div>
 
         {/* Navigation Menu */}
         <nav className="header-nav">
-          <Link to="/profile" className="nav-link">Profile</Link>
-          <Link to="/friends" className="nav-link">Friends</Link>
-          <Link to="/groups" className="nav-link">Groups</Link>
-          <Link to="/events" className="nav-link">Events</Link>
-          <Link to="/settings" className="nav-link">Settings</Link>
+          <a href="#profile" className="nav-link">
+            Profile
+          </a>
+          <a href="#friends" className="nav-link">
+            Friends
+          </a>
+          <a href="#groups" className="nav-link">
+            Groups
+          </a>
+          <a href="#events" className="nav-link">
+            Events
+          </a>
+          <a href="#settings" className="nav-link">
+            Settings
+          </a>
         </nav>
 
         {/* Search Bar */}
@@ -54,7 +64,7 @@ const Header = ({ onNotificationsToggle, notificationCount }) => {
         {/* Right side controls */}
         <div className="header-controls">
           {/* Notifications */}
-          <button 
+          <button
             className="notifications-button"
             onClick={onNotificationsToggle}
           >

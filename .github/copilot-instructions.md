@@ -62,26 +62,25 @@ Testing: Implement unit and integration tests to ensure code quality and functio
 
 ## Colors
 
-Primary Color
+### Primary Color
 Lavender Purple: #a861ba
 Usage: Primary buttons, highlights, and key interactive elements.
-Secondary Color
+### Secondary Color
 Soft Lilac: #c8a2c8
 Usage: Backgrounds for cards, secondary buttons, and hover effects.
-Accent Color
+### Accent Color
 Cool Teal: #4ecca3
 Usage: Links, icons, and notification badges to add a pop of interest.
-Neutral Base Colors
+### Neutral Base Colors
 Light Gray: #f5f5f5
 Usage: General background color for a clean and calming canvas.
 Medium Gray: #b0b0b0
 Usage: Text color for secondary information, borders, and dividers.
-Dark Accent
+### Dark Accent
 Charcoal Black: #333333
 Usage: Primary text color for strong contrast and readability.
 Implementation Tips:
  
-
 Balance: Use the lavender purple and soft lilac for large areas to maintain calmness while letting the teal accent add lively touches.
-Contrast: Ensure text and critical elements have sufficient contrast against backgrounds for accessibility.
+Contrast: Ensure text and critical elements have sufficient contrast against backgrounds for accessibility. Follow WCAG AA standards, which require a minimum contrast ratio of 4.5:1 for normal text and 3:1 for large text.
 Consistency: Apply colors consistently across components to maintain a cohesive look.

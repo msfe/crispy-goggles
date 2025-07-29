@@ -1,6 +1,6 @@
 # Azure CIAM Setup Guide
 
-**IF YOU ARE USING CODESPACES THIS CONFIGURATION IS DONE FOR YOU***
+**IF YOU ARE USING CODESPACES THIS CONFIGURATION IS DONE FOR YOU**
 
 This guide walks you through setting up Azure Customer Identity and Access Management (CIAM) for the Crispy Goggles application.
 
@@ -115,7 +115,7 @@ The backend provides these authentication endpoints:
 
 1. **CORS Errors**: Ensure your redirect URI is correctly configured in Azure
 2. **Invalid Client**: Double-check your client ID and tenant ID
-3. **Login Popup Blocked**: Ensure pop-ups are enabled for localhost:3000
+3. **Missing User Details**: Make sure your User Flow is configured correctly in Entra ID
 
 ### Error Messages
 
@@ -128,4 +128,4 @@ The backend provides these authentication endpoints:
 - Never commit `.env` files to version control
 - Use different client secrets for development and production
 - Consider implementing proper session management for production use
-- The current implementation uses popup-based authentication for simplicity
+- The current implementation uses redirect authentication

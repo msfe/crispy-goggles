@@ -54,8 +54,7 @@ const SignupForm = ({ onBackToLogin }) => {
   return (
     <div
       style={{
-        maxWidth: "420px",
-        margin: "40px auto 0",
+        width: "100%",
         padding: "0",
         borderRadius: "20px",
         background: "linear-gradient(135deg, #f5f5f5 0%, #ffffff 100%)",

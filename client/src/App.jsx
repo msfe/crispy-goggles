@@ -10,6 +10,7 @@ function App() {
   const isAuthenticated = useIsAuthenticated();
   const { accounts } = useMsal();
   const [showSignUp, setShowSignUp] = useState(false);
+  const [devMode, setDevMode] = useState(false);
 
   // Debug logging in development
   if (import.meta.env.DEV) {
@@ -17,7 +18,7 @@ function App() {
     console.log('App render - accounts:', accounts);
   }
 
-  if (isAuthenticated) {
+  if (isAuthenticated || devMode) {
     return <Dashboard />;
   }
 
@@ -32,6 +33,30 @@ function App() {
           <SignupForm onBackToLogin={() => setShowSignUp(false)} />
         ) : (
           <LoginForm showSignUp={showSignUp} setShowSignUp={setShowSignUp} />
+        )}
+        
+        {/* Development Mode Button */}
+        {import.meta.env.DEV && (
+          <div style={{ marginTop: '20px' }}>
+            <button 
+              onClick={() => setDevMode(true)}
+              style={{
+                backgroundColor: '#4ecca3',
+                color: 'white',
+                border: 'none',
+                borderRadius: '8px',
+                padding: '12px 24px',
+                fontSize: '16px',
+                cursor: 'pointer',
+                fontWeight: '600'
+              }}
+            >
+              🚀 Continue in Dev Mode
+            </button>
+            <p style={{ fontSize: '14px', color: '#b0b0b0', marginTop: '8px' }}>
+              For development and testing purposes
+            </p>
+          </div>
         )}
       </header>
     </div>

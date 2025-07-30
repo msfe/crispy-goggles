@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useMsal } from '@azure/msal-react';
 import Header from './Header';
 import UserOverview from './UserOverview';
@@ -6,6 +7,7 @@ import Notifications from './Notifications';
 import MainContent from './MainContent';
 import Footer from './Footer';
 import DatabaseStatus from '../database/DatabaseStatus';
+import Profile from '../Profile';
 import './Dashboard.css';
 
 const Dashboard = () => {
@@ -50,6 +52,51 @@ const Dashboard = () => {
     };
     
     return (
+      <Router>
+        <div className="dashboard">
+          <Header 
+            onNotificationsToggle={() => setShowNotifications(!showNotifications)}
+            notificationCount={mockData.notifications.length}
+          />
+          
+          <div className="dashboard-content">
+            <UserOverview 
+              user={mockAccount} 
+              stats={mockData.stats}
+            />
+            
+            <DatabaseStatus />
+            
+            <Notifications 
+              notifications={mockData.notifications}
+              isVisible={showNotifications}
+              onClose={() => setShowNotifications(false)}
+            />
+            
+            <Routes>
+              <Route path="/" element={
+                <MainContent 
+                  data={mockData}
+                  user={mockAccount}
+                />
+              } />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/friends" element={<div className="coming-soon">Friends feature coming soon...</div>} />
+              <Route path="/groups" element={<div className="coming-soon">Groups feature coming soon...</div>} />
+              <Route path="/events" element={<div className="coming-soon">Events feature coming soon...</div>} />
+              <Route path="/settings" element={<div className="coming-soon">Settings feature coming soon...</div>} />
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </div>
+          
+          <Footer />
+        </div>
+      </Router>
+    );
+  }
+
+  return (
+    <Router>
       <div className="dashboard">
         <Header 
           onNotificationsToggle={() => setShowNotifications(!showNotifications)}
@@ -58,7 +105,7 @@ const Dashboard = () => {
         
         <div className="dashboard-content">
           <UserOverview 
-            user={mockAccount} 
+            user={account} 
             stats={mockData.stats}
           />
           
@@ -70,46 +117,25 @@ const Dashboard = () => {
             onClose={() => setShowNotifications(false)}
           />
           
-          <MainContent 
-            data={mockData}
-            user={mockAccount}
-          />
+          <Routes>
+            <Route path="/" element={
+              <MainContent 
+                data={mockData}
+                user={account}
+              />
+            } />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/friends" element={<div className="coming-soon">Friends feature coming soon...</div>} />
+            <Route path="/groups" element={<div className="coming-soon">Groups feature coming soon...</div>} />
+            <Route path="/events" element={<div className="coming-soon">Events feature coming soon...</div>} />
+            <Route path="/settings" element={<div className="coming-soon">Settings feature coming soon...</div>} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
         </div>
         
         <Footer />
       </div>
-    );
-  }
-
-  return (
-    <div className="dashboard">
-      <Header 
-        onNotificationsToggle={() => setShowNotifications(!showNotifications)}
-        notificationCount={mockData.notifications.length}
-      />
-      
-      <div className="dashboard-content">
-        <UserOverview 
-          user={account} 
-          stats={mockData.stats}
-        />
-        
-        <DatabaseStatus />
-        
-        <Notifications 
-          notifications={mockData.notifications}
-          isVisible={showNotifications}
-          onClose={() => setShowNotifications(false)}
-        />
-        
-        <MainContent 
-          data={mockData}
-          user={account}
-        />
-      </div>
-      
-      <Footer />
-    </div>
+    </Router>
   );
 };
 

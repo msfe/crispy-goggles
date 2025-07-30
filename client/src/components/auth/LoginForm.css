@@ -90,7 +90,7 @@
   transition: all 0.3s ease;
   line-height: 1.4;
   outline: none;
-  margin-bottom: 24px;
+  margin-bottom: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -119,11 +119,60 @@
   transform: translateY(0);
 }
 
+/* Google Button */
+.login-form-google-button {
+  width: 100%;
+  padding: 18px 24px;
+  background-color: #c8a2c8;
+  color: white;
+  border: none;
+  border-radius: 14px;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  line-height: 1.4;
+  outline: none;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  box-shadow: 0 8px 20px rgba(200, 162, 200, 0.3);
+  font-family: Helvetica Neue, Arial, sans-serif;
+  letter-spacing: 0.2px;
+}
+
+.login-form-google-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.login-form-google-button:not(:disabled):hover {
+  background-color: #b894b8;
+  transform: translateY(-1px);
+  box-shadow: 0 12px 28px rgba(200, 162, 200, 0.4);
+}
+
+.login-form-google-button:focus {
+  box-shadow: 0 8px 20px rgba(200, 162, 200, 0.3), 0 0 0 3px rgba(200, 162, 200, 0.2);
+}
+
+.login-form-google-button:not(:disabled):active {
+  transform: translateY(0);
+}
+
 /* Microsoft Icon */
 .microsoft-icon {
   width: 20px;
   height: 20px;
   fill: white;
+}
+
+/* Google Icon */
+.google-icon {
+  width: 20px;
+  height: 20px;
 }
 
 /* Divider */

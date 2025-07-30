@@ -8,8 +8,8 @@ export const msalConfig = {
     redirectUri: import.meta.env.VITE_AZURE_REDIRECT_URI || 'http://localhost:3000',
   },
   cache: {
-    cacheLocation: 'sessionStorage', // Store tokens in session storage
-    storeAuthStateInCookie: false, // Don't store auth state in cookies
+    cacheLocation: 'localStorage', // Use localStorage for better persistence across tabs/redirects
+    storeAuthStateInCookie: true, // Store auth state in cookies for better redirect handling
   },
 };
 

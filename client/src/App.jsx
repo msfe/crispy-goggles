@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useIsAuthenticated } from '@azure/msal-react';
+import { useIsAuthenticated, useMsal } from '@azure/msal-react';
 import logo from './logo-custom.svg';
 import './App.css';
 import LoginForm from './components/auth/LoginForm';
@@ -8,7 +8,14 @@ import Dashboard from './components/dashboard/Dashboard';
 
 function App() {
   const isAuthenticated = useIsAuthenticated();
+  const { accounts } = useMsal();
   const [showSignUp, setShowSignUp] = useState(false);
+
+  // Debug logging in development
+  if (import.meta.env.DEV) {
+    console.log('App render - isAuthenticated:', isAuthenticated);
+    console.log('App render - accounts:', accounts);
+  }
 
   if (isAuthenticated) {
     return <Dashboard />;

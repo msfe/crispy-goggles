@@ -2,7 +2,23 @@ const express = require('express');
 const { testConnection, isConfigured, cosmosConfig } = require('../config/cosmosConfig');
 const router = express.Router();
 
-// Database status endpoint
+/**
+ * @swagger
+ * /database/status:
+ *   get:
+ *     tags: [Database]
+ *     summary: Get database status
+ *     description: Returns the configuration and connection status of the Cosmos DB database
+ *     responses:
+ *       200:
+ *         description: Database status information
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/DatabaseStatus'
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
+ */
 router.get('/status', async (req, res) => {
   try {
     const connectionTest = await testConnection();

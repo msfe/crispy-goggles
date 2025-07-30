@@ -1,5 +1,7 @@
 const express = require('express');
 const cors = require('cors');
+const swaggerUi = require('swagger-ui-express');
+const { spec } = require('./config/openapi');
 require('dotenv').config();
 
 const app = express();
@@ -18,7 +20,21 @@ const databaseRoutes = require('./routes/database');
 app.use(cors());
 app.use(express.json());
 
-// Basic route
+/**
+ * @swagger
+ * /:
+ *   get:
+ *     tags: [System]
+ *     summary: Get API information
+ *     description: Returns basic information about the Crispy Goggles Backend API
+ *     responses:
+ *       200:
+ *         description: API information
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ApiInfo'
+ */
 app.get('/', (req, res) => {
   res.json({ 
     message: 'Crispy Goggles Backend API', 
@@ -27,9 +43,70 @@ app.get('/', (req, res) => {
   });
 });
 
-// Health check endpoint
+/**
+ * @swagger
+ * /health:
+ *   get:
+ *     tags: [System]
+ *     summary: Health check
+ *     description: Returns the health status of the API server
+ *     responses:
+ *       200:
+ *         description: Server is healthy
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/HealthCheck'
+ */
 app.get('/health', (req, res) => {
   res.json({ status: 'OK', timestamp: new Date().toISOString() });
+});
+
+// OpenAPI/Swagger endpoints
+/**
+ * @swagger
+ * /api-docs:
+ *   get:
+ *     tags: [System]
+ *     summary: Interactive API documentation
+ *     description: Serves the Swagger UI interface for exploring the API
+ *     responses:
+ *       200:
+ *         description: Swagger UI interface
+ *         content:
+ *           text/html:
+ *             schema:
+ *               type: string
+ */
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(spec, {
+  customSiteTitle: 'Crispy Goggles API Documentation',
+  customCss: '.swagger-ui .topbar { display: none }',
+  swaggerOptions: {
+    displayRequestDuration: true,
+    tryItOutEnabled: true,
+    filter: true,
+    docExpansion: 'list'
+  }
+}));
+
+/**
+ * @swagger
+ * /api-spec:
+ *   get:
+ *     tags: [System]
+ *     summary: Get OpenAPI specification
+ *     description: Returns the OpenAPI 3.0 specification in JSON format
+ *     responses:
+ *       200:
+ *         description: OpenAPI specification
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               description: OpenAPI 3.0 specification document
+ */
+app.get('/api-spec', (req, res) => {
+  res.json(spec);
 });
 
 // Authentication routes

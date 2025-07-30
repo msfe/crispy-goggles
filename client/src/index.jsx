@@ -4,6 +4,7 @@ import './index.css';
 import App from './App.jsx';
 import AuthProvider from './components/auth/AuthProvider.jsx';
 import { msalInstance } from './config/authConfig.js';
+import { extractUserInfo, logAccountInfo } from './utils/authUtils.js';
 
 // Import test utilities in development mode
 if (import.meta.env.DEV) {
@@ -22,14 +23,15 @@ msalInstance.initialize().then(() => {
     if (authResult.account) {
       msalInstance.setActiveAccount(authResult.account);
       
+      // Log account info for debugging
+      if (import.meta.env.DEV) {
+        logAccountInfo(authResult.account);
+      }
+      
       // Sync user to database after successful authentication
       try {
-        const userInfo = {
-          userId: authResult.account.homeAccountId,
-          username: authResult.account.username,
-          name: authResult.account.name,
-          email: authResult.account.username, // Email is typically in username for Azure CIAM
-        };
+        const userInfo = extractUserInfo(authResult.account);
+        console.log('Extracted user info:', userInfo);
 
         const response = await fetch('/auth/sync-user', {
           method: 'POST',
@@ -43,7 +45,15 @@ msalInstance.initialize().then(() => {
           const result = await response.json();
           console.log('User sync successful:', result);
         } else {
-          console.error('User sync failed:', await response.text());
+          const errorText = await response.text();
+          console.error('User sync failed:', errorText);
+          // Try to parse error response
+          try {
+            const errorData = JSON.parse(errorText);
+            console.error('Sync error details:', errorData);
+          } catch (e) {
+            // Error response is not JSON
+          }
         }
       } catch (error) {
         console.error('Error syncing user to database:', error);
@@ -55,6 +65,11 @@ msalInstance.initialize().then(() => {
     const accounts = msalInstance.getAllAccounts();
     if (accounts.length > 0) {
       msalInstance.setActiveAccount(accounts[0]);
+      
+      // Log account info for debugging
+      if (import.meta.env.DEV) {
+        logAccountInfo(accounts[0]);
+      }
     }
   }
   

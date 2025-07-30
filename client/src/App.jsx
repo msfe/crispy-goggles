@@ -26,7 +26,10 @@ function App() {
       <header className="App-header">
         <img src={logo} className="App-logo" alt="Crispy Goggles logo" />
         <h1 className="App-title">Crispy Goggles</h1>
-        <p className="App-subtitle">Privacy-focused social networking platform</p>
+        <p className="App-subtitle">Join a Privacy-First Social Network</p>
+        <p className="App-description">
+          Crispy Goggles is your privacy-first social network. Connect with friends, join interest-based groups, and explore events—all while keeping your data safe. Discover a community that values your privacy.
+        </p>
         
         {showSignUp ? (
           <SignupForm onBackToLogin={() => setShowSignUp(false)} />

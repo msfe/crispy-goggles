@@ -14,13 +14,41 @@ if (import.meta.env.DEV) {
 msalInstance.initialize().then(() => {
   // Handle MSAL redirect responses before rendering the app
   return msalInstance.handleRedirectPromise();
-}).then((authResult) => {
+}).then(async (authResult) => {
   // authResult will contain tokens if the user was redirected after login
   if (authResult) {
     console.log('Authentication successful:', authResult);
     // Set the active account after successful authentication
     if (authResult.account) {
       msalInstance.setActiveAccount(authResult.account);
+      
+      // Sync user to database after successful authentication
+      try {
+        const userInfo = {
+          userId: authResult.account.homeAccountId,
+          username: authResult.account.username,
+          name: authResult.account.name,
+          email: authResult.account.username, // Email is typically in username for Azure CIAM
+        };
+
+        const response = await fetch('/auth/sync-user', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ userInfo }),
+        });
+
+        if (response.ok) {
+          const result = await response.json();
+          console.log('User sync successful:', result);
+        } else {
+          console.error('User sync failed:', await response.text());
+        }
+      } catch (error) {
+        console.error('Error syncing user to database:', error);
+        // Don't prevent app rendering if sync fails
+      }
     }
   } else {
     // If no authResult but there are accounts, set the first one as active

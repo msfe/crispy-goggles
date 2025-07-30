@@ -23,6 +23,17 @@ const Profile = () => {
     updatedAt: '2024-01-01T00:00:00.000Z'
   };
 
+  // Helper function to validate and sanitize Azure homeAccountId
+  const validateAndSanitizeHomeAccountId = (homeAccountId) => {
+    if (!homeAccountId || typeof homeAccountId !== 'string') {
+      return null;
+    }
+    // Basic sanitization - remove any potentially dangerous characters
+    // Azure IDs are typically in format: "userId.tenantId"
+    const sanitized = homeAccountId.replace(/[^a-zA-Z0-9.\-_]/g, '');
+    return sanitized.length > 0 ? sanitized : null;
+  };
+
   useEffect(() => {
     fetchProfile();
   }, [account]);
@@ -45,34 +56,35 @@ const Profile = () => {
         throw new Error('Invalid homeAccountId');
       }
 
-      // Try to fetch user profile from backend
+      // Fetch user profile from backend (user should exist due to sync on login)
       const response = await fetch(`/api/users/azure/${sanitizedHomeAccountId}`);
       
       if (response.ok) {
         const userData = await response.json();
         setProfile(userData);
       } else if (response.status === 404) {
-        // User doesn't exist in database yet, create with Azure info
-        const newUser = {
-          azureId: account.homeAccountId,
-          email: account.username,
-          name: account.name || account.username.split('@')[0],
-          bio: ''
+        // If user still doesn't exist, try syncing now
+        console.log('User not found in database, attempting sync...');
+        const userInfo = {
+          userId: account.homeAccountId,
+          username: account.username,
+          name: account.name,
+          email: account.username, // Email is typically in username for Azure CIAM
         };
-        
-        const createResponse = await fetch('/api/users', {
+
+        const syncResponse = await fetch('/auth/sync-user', {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
           },
-          body: JSON.stringify(newUser)
+          body: JSON.stringify({ userInfo }),
         });
-        
-        if (createResponse.ok) {
-          const createdUser = await createResponse.json();
-          setProfile(createdUser);
+
+        if (syncResponse.ok) {
+          const syncResult = await syncResponse.json();
+          setProfile(syncResult.user);
         } else {
-          throw new Error('Failed to create user profile');
+          throw new Error('Failed to sync user to database');
         }
       } else {
         throw new Error('Failed to fetch profile');

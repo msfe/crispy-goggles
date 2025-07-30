@@ -106,6 +106,67 @@ router.get('/status', (req, res) => {
   });
 });
 
+// User sync endpoint - creates/updates user in database from Azure account info
+router.post('/sync-user', checkConfiguration, async (req, res) => {
+  try {
+    const { userInfo } = req.body;
+    
+    if (!userInfo || !userInfo.userId || !userInfo.email) {
+      return res.status(400).json({ error: 'User info with userId and email is required' });
+    }
+
+    const { UserService } = require('../services/databaseService');
+    const { User } = require('../models');
+    const userService = new UserService();
+
+    // Check if user already exists by Azure ID
+    const existingUser = await userService.getByAzureId(userInfo.userId);
+    
+    if (existingUser.success) {
+      // User exists, return the existing user
+      res.json({ 
+        success: true, 
+        user: existingUser.data,
+        created: false 
+      });
+    } else {
+      // User doesn't exist, create new user
+      const newUser = new User({
+        azureId: userInfo.userId,
+        email: userInfo.email,
+        name: userInfo.name || userInfo.email.split('@')[0],
+        bio: ''
+      });
+
+      // Validate user data
+      newUser.validate();
+
+      // Check if email is already taken by another user (shouldn't happen with Azure)
+      const emailCheck = await userService.getByEmail(newUser.email);
+      if (emailCheck.success) {
+        return res.status(409).json({ error: 'User with this email already exists with different Azure ID' });
+      }
+
+      const result = await userService.create(newUser.toJSON());
+      if (result.success) {
+        res.status(201).json({
+          success: true,
+          user: result.data,
+          created: true
+        });
+      } else {
+        res.status(500).json({ error: result.error });
+      }
+    }
+  } catch (error) {
+    console.error('User sync error:', error);
+    res.status(500).json({ 
+      error: 'Failed to sync user',
+      details: error.message 
+    });
+  }
+});
+
 // Logout endpoint
 router.post('/logout', (req, res) => {
   // For Azure CIAM, logout is typically handled on the frontend

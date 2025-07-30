@@ -39,8 +39,14 @@ const Profile = () => {
         return;
       }
 
+      // Validate and sanitize homeAccountId
+      const sanitizedHomeAccountId = validateAndSanitizeHomeAccountId(account.homeAccountId);
+      if (!sanitizedHomeAccountId) {
+        throw new Error('Invalid homeAccountId');
+      }
+
       // Try to fetch user profile from backend
-      const response = await fetch(`/api/users/azure/${account.homeAccountId}`);
+      const response = await fetch(`/api/users/azure/${sanitizedHomeAccountId}`);
       
       if (response.ok) {
         const userData = await response.json();

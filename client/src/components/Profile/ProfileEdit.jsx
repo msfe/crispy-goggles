@@ -154,7 +154,7 @@ const ProfileEdit = ({ profile, onSave, onCancel }) => {
           <button
             type="submit"
             className="save-button"
-            disabled={saving || !formData.name.trim()}
+            disabled={saving || (nameInputRef.current && !nameInputRef.current.checkValidity())}
           >
             {saving ? 'Saving...' : 'Save Profile'}
           </button>

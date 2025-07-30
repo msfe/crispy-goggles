@@ -18,6 +18,28 @@
   position: relative;
 }
 
+/* Coming Soon Pages */
+.coming-soon {
+  max-width: 600px;
+  margin: 60px auto;
+  padding: 40px;
+  text-align: center;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  color: #666;
+  font-size: 18px;
+  border: 2px solid #c8a2c8;
+}
+
+/* Active Navigation Link */
+.nav-link.active {
+  background-color: rgba(168, 97, 186, 0.1);
+  color: #a861ba !important;
+  font-weight: 600;
+  border-radius: 6px;
+}
+
 /* Home Dashboard Layout */
 .home-dashboard {
   display: flex;

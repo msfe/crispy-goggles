@@ -1,9 +1,11 @@
 import React, { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { useMsal } from "@azure/msal-react";
 
 const Header = ({ onNotificationsToggle, notificationCount }) => {
   const { instance } = useMsal();
   const [searchQuery, setSearchQuery] = useState("");
+  const location = useLocation();
 
   const handleLogout = () => {
     instance.logoutRedirect({
@@ -23,28 +25,28 @@ const Header = ({ onNotificationsToggle, notificationCount }) => {
       <div className="header-container">
         {/* Logo */}
         <div className="header-logo">
-          <a href="#" className="logo-link">
+          <Link to="/" className="logo-link">
             <span className="logo-text">Crispy Goggles</span>
-          </a>
+          </Link>
         </div>
 
         {/* Navigation Menu */}
         <nav className="header-nav">
-          <a href="#profile" className="nav-link">
+          <Link to="/profile" className={`nav-link ${location.pathname === '/profile' ? 'active' : ''}`}>
             Profile
-          </a>
-          <a href="#friends" className="nav-link">
+          </Link>
+          <Link to="/friends" className={`nav-link ${location.pathname === '/friends' ? 'active' : ''}`}>
             Friends
-          </a>
-          <a href="#groups" className="nav-link">
+          </Link>
+          <Link to="/groups" className={`nav-link ${location.pathname === '/groups' ? 'active' : ''}`}>
             Groups
-          </a>
-          <a href="#events" className="nav-link">
+          </Link>
+          <Link to="/events" className={`nav-link ${location.pathname === '/events' ? 'active' : ''}`}>
             Events
-          </a>
-          <a href="#settings" className="nav-link">
+          </Link>
+          <Link to="/settings" className={`nav-link ${location.pathname === '/settings' ? 'active' : ''}`}>
             Settings
-          </a>
+          </Link>
         </nav>
 
         {/* Search Bar */}

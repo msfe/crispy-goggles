@@ -9,7 +9,8 @@ const DatabaseStatus = () => {
     const fetchDatabaseStatus = async () => {
       try {
         setLoading(true);
-        const response = await fetch('http://localhost:5000/database/status');
+        const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
+        const response = await fetch(`${API_BASE_URL}/database/status`);
         
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);

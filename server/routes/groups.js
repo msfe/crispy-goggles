@@ -101,14 +101,14 @@ router.delete('/:id', checkDatabaseConfig, async (req, res) => {
   }
 });
 
-// Search groups
-router.get('/search/:term', checkDatabaseConfig, async (req, res) => {
+// Get group by ID
+router.get('/:id', checkDatabaseConfig, async (req, res) => {
   try {
-    const result = await groupService.search(req.params.term);
+    const result = await groupService.getById(req.params.id);
     if (result.success) {
-      res.json({ groups: result.data });
+      res.json(result.data);
     } else {
-      res.status(500).json({ error: result.error });
+      res.status(404).json({ error: result.error });
     }
   } catch (error) {
     res.status(500).json({ error: error.message });

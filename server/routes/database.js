@@ -11,7 +11,7 @@ router.get('/status', async (req, res) => {
       configured: isConfigured,
       connection: connectionTest,
       config: {
-        endpoint: cosmosConfig.endpoint ? cosmosConfig.endpoint.split('.')[0] + '.***' : 'Not set',
+        endpoint: cosmosConfig.endpoint ? 'Configured' : 'Not set',
         database: cosmosConfig.databaseName || 'Not set',
         hasKey: !!cosmosConfig.key
       },

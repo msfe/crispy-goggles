@@ -104,9 +104,10 @@ class BaseService {
   /**
    * Get all documents (with optional filtering)
    */
-  async getAll(whereClause = '', parameters = []) {
+  async getAll(filter = {}) {
+    const { conditions = '', parameters = [] } = filter;
     const querySpec = {
-      query: `SELECT * FROM c${whereClause ? ` WHERE ${whereClause}` : ''}`,
+      query: `SELECT * FROM c${conditions ? ` WHERE ${conditions}` : ''}`,
       parameters
     };
     return this.query(querySpec);

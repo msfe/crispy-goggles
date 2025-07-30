@@ -37,8 +37,13 @@ export const simulateAuthentication = () => {
       authorityType: "MSSTS"
     };
     
-    localStorage.setItem(`msal.account.keys`, JSON.stringify([accountKey]));
-    localStorage.setItem(accountKey, JSON.stringify(accountData));
+    if (msalInstance) {
+      try {
+        msalInstance.getTokenCache().writeAccounts([mockAccount]);
+      } catch (error) {
+        console.warn('Could not write account to MSAL cache:', error);
+      }
+    }
     
     // Set active account if MSAL instance is available
     if (msalInstance) {
@@ -49,13 +54,15 @@ export const simulateAuthentication = () => {
       }
     }
     
-    // Reload the page to trigger re-authentication check
-    window.location.reload();
+    // Notify about authentication state change
+    if (onAuthStateChange) {
+      onAuthStateChange({ authenticated: true, account: mockAccount });
+    }
   }
 };
 
 // Function to clear authentication state
-export const clearAuthentication = () => {
+export const clearAuthentication = (onAuthStateChange) => {
   if (typeof window !== 'undefined') {
     // Clear localStorage entries related to MSAL
     Object.keys(localStorage).forEach(key => {
@@ -73,13 +80,18 @@ export const clearAuthentication = () => {
       }
     }
     
-    // Reload the page
-    window.location.reload();
+    // Notify that authentication state has been cleared
+    if (typeof window.onAuthStateChanged === 'function') {
+      window.onAuthStateChanged('cleared');
+    } else {
+      console.log('Authentication state updated: cleared');
+    }
   }
 };
 
 // Add global functions for browser console testing
 if (typeof window !== 'undefined') {
+  window.onAuthStateChanged = null; // Callback for authentication state changes
   window.testAuth = {
     simulate: simulateAuthentication,
     clear: clearAuthentication

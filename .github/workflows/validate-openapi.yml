@@ -1,0 +1,86 @@
+name: OpenAPI Specification Validation
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths: 
+      - 'server/**'
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'server/**'
+
+jobs:
+  validate-openapi:
+    runs-on: ubuntu-latest
+    
+    defaults:
+      run:
+        working-directory: ./server
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+        cache-dependency-path: server/package-lock.json
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Validate OpenAPI specification
+      run: npm run validate:openapi
+
+    - name: Generate OpenAPI spec file
+      run: npm run openapi:generate
+
+    - name: Run OpenAPI tests
+      run: npm run test:openapi
+
+    - name: Lint OpenAPI specification (if redocly config exists)
+      run: |
+        if [ -f "redocly.yaml" ] || [ -f ".redocly.yaml" ]; then
+          npm run openapi:lint
+        else
+          echo "No redocly config found, skipping lint step"
+        fi
+      continue-on-error: true
+
+    - name: Upload OpenAPI specification as artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: openapi-specification
+        path: server/docs/openapi.json
+        retention-days: 30
+
+    - name: Comment on PR with API documentation link
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const { owner, repo, number } = context.issue;
+          await github.rest.issues.createComment({
+            owner,
+            repo,
+            issue_number: number,
+            body: `## 📖 API Documentation
+            
+            The OpenAPI specification has been validated successfully! 
+            
+            ### 🔗 Quick Links
+            - **Swagger UI**: Available at \`/api-docs\` when the server is running
+            - **OpenAPI Spec**: Available at \`/api-spec\` endpoint
+            - **Generated Spec File**: Available as build artifact
+            
+            ### ✅ Validation Results
+            - All endpoint coverage validated
+            - All schema definitions verified
+            - All response definitions checked
+            - OpenAPI 3.0 compliance confirmed
+            
+            The specification is automatically kept in sync with the actual API endpoints through JSDoc comments.`
+          });

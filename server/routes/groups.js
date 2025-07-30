@@ -18,7 +18,30 @@ const checkDatabaseConfig = (req, res, next) => {
   next();
 };
 
-// Get all public groups
+/**
+ * @swagger
+ * /api/groups:
+ *   get:
+ *     tags: [Groups]
+ *     summary: Get all public groups
+ *     description: Retrieves a list of all public groups in the system
+ *     responses:
+ *       200:
+ *         description: List of public groups
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 groups:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Group'
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
+ *       503:
+ *         $ref: '#/components/responses/ServiceUnavailable'
+ */
 router.get('/', checkDatabaseConfig, async (req, res) => {
   try {
     const result = await groupService.getPublicGroups();
@@ -32,7 +55,35 @@ router.get('/', checkDatabaseConfig, async (req, res) => {
   }
 });
 
-// Get group by ID
+/**
+ * @swagger
+ * /api/groups/{id}:
+ *   get:
+ *     tags: [Groups]
+ *     summary: Get group by ID
+ *     description: Retrieves a specific group by its unique identifier
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Group unique identifier
+ *         example: group-789-xyz
+ *     responses:
+ *       200:
+ *         description: Group information
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Group'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
+ *       503:
+ *         $ref: '#/components/responses/ServiceUnavailable'
+ */
 router.get('/:id', checkDatabaseConfig, async (req, res) => {
   try {
     const result = await groupService.getById(req.params.id);
@@ -46,7 +97,53 @@ router.get('/:id', checkDatabaseConfig, async (req, res) => {
   }
 });
 
-// Create new group
+/**
+ * @swagger
+ * /api/groups:
+ *   post:
+ *     tags: [Groups]
+ *     summary: Create new group
+ *     description: Creates a new group in the system
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [name, description, adminId]
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 example: Stockholm Tech Meetup
+ *               description:
+ *                 type: string
+ *                 example: A community for technology enthusiasts in Stockholm
+ *               adminId:
+ *                 type: string
+ *                 example: user-123-abc
+ *               tags:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 example: [technology, meetup, stockholm]
+ *               privacy:
+ *                 type: string
+ *                 enum: [public, private]
+ *                 example: public
+ *     responses:
+ *       201:
+ *         description: Group created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Group'
+ *       400:
+ *         $ref: '#/components/responses/BadRequest'
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
+ *       503:
+ *         $ref: '#/components/responses/ServiceUnavailable'
+ */
 router.post('/', checkDatabaseConfig, async (req, res) => {
   try {
     const groupData = req.body;
@@ -66,7 +163,57 @@ router.post('/', checkDatabaseConfig, async (req, res) => {
   }
 });
 
-// Update group
+/**
+ * @swagger
+ * /api/groups/{id}:
+ *   put:
+ *     tags: [Groups]
+ *     summary: Update group
+ *     description: Updates an existing group's information
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Group unique identifier
+ *         example: group-789-xyz
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 example: Updated Group Name
+ *               description:
+ *                 type: string
+ *                 example: Updated group description
+ *               tags:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 example: [technology, community, updated]
+ *               privacy:
+ *                 type: string
+ *                 enum: [public, private]
+ *                 example: private
+ *     responses:
+ *       200:
+ *         description: Group updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Group'
+ *       400:
+ *         $ref: '#/components/responses/BadRequest'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ *       503:
+ *         $ref: '#/components/responses/ServiceUnavailable'
+ */
 router.put('/:id', checkDatabaseConfig, async (req, res) => {
   try {
     const updates = req.body;
@@ -87,7 +234,39 @@ router.put('/:id', checkDatabaseConfig, async (req, res) => {
   }
 });
 
-// Delete group
+/**
+ * @swagger
+ * /api/groups/{id}:
+ *   delete:
+ *     tags: [Groups]
+ *     summary: Delete group
+ *     description: Deletes a group from the system
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Group unique identifier
+ *         example: group-789-xyz
+ *     responses:
+ *       200:
+ *         description: Group deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Group deleted successfully
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
+ *       503:
+ *         $ref: '#/components/responses/ServiceUnavailable'
+ */
 router.delete('/:id', checkDatabaseConfig, async (req, res) => {
   try {
     const result = await groupService.delete(req.params.id);
@@ -101,7 +280,38 @@ router.delete('/:id', checkDatabaseConfig, async (req, res) => {
   }
 });
 
-// Get groups for a user
+/**
+ * @swagger
+ * /api/groups/user/{userId}:
+ *   get:
+ *     tags: [Groups]
+ *     summary: Get groups for a user
+ *     description: Retrieves all groups that a user is a member of
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: User unique identifier
+ *         example: user-123-abc
+ *     responses:
+ *       200:
+ *         description: List of user's groups
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 groups:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Group'
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
+ *       503:
+ *         $ref: '#/components/responses/ServiceUnavailable'
+ */
 router.get('/user/:userId', checkDatabaseConfig, async (req, res) => {
   try {
     const result = await groupService.getGroupsForUser(req.params.userId);
@@ -115,7 +325,53 @@ router.get('/user/:userId', checkDatabaseConfig, async (req, res) => {
   }
 });
 
-// Apply for group membership
+/**
+ * @swagger
+ * /api/groups/{id}/apply:
+ *   post:
+ *     tags: [Groups]
+ *     summary: Apply for group membership
+ *     description: Submits a membership request to join a group
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Group unique identifier
+ *         example: group-789-xyz
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [userId]
+ *             properties:
+ *               userId:
+ *                 type: string
+ *                 description: ID of the user requesting membership
+ *                 example: user-123-abc
+ *     responses:
+ *       200:
+ *         description: Membership request submitted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Membership request submitted
+ *       400:
+ *         $ref: '#/components/responses/BadRequest'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
+ *       503:
+ *         $ref: '#/components/responses/ServiceUnavailable'
+ */
 router.post('/:id/apply', checkDatabaseConfig, async (req, res) => {
   try {
     const { userId } = req.body;
@@ -143,7 +399,58 @@ router.post('/:id/apply', checkDatabaseConfig, async (req, res) => {
   }
 });
 
-// Accept/reject membership request
+/**
+ * @swagger
+ * /api/groups/{id}/membership:
+ *   post:
+ *     tags: [Groups]
+ *     summary: Accept or reject membership request
+ *     description: Allows group admins to accept or reject pending membership requests
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Group unique identifier
+ *         example: group-789-xyz
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [userId, action]
+ *             properties:
+ *               userId:
+ *                 type: string
+ *                 description: ID of the user whose membership request is being processed
+ *                 example: user-456-def
+ *               action:
+ *                 type: string
+ *                 enum: [accept, reject]
+ *                 description: Action to take on the membership request
+ *                 example: accept
+ *     responses:
+ *       200:
+ *         description: Membership request processed successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Membership request accepted
+ *       400:
+ *         $ref: '#/components/responses/BadRequest'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
+ *       503:
+ *         $ref: '#/components/responses/ServiceUnavailable'
+ */
 router.post('/:id/membership', checkDatabaseConfig, async (req, res) => {
   try {
     const { userId, action } = req.body; // action: 'accept' or 'reject'

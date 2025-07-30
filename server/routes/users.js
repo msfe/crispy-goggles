@@ -18,7 +18,30 @@ const checkDatabaseConfig = (req, res, next) => {
   next();
 };
 
-// Get all users
+/**
+ * @swagger
+ * /api/users:
+ *   get:
+ *     tags: [Users]
+ *     summary: Get all users
+ *     description: Retrieves a list of all users in the system
+ *     responses:
+ *       200:
+ *         description: List of users
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 users:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/User'
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
+ *       503:
+ *         $ref: '#/components/responses/ServiceUnavailable'
+ */
 router.get('/', checkDatabaseConfig, async (req, res) => {
   try {
     const result = await userService.getAll();
@@ -32,7 +55,35 @@ router.get('/', checkDatabaseConfig, async (req, res) => {
   }
 });
 
-// Get user by ID
+/**
+ * @swagger
+ * /api/users/{id}:
+ *   get:
+ *     tags: [Users]
+ *     summary: Get user by ID
+ *     description: Retrieves a specific user by their unique identifier
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: User unique identifier
+ *         example: user-123-abc
+ *     responses:
+ *       200:
+ *         description: User information
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
+ *       503:
+ *         $ref: '#/components/responses/ServiceUnavailable'
+ */
 router.get('/:id', checkDatabaseConfig, async (req, res) => {
   try {
     const result = await userService.getById(req.params.id);
@@ -46,7 +97,67 @@ router.get('/:id', checkDatabaseConfig, async (req, res) => {
   }
 });
 
-// Create new user
+/**
+ * @swagger
+ * /api/users:
+ *   post:
+ *     tags: [Users]
+ *     summary: Create new user
+ *     description: Creates a new user account in the system
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [name, email, role]
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 example: John Doe
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: john.doe@example.com
+ *               bio:
+ *                 type: string
+ *                 example: Software developer passionate about privacy
+ *               role:
+ *                 type: string
+ *                 enum: [member, group_admin, global_admin]
+ *                 example: member
+ *               azureId:
+ *                 type: string
+ *                 example: azure-user-456-def
+ *               contactDetails:
+ *                 type: object
+ *                 properties:
+ *                   phone:
+ *                     type: string
+ *                     example: +1-555-123-4567
+ *                   location:
+ *                     type: string
+ *                     example: Stockholm, Sweden
+ *     responses:
+ *       201:
+ *         description: User created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
+ *       400:
+ *         $ref: '#/components/responses/BadRequest'
+ *       409:
+ *         description: User with this email already exists
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
+ *       503:
+ *         $ref: '#/components/responses/ServiceUnavailable'
+ */
 router.post('/', checkDatabaseConfig, async (req, res) => {
   try {
     const userData = req.body;
@@ -72,7 +183,57 @@ router.post('/', checkDatabaseConfig, async (req, res) => {
   }
 });
 
-// Update user
+/**
+ * @swagger
+ * /api/users/{id}:
+ *   put:
+ *     tags: [Users]
+ *     summary: Update user
+ *     description: Updates an existing user's information
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: User unique identifier
+ *         example: user-123-abc
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 example: John Doe Updated
+ *               bio:
+ *                 type: string
+ *                 example: Updated bio information
+ *               contactDetails:
+ *                 type: object
+ *                 properties:
+ *                   phone:
+ *                     type: string
+ *                     example: +1-555-987-6543
+ *                   location:
+ *                     type: string
+ *                     example: Gothenburg, Sweden
+ *     responses:
+ *       200:
+ *         description: User updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
+ *       400:
+ *         $ref: '#/components/responses/BadRequest'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ *       503:
+ *         $ref: '#/components/responses/ServiceUnavailable'
+ */
 router.put('/:id', checkDatabaseConfig, async (req, res) => {
   try {
     const updates = req.body;
@@ -93,7 +254,39 @@ router.put('/:id', checkDatabaseConfig, async (req, res) => {
   }
 });
 
-// Delete user
+/**
+ * @swagger
+ * /api/users/{id}:
+ *   delete:
+ *     tags: [Users]
+ *     summary: Delete user
+ *     description: Deletes a user account from the system
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: User unique identifier
+ *         example: user-123-abc
+ *     responses:
+ *       200:
+ *         description: User deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: User deleted successfully
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
+ *       503:
+ *         $ref: '#/components/responses/ServiceUnavailable'
+ */
 router.delete('/:id', checkDatabaseConfig, async (req, res) => {
   try {
     const result = await userService.delete(req.params.id);
@@ -107,7 +300,38 @@ router.delete('/:id', checkDatabaseConfig, async (req, res) => {
   }
 });
 
-// Search users
+/**
+ * @swagger
+ * /api/users/search/{term}:
+ *   get:
+ *     tags: [Users]
+ *     summary: Search users
+ *     description: Searches for users by name or email
+ *     parameters:
+ *       - in: path
+ *         name: term
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Search term
+ *         example: john
+ *     responses:
+ *       200:
+ *         description: Search results
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 users:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/User'
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
+ *       503:
+ *         $ref: '#/components/responses/ServiceUnavailable'
+ */
 router.get('/search/:term', checkDatabaseConfig, async (req, res) => {
   try {
     const result = await userService.search(req.params.term);
@@ -121,7 +345,36 @@ router.get('/search/:term', checkDatabaseConfig, async (req, res) => {
   }
 });
 
-// Get user by email
+/**
+ * @swagger
+ * /api/users/email/{email}:
+ *   get:
+ *     tags: [Users]
+ *     summary: Get user by email
+ *     description: Retrieves a user by their email address
+ *     parameters:
+ *       - in: path
+ *         name: email
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: email
+ *         description: User email address
+ *         example: john.doe@example.com
+ *     responses:
+ *       200:
+ *         description: User information
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
+ *       503:
+ *         $ref: '#/components/responses/ServiceUnavailable'
+ */
 router.get('/email/:email', checkDatabaseConfig, async (req, res) => {
   try {
     const result = await userService.getByEmail(req.params.email);
@@ -135,7 +388,35 @@ router.get('/email/:email', checkDatabaseConfig, async (req, res) => {
   }
 });
 
-// Get user by Azure ID
+/**
+ * @swagger
+ * /api/users/azure/{azureId}:
+ *   get:
+ *     tags: [Users]
+ *     summary: Get user by Azure ID
+ *     description: Retrieves a user by their Azure Active Directory identifier
+ *     parameters:
+ *       - in: path
+ *         name: azureId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Azure Active Directory user identifier
+ *         example: azure-user-456-def
+ *     responses:
+ *       200:
+ *         description: User information
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
+ *       503:
+ *         $ref: '#/components/responses/ServiceUnavailable'
+ */
 router.get('/azure/:azureId', checkDatabaseConfig, async (req, res) => {
   try {
     const result = await userService.getByAzureId(req.params.azureId);

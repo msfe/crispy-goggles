@@ -1,7 +1,6 @@
 const request = require('supertest');
 const express = require('express');
 const { spec } = require('../config/openapi');
-const OpenAPIValidator = require('express-openapi-validator');
 
 // Create a test app with the same routes as the main app
 const createTestApp = () => {

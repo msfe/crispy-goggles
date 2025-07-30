@@ -101,20 +101,6 @@ router.delete('/:id', checkDatabaseConfig, async (req, res) => {
   }
 });
 
-// Get group by ID
-router.get('/:id', checkDatabaseConfig, async (req, res) => {
-  try {
-    const result = await groupService.getById(req.params.id);
-    if (result.success) {
-      res.json(result.data);
-    } else {
-      res.status(404).json({ error: result.error });
-    }
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
 // Get groups for a user
 router.get('/user/:userId', checkDatabaseConfig, async (req, res) => {
   try {

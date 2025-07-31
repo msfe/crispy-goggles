@@ -23,14 +23,50 @@
   font-family: 'Helvetica Neue', Arial, sans-serif;
 }
 
+/* Pending Requests Module */
+.pending-requests-module {
+  background: white;
+  border-radius: 12px;
+  padding: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  margin-bottom: 30px;
+  overflow: hidden;
+}
+
+.module-tabs {
+  display: flex;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.module-content {
+  padding: 20px;
+  min-height: 200px;
+}
+
+/* Friends List Section */
+.friends-list-section {
+  background: white;
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
 /* Tabs */
-.friends-tabs {
+.friends-tabs,
+.module-tabs {
   display: flex;
   background-color: white;
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   margin-bottom: 30px;
+}
+
+.module-tabs {
+  border-radius: 0;
+  box-shadow: none;
+  margin-bottom: 0;
 }
 
 .tab-button {
@@ -46,15 +82,30 @@
   border-bottom: 3px solid transparent;
 }
 
+.module-tabs .tab-button {
+  background-color: #f8f9fa;
+  border-bottom: none;
+}
+
 .tab-button:hover {
   background-color: #fafafa;
   color: #a861ba;
+}
+
+.module-tabs .tab-button:hover {
+  background-color: #e9ecef;
 }
 
 .tab-button.active {
   background-color: #a861ba;
   color: white;
   border-bottom-color: #5c3c92;
+}
+
+.module-tabs .tab-button.active {
+  background-color: white;
+  color: #a861ba;
+  border-bottom: 3px solid #a861ba;
 }
 
 /* Content */

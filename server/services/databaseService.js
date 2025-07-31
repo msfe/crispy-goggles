@@ -173,6 +173,43 @@ class FriendshipService extends BaseService {
   }
 
   /**
+   * Update a friendship with proper partition key
+   * Override base method to use userId as partition key for friendships
+   */
+  async update(id, updates) {
+    try {
+      const container = this.getContainer();
+      
+      // First get the existing document to find the userId (partition key)
+      const querySpec = {
+        query: 'SELECT * FROM c WHERE c.id = @id',
+        parameters: [{ name: '@id', value: id }]
+      };
+      const { resources: items } = await container.items.query(querySpec).fetchAll();
+      
+      if (!items || items.length === 0) {
+        return { success: false, error: 'Document not found' };
+      }
+
+      const existing = items[0];
+      const partitionKey = existing.userId; // Use userId as partition key
+
+      // Merge updates with existing data
+      const updatedItem = {
+        ...existing,
+        ...updates,
+        id: existing.id, // Ensure ID doesn't change
+        updatedAt: new Date().toISOString()
+      };
+
+      const { resource: updated } = await container.item(id, partitionKey).replace(updatedItem);
+      return { success: true, data: updated };
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
+  }
+
+  /**
    * Get friendships for a user
    */
   async getFriendshipsForUser(userId) {

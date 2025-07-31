@@ -14,11 +14,11 @@ vi.mock('@azure/msal-react', () => ({
 test('renders signup form with Microsoft account creation button', () => {
   render(<SignupForm />);
   
-  const heading = screen.getByText(/sign up/i);
-  const signUpButton = screen.getByText(/create microsoft account/i);
-  const helpText = screen.getByText(/already have an account/i);
+  const heading = screen.getByRole('heading', { name: /create account/i });
+  const signUpButton = screen.getByText(/sign up with microsoft/i);
+  const backButton = screen.getByText(/back to sign in/i);
   
   expect(heading).toBeInTheDocument();
   expect(signUpButton).toBeInTheDocument();
-  expect(helpText).toBeInTheDocument();
+  expect(backButton).toBeInTheDocument();
 });

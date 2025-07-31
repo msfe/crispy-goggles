@@ -24,41 +24,38 @@ function App() {
 
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="Crispy Goggles logo" />
-        <h1 className="App-title">Crispy Goggles</h1>
-        <p className="App-subtitle">Privacy-focused social networking platform</p>
-        
-        {showSignUp ? (
-          <SignupForm onBackToLogin={() => setShowSignUp(false)} />
-        ) : (
-          <LoginForm showSignUp={showSignUp} setShowSignUp={setShowSignUp} />
-        )}
-        
-        {/* Development Mode Button */}
-        {import.meta.env.DEV && (
-          <div style={{ marginTop: '20px' }}>
-            <button 
-              onClick={() => setDevMode(true)}
-              style={{
-                backgroundColor: '#4ecca3',
-                color: 'white',
-                border: 'none',
-                borderRadius: '8px',
-                padding: '12px 24px',
-                fontSize: '16px',
-                cursor: 'pointer',
-                fontWeight: '600'
-              }}
-            >
-              🚀 Continue in Dev Mode
-            </button>
-            <p style={{ fontSize: '14px', color: '#b0b0b0', marginTop: '8px' }}>
-              For development and testing purposes
+      <div className="App-container">
+        {/* Left Panel - Branding and Welcome */}
+        <div className="App-left-panel">
+          <div className="App-branding">
+            <img src={logo} className="App-logo" alt="Crispy Goggles logo" />
+            <h1 className="App-title">Crispy Goggles</h1>
+            <p className="App-subtitle">Join a Privacy-First Social Network</p>
+            <p className="App-description">
+              Crispy Goggles is your privacy-first social network. Connect with friends, join interest-based groups, and explore events—all while keeping your data safe. Discover a community that values your privacy.
             </p>
           </div>
-        )}
-      </header>
+        </div>
+
+        {/* Right Panel - Authentication */}
+        <div className="App-right-panel">
+          <div className="App-auth-container">
+            {showSignUp ? (
+              <SignupForm onBackToLogin={() => setShowSignUp(false)} />
+            ) : (
+              <LoginForm showSignUp={showSignUp} setShowSignUp={setShowSignUp} />
+            )}
+          </div>
+          {/* Development Mode Toggle */}
+          {import.meta.env.DEV && (
+            <div className="DevMode-toggle">
+              <button onClick={() => setDevMode(!devMode)}>
+                {devMode ? 'Disable Dev Mode' : 'Enable Dev Mode'}
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

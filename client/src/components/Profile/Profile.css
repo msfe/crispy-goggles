@@ -258,6 +258,72 @@
   background-color: #40b393;
 }
 
+/* Add Contact Input Row */
+.add-contact-input-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 8px;
+  background-color: white;
+  border: 2px solid #4ecca3;
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+.add-contact-input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 14px;
+  background-color: white;
+}
+
+.add-contact-input:focus {
+  outline: none;
+  border-color: #a861ba;
+  box-shadow: 0 0 0 2px rgba(168, 97, 186, 0.1);
+}
+
+.add-contact-confirm-button {
+  background-color: #4ecca3;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  white-space: nowrap;
+}
+
+.add-contact-confirm-button:hover:not(:disabled) {
+  background-color: #40b393;
+}
+
+.add-contact-confirm-button:disabled {
+  background-color: #b0b0b0;
+  cursor: not-allowed;
+}
+
+.add-contact-cancel-button {
+  background-color: #b0b0b0;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  white-space: nowrap;
+}
+
+.add-contact-cancel-button:hover {
+  background-color: #9a9a9a;
+}
+
 /* Form Actions */
 .form-actions {
   display: flex;

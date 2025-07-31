@@ -1,5 +1,6 @@
 const express = require('express');
 const { cca, isConfigured } = require('../config/authConfig');
+const { extractUserInfo, logAccountInfo } = require('../utils/authUtils');
 const router = express.Router();
 
 // Middleware to check if Azure CIAM is configured
@@ -140,15 +141,14 @@ router.post('/validate-token', checkConfiguration, async (req, res) => {
 
     const response = await cca.acquireTokenByCode(tokenRequest);
     
-    // Return user info (explicitly exclude sensitive token data such as access tokens and refresh tokens)
-    const userInfo = {
-      userId: response.account.homeAccountId, // Unique identifier for the user
-      username: response.account.username, // User's username (often their email)
-      name: response.account.name, // User's display name
-      email: response.account.username, // Email is typically in username for Azure CIAM
-      // Note: Sensitive fields like accessToken, refreshToken, and idToken are excluded for security
-    };
-
+    // Log account info for debugging in development
+    if (process.env.NODE_ENV === 'development') {
+      logAccountInfo(response.account);
+    }
+    
+    // Extract user information using robust email extraction logic
+    const userInfo = extractUserInfo(response.account);
+    
     res.json({ 
       success: true, 
       user: userInfo,

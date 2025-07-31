@@ -4,7 +4,8 @@
   padding: 0;
   border-radius: 20px;
   background: linear-gradient(135deg, #f5f5f5 0%, #ffffff 100%);
-  box-shadow: 0 20px 40px rgba(168, 97, 186, 0.1), 0 8px 16px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 20px 40px rgba(168, 97, 186, 0.1),
+    0 8px 16px rgba(0, 0, 0, 0.05);
   overflow: hidden;
   border: 1px solid rgba(200, 162, 200, 0.2);
 }
@@ -18,7 +19,7 @@
 }
 
 .login-form-header::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 20px;
   right: 20px;
@@ -30,7 +31,7 @@
 }
 
 .login-form-header::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: 10px;
   left: 30px;
@@ -79,7 +80,7 @@
 .login-form-primary-button {
   width: 100%;
   padding: 18px 24px;
-  background-color: #4ecca3;
+  background-color: #b89ac4;
   color: white;
   border: none;
   border-radius: 14px;
@@ -105,14 +106,15 @@
 }
 
 .login-form-primary-button:not(:disabled):hover {
-  background-color: #45b893;
+  background-color: #a894b4;
   transform: translateY(-2px);
   box-shadow: 0 12px 32px rgba(78, 204, 163, 0.4);
   scale: 1.02;
 }
 
 .login-form-primary-button:focus {
-  box-shadow: 0 8px 20px rgba(78, 204, 163, 0.4), 0 0 0 3px rgba(78, 204, 163, 0.2);
+  box-shadow: 0 8px 20px rgba(78, 204, 163, 0.4),
+    0 0 0 3px rgba(78, 204, 163, 0.2);
 }
 
 .login-form-primary-button:not(:disabled):active {
@@ -123,7 +125,7 @@
 .login-form-google-button {
   width: 100%;
   padding: 18px 24px;
-  background-color: #c8a2c8;
+  background-color: #b89ac4;
   color: white;
   border: none;
   border-radius: 14px;
@@ -149,14 +151,15 @@
 }
 
 .login-form-google-button:not(:disabled):hover {
-  background-color: #b894b8;
+  background-color: #a894b4;
   transform: translateY(-2px);
   box-shadow: 0 12px 32px rgba(200, 162, 200, 0.4);
   scale: 1.02;
 }
 
 .login-form-google-button:focus {
-  box-shadow: 0 8px 20px rgba(200, 162, 200, 0.3), 0 0 0 3px rgba(200, 162, 200, 0.2);
+  box-shadow: 0 8px 20px rgba(200, 162, 200, 0.3),
+    0 0 0 3px rgba(200, 162, 200, 0.2);
 }
 
 .login-form-google-button:not(:disabled):active {
@@ -184,7 +187,12 @@
 
 .login-form-divider-line {
   height: 1px;
-  background: linear-gradient(90deg, transparent 0%, #b0b0b0 50%, transparent 100%);
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    #b0b0b0 50%,
+    transparent 100%
+  );
   position: relative;
 }
 

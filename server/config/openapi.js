@@ -164,6 +164,50 @@ const options = {
             }
           }
         },
+        Friendship: {
+          type: 'object',
+          required: ['userId', 'friendId', 'requestedBy', 'status'],
+          properties: {
+            id: {
+              type: 'string',
+              description: 'Unique friendship identifier',
+              example: 'friendship-123-abc'
+            },
+            userId: {
+              type: 'string',
+              description: 'ID of the first user in the friendship',
+              example: 'user-123-abc'
+            },
+            friendId: {
+              type: 'string',
+              description: 'ID of the second user in the friendship',
+              example: 'user-456-def'
+            },
+            requestedBy: {
+              type: 'string',
+              description: 'ID of the user who initiated the friend request',
+              example: 'user-123-abc'
+            },
+            status: {
+              type: 'string',
+              enum: ['pending', 'accepted', 'rejected'],
+              description: 'Current status of the friendship',
+              example: 'pending'
+            },
+            createdAt: {
+              type: 'string',
+              format: 'date-time',
+              description: 'Friendship creation timestamp',
+              example: '2024-01-15T10:30:00Z'
+            },
+            updatedAt: {
+              type: 'string',
+              format: 'date-time',
+              description: 'Last friendship update timestamp',
+              example: '2024-01-20T14:22:00Z'
+            }
+          }
+        },
         Error: {
           type: 'object',
           required: ['error'],
@@ -390,6 +434,10 @@ const options = {
       {
         name: 'Groups',
         description: 'Group management and membership operations'
+      },
+      {
+        name: 'Friendships',
+        description: 'Friend request and friendship management operations'
       }
     ]
   },

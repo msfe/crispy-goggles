@@ -5,6 +5,92 @@
 import { jwtDecode } from "jwt-decode";
 
 /**
+ * Comprehensive email validation regex pattern
+ * Based on RFC 5322 specification with practical considerations
+ */
+const EMAIL_REGEX = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+
+/**
+ * Validate email address using comprehensive regex
+ * @param {string} email - Email address to validate
+ * @returns {boolean} - True if email is valid
+ */
+const isValidEmail = (email) => {
+  return typeof email === 'string' && EMAIL_REGEX.test(email);
+};
+
+/**
+ * Check if email is a real user email (not Azure internal domain)
+ * @param {string} email - Email address to check
+ * @returns {boolean} - True if email appears to be a real user email
+ */
+const isRealUserEmail = (email) => {
+  if (!isValidEmail(email)) {
+    return false;
+  }
+  // Exclude Azure internal domains that contain user IDs
+  return !email.endsWith('.onmicrosoft.com');
+};
+
+/**
+ * Safely decode JWT token with proper validation and error handling
+ * @param {string} token - JWT token to decode
+ * @returns {Object|null} - Decoded token claims or null if invalid
+ */
+const safeJwtDecode = (token) => {
+  if (!token || typeof token !== 'string') {
+    console.warn('JWT decode: Invalid token provided - not a string');
+    return null;
+  }
+
+  // Basic JWT structure validation (header.payload.signature)
+  const tokenParts = token.split('.');
+  if (tokenParts.length !== 3) {
+    console.warn('JWT decode: Invalid token structure - expected 3 parts separated by dots');
+    return null;
+  }
+
+  // Validate that parts are not empty
+  if (tokenParts.some(part => !part || part.length === 0)) {
+    console.warn('JWT decode: Invalid token structure - empty parts detected');
+    return null;
+  }
+
+  try {
+    const decoded = jwtDecode(token);
+    
+    // Validate that decoded token has expected structure
+    if (!decoded || typeof decoded !== 'object') {
+      console.warn('JWT decode: Decoded token is not a valid object');
+      return null;
+    }
+
+    // Check for common JWT fields to ensure it's a valid token
+    if (!decoded.iat && !decoded.exp && !decoded.aud && !decoded.iss) {
+      console.warn('JWT decode: Token missing standard JWT claims (iat, exp, aud, iss)');
+      return null;
+    }
+
+    // Check if token is expired (if exp claim exists)
+    if (decoded.exp && decoded.exp < Date.now() / 1000) {
+      console.warn('JWT decode: Token is expired');
+      return null;
+    }
+
+    return decoded;
+  } catch (error) {
+    if (error.name === 'InvalidTokenError') {
+      console.warn('JWT decode: Invalid token format', error.message);
+    } else if (error.message.includes('Invalid token')) {
+      console.warn('JWT decode: Token validation failed', error.message);
+    } else {
+      console.warn('JWT decode: Unexpected error during token decoding', error.message);
+    }
+    return null;
+  }
+};
+
+/**
  * Extract user information from Azure account object with access token fallback.
  * Always prefer access token claims for federated users.
  * @param {Object} account - Azure MSAL account object
@@ -22,14 +108,10 @@ export const extractUserInfo = (account, authResult = null) => {
   // 1. Try to extract from access token first (for federated users)
   let accessTokenClaims = null;
   if (authResult?.accessToken) {
-    try {
-      accessTokenClaims = jwtDecode(authResult.accessToken);
+    accessTokenClaims = safeJwtDecode(authResult.accessToken);
+    if (accessTokenClaims) {
       // Prefer a real email from access token
-      if (
-        accessTokenClaims.email &&
-        accessTokenClaims.email.includes("@") &&
-        !accessTokenClaims.email.endsWith(".onmicrosoft.com")
-      ) {
+      if (accessTokenClaims.email && isRealUserEmail(accessTokenClaims.email)) {
         email = accessTokenClaims.email;
       }
       // Prefer name from access token if available
@@ -41,42 +123,20 @@ export const extractUserInfo = (account, authResult = null) => {
       ) {
         name = `${accessTokenClaims.given_name} ${accessTokenClaims.family_name}`;
       }
-    } catch (e) {
-      console.warn("Failed to decode access token", e);
     }
   }
 
   // 2. If still missing, try idTokenClaims
-  if (
-    !email &&
-    account?.idTokenClaims?.email &&
-    account.idTokenClaims.email.includes("@") &&
-    !account.idTokenClaims.email.endsWith(".onmicrosoft.com")
-  ) {
+  if (!email && account?.idTokenClaims?.email && isRealUserEmail(account.idTokenClaims.email)) {
     email = account.idTokenClaims.email;
-  } else if (
-    !email &&
-    account?.idTokenClaims?.preferred_username &&
-    account.idTokenClaims.preferred_username.includes("@") &&
-    !account.idTokenClaims.preferred_username.endsWith(".onmicrosoft.com")
-  ) {
+  } else if (!email && account?.idTokenClaims?.preferred_username && isRealUserEmail(account.idTokenClaims.preferred_username)) {
     email = account.idTokenClaims.preferred_username;
-  } else if (
-    !email &&
-    account?.idTokenClaims?.upn &&
-    account.idTokenClaims.upn.includes("@") &&
-    !account.idTokenClaims.upn.endsWith(".onmicrosoft.com")
-  ) {
+  } else if (!email && account?.idTokenClaims?.upn && isRealUserEmail(account.idTokenClaims.upn)) {
     email = account.idTokenClaims.upn;
   }
 
   // 3. Last resort: check username if it looks like a real email
-  if (
-    !email &&
-    account?.username &&
-    account.username.includes("@") &&
-    !account.username.endsWith(".onmicrosoft.com")
-  ) {
+  if (!email && account?.username && isRealUserEmail(account.username)) {
     email = account.username;
   }
 

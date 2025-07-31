@@ -3,6 +3,34 @@
  */
 
 /**
+ * Comprehensive email validation regex pattern
+ * Based on RFC 5322 specification with practical considerations
+ */
+const EMAIL_REGEX = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+
+/**
+ * Validate email address using comprehensive regex
+ * @param {string} email - Email address to validate
+ * @returns {boolean} - True if email is valid
+ */
+const isValidEmail = (email) => {
+  return typeof email === 'string' && EMAIL_REGEX.test(email);
+};
+
+/**
+ * Check if email is a real user email (not Azure internal domain)
+ * @param {string} email - Email address to check
+ * @returns {boolean} - True if email appears to be a real user email
+ */
+const isRealUserEmail = (email) => {
+  if (!isValidEmail(email)) {
+    return false;
+  }
+  // Exclude Azure internal domains that contain user IDs
+  return !email.endsWith('.onmicrosoft.com');
+};
+
+/**
  * Extract user information from Azure account object with access token fallback
  * @param {Object} account - Azure MSAL account object
  * @param {Object} authResult - Optional MSAL auth result containing access token claims
@@ -18,11 +46,11 @@ const extractUserInfo = (account, authResult = null) => {
   let name = null;
   
   // First try idTokenClaims which typically contains the actual email
-  if (account.idTokenClaims?.email) {
+  if (account.idTokenClaims?.email && isRealUserEmail(account.idTokenClaims.email)) {
     email = account.idTokenClaims.email;
-  } else if (account.idTokenClaims?.preferred_username) {
+  } else if (account.idTokenClaims?.preferred_username && isRealUserEmail(account.idTokenClaims.preferred_username)) {
     email = account.idTokenClaims.preferred_username;
-  } else if (account.idTokenClaims?.upn) {
+  } else if (account.idTokenClaims?.upn && isRealUserEmail(account.idTokenClaims.upn)) {
     // User Principal Name might be used as email
     email = account.idTokenClaims.upn;
   }
@@ -33,11 +61,11 @@ const extractUserInfo = (account, authResult = null) => {
     console.log('ID token missing email claims, trying access token for federated user...');
     
     // Access token claims are often richer for federated users
-    if (authResult.account?.idTokenClaims?.email) {
+    if (authResult.account?.idTokenClaims?.email && isRealUserEmail(authResult.account.idTokenClaims.email)) {
       email = authResult.account.idTokenClaims.email;
-    } else if (authResult.account?.idTokenClaims?.preferred_username) {
+    } else if (authResult.account?.idTokenClaims?.preferred_username && isRealUserEmail(authResult.account.idTokenClaims.preferred_username)) {
       email = authResult.account.idTokenClaims.preferred_username;
-    } else if (authResult.account?.idTokenClaims?.upn) {
+    } else if (authResult.account?.idTokenClaims?.upn && isRealUserEmail(authResult.account.idTokenClaims.upn)) {
       email = authResult.account.idTokenClaims.upn;
     }
     
@@ -48,7 +76,7 @@ const extractUserInfo = (account, authResult = null) => {
   }
   
   // Last resort: check username if it looks like a real email
-  if (!email && account.username && account.username.includes('@') && !account.username.includes('.onmicrosoft.com')) {
+  if (!email && account.username && isRealUserEmail(account.username)) {
     // Only use username if it looks like a real email (not an Azure internal ID)
     email = account.username;
   }
@@ -148,5 +176,7 @@ const logAccountInfo = (account, authResult = null) => {
 module.exports = {
   extractUserInfo,
   validateAndSanitizeHomeAccountId,
-  logAccountInfo
+  logAccountInfo,
+  isValidEmail,
+  isRealUserEmail
 };

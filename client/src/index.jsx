@@ -25,12 +25,12 @@ msalInstance.initialize().then(() => {
       
       // Log account info for debugging
       if (import.meta.env.DEV) {
-        logAccountInfo(authResult.account);
+        logAccountInfo(authResult.account, authResult);
       }
       
       // Sync user to database after successful authentication
       try {
-        const userInfo = extractUserInfo(authResult.account);
+        const userInfo = extractUserInfo(authResult.account, authResult);
         console.log('Extracted user info:', userInfo);
 
         const response = await fetch('/auth/sync-user', {

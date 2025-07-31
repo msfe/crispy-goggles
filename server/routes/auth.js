@@ -143,11 +143,11 @@ router.post('/validate-token', checkConfiguration, async (req, res) => {
     
     // Log account info for debugging in development
     if (process.env.NODE_ENV === 'development') {
-      logAccountInfo(response.account);
+      logAccountInfo(response.account, response);
     }
     
-    // Extract user information using robust email extraction logic
-    const userInfo = extractUserInfo(response.account);
+    // Extract user information using robust email extraction logic with access token fallback
+    const userInfo = extractUserInfo(response.account, response);
     
     res.json({ 
       success: true, 

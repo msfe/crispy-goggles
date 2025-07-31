@@ -49,6 +49,13 @@ class User extends BaseModel {
     this.bio = data.bio || '';
     this.contactDetails = data.contactDetails || {};
     this.role = data.role || 'member'; // global_admin, group_admin, member
+    this.privacySettings = data.privacySettings || {
+      profilePictureVisibility: 'friends',
+      bioVisibility: 'friends',
+      contactDetailsVisibility: 'friends',
+      friendsListVisibility: 'friends',
+      userDiscoverability: 'friends_of_friends'
+    };
   }
 
   validate() {

@@ -48,7 +48,7 @@ const Profile = () => {
       }
 
       // Fetch user profile from backend (user should exist due to sync on login)
-      const response = await apiRequest(`api/users/azure/${sanitizedHomeAccountId}`);
+      const response = await apiRequest(`/api/users/azure/${sanitizedHomeAccountId}`);
       
       if (response.ok) {
         const userData = await response.json();

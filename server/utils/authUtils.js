@@ -99,10 +99,10 @@ const validateAndSanitizeHomeAccountId = (homeAccountId) => {
   if (!homeAccountId || typeof homeAccountId !== 'string') {
     return null;
   }
-  // Basic sanitization - remove any potentially dangerous characters
-  // Azure IDs are typically in format: "userId.tenantId"
-  const sanitized = homeAccountId.replace(/[^a-zA-Z0-9.\-_]/g, '');
-  return sanitized.length > 0 ? sanitized : null;
+  // Validate Azure homeAccountId format: "userId.tenantId"
+  // Both userId and tenantId should be alphanumeric strings
+  const isValidFormat = /^[a-zA-Z0-9]+(\.[a-zA-Z0-9]+)+$/.test(homeAccountId);
+  return isValidFormat ? homeAccountId : null;
 };
 
 /**

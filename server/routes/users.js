@@ -302,11 +302,65 @@ router.delete('/:id', checkDatabaseConfig, async (req, res) => {
 
 /**
  * @swagger
- * /api/users/search/{term}:
+ * /api/users/search:
  *   get:
  *     tags: [Users]
  *     summary: Search users
- *     description: Searches for users by name or email
+ *     description: Searches for users by name or email using query parameter
+ *     parameters:
+ *       - in: query
+ *         name: q
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Search term
+ *         example: john
+ *     responses:
+ *       200:
+ *         description: Search results
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 users:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/User'
+ *       400:
+ *         description: Missing search query
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
+ *       503:
+ *         $ref: '#/components/responses/ServiceUnavailable'
+ */
+router.get('/search', checkDatabaseConfig, async (req, res) => {
+  try {
+    const { q: searchTerm } = req.query;
+    
+    if (!searchTerm) {
+      return res.status(400).json({ error: 'Search query parameter "q" is required' });
+    }
+
+    const result = await userService.search(searchTerm);
+    if (result.success) {
+      res.json({ users: result.data });
+    } else {
+      res.status(500).json({ error: result.error });
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+/**
+ * @swagger
+ * /api/users/search/{term}:
+ *   get:
+ *     tags: [Users]
+ *     summary: Search users (deprecated)
+ *     description: Searches for users by name or email - use /search?q= instead
+ *     deprecated: true
  *     parameters:
  *       - in: path
  *         name: term
@@ -335,6 +389,65 @@ router.delete('/:id', checkDatabaseConfig, async (req, res) => {
 router.get('/search/:term', checkDatabaseConfig, async (req, res) => {
   try {
     const result = await userService.search(req.params.term);
+    if (result.success) {
+      res.json({ users: result.data });
+    } else {
+      res.status(500).json({ error: result.error });
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+/**
+ * @swagger
+ * /api/users/batch:
+ *   post:
+ *     tags: [Users]
+ *     summary: Batch get users
+ *     description: Retrieves multiple users by their IDs in a single request
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [userIds]
+ *             properties:
+ *               userIds:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 description: Array of user IDs to fetch
+ *                 example: ["user-123-abc", "user-456-def"]
+ *     responses:
+ *       200:
+ *         description: Batch user lookup results
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 users:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/User'
+ *       400:
+ *         description: Invalid request body
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
+ *       503:
+ *         $ref: '#/components/responses/ServiceUnavailable'
+ */
+router.post('/batch', checkDatabaseConfig, async (req, res) => {
+  try {
+    const { userIds } = req.body;
+    
+    if (!userIds || !Array.isArray(userIds)) {
+      return res.status(400).json({ error: 'userIds must be an array' });
+    }
+
+    const result = await userService.batchGetUsers(userIds);
     if (result.success) {
       res.json({ users: result.data });
     } else {

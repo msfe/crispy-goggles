@@ -8,6 +8,7 @@ import MainContent from './MainContent';
 import Footer from './Footer';
 import DatabaseStatus from '../database/DatabaseStatus';
 import Profile from '../Profile';
+import Friends, { FriendSearchWrapper } from '../Friends';
 import './Dashboard.css';
 
 const Dashboard = () => {
@@ -81,7 +82,8 @@ const Dashboard = () => {
                 />
               } />
               <Route path="/profile" element={<Profile />} />
-              <Route path="/friends" element={<div className="coming-soon">Friends feature coming soon...</div>} />
+              <Route path="/friends" element={<Friends />} />
+              <Route path="/friends/search" element={<FriendSearchWrapper />} />
               <Route path="/groups" element={<div className="coming-soon">Groups feature coming soon...</div>} />
               <Route path="/events" element={<div className="coming-soon">Events feature coming soon...</div>} />
               <Route path="/settings" element={<div className="coming-soon">Settings feature coming soon...</div>} />
@@ -125,7 +127,8 @@ const Dashboard = () => {
               />
             } />
             <Route path="/profile" element={<Profile />} />
-            <Route path="/friends" element={<div className="coming-soon">Friends feature coming soon...</div>} />
+            <Route path="/friends" element={<Friends />} />
+            <Route path="/friends/search" element={<FriendSearchWrapper />} />
             <Route path="/groups" element={<div className="coming-soon">Groups feature coming soon...</div>} />
             <Route path="/events" element={<div className="coming-soon">Events feature coming soon...</div>} />
             <Route path="/settings" element={<div className="coming-soon">Settings feature coming soon...</div>} />

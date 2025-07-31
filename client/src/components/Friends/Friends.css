@@ -179,17 +179,6 @@
   margin: 0 0 8px 0;
 }
 
-.friend-bio {
-  color: #666;
-  font-size: 14px;
-  line-height: 1.4;
-  margin: 0 0 8px 0;
-  max-width: 400px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
 .friendship-date,
 .request-date {
   color: #b0b0b0;
@@ -410,11 +399,6 @@
   
   .friend-info {
     text-align: center;
-  }
-  
-  .friend-bio {
-    white-space: normal;
-    max-width: none;
   }
   
   .search-box {

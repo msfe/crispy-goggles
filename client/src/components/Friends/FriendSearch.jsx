@@ -246,9 +246,6 @@ const FriendSearch = ({ searchQuery, onBack }) => {
                     <div className="friend-info">
                       <h3>{user.name}</h3>
                       <p className="friend-email">{user.email}</p>
-                      {user.bio && (
-                        <p className="friend-bio">{user.bio}</p>
-                      )}
                     </div>
                     <div className="user-actions">
                       <button 

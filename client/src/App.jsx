@@ -10,6 +10,7 @@ function App() {
   const isAuthenticated = useIsAuthenticated();
   const { accounts } = useMsal();
   const [showSignUp, setShowSignUp] = useState(false);
+  const [devMode, setDevMode] = useState(false);
 
   // Debug logging in development
   if (import.meta.env.DEV) {
@@ -17,7 +18,7 @@ function App() {
     console.log('App render - accounts:', accounts);
   }
 
-  if (isAuthenticated) {
+  if (isAuthenticated || devMode) {
     return <Dashboard />;
   }
 

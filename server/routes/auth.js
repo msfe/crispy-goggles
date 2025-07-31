@@ -274,44 +274,31 @@ router.post('/sync-user', checkConfiguration, async (req, res) => {
   try {
     const { userInfo } = req.body;
     
-    // Enhanced validation with detailed logging
+    // Enhanced validation
     if (!userInfo) {
-      console.error('Sync failed: userInfo is required');
       return res.status(400).json({ error: 'userInfo is required' });
     }
     
     if (!userInfo.userId) {
-      console.error('Sync failed: userInfo.userId is required', { receivedUserInfo: userInfo });
       return res.status(400).json({ error: 'userInfo.userId is required' });
     }
     
     if (!userInfo.email) {
-      console.error('Sync failed: userInfo.email is required', { receivedUserInfo: userInfo });
       return res.status(400).json({ error: 'userInfo.email is required' });
     }
 
     // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(userInfo.email)) {
-      console.error('Sync failed: Invalid email format', { email: userInfo.email });
-      return res.status(400).json({ error: 'Invalid email format', receivedEmail: userInfo.email });
+      return res.status(400).json({ error: 'Invalid email format' });
     }
 
-    // Additional validation for Azure-specific patterns
-    if (userInfo.email.endsWith('.onmicrosoft.com')) {
-      console.warn('Warning: Email appears to be Azure internal ID, not user email', { email: userInfo.email });
-      // Don't fail but warn - this might indicate the email extraction isn't working properly
-    }
-
-    // Log sync attempt for debugging with more details
-    console.log('User sync attempt with details:', {
+    // Log sync attempt for debugging
+    console.log('User sync attempt:', {
       userId: userInfo.userId,
       email: userInfo.email,
       name: userInfo.name,
-      username: userInfo.username,
-      hasUsername: !!userInfo.username,
-      isInternalAzureEmail: userInfo.email.endsWith('.onmicrosoft.com'),
-      timestamp: new Date().toISOString(),
+      hasUsername: !!userInfo.username
     });
 
     const { UserService } = require('../services/databaseService');
@@ -319,29 +306,17 @@ router.post('/sync-user', checkConfiguration, async (req, res) => {
     const userService = new UserService();
 
     // Check if user already exists by Azure ID
-    console.log('Checking for existing user by Azure ID:', userInfo.userId);
     const existingUser = await userService.getByAzureId(userInfo.userId);
     
     if (existingUser.success) {
       // User exists, return the existing user
-      console.log('User already exists in database:', {
-        userId: existingUser.data.id,
-        azureId: existingUser.data.azureId,
-        email: existingUser.data.email,
-        name: existingUser.data.name
-      });
+      console.log('User already exists:', existingUser.data.id);
       res.json({ 
         success: true, 
         user: existingUser.data,
         created: false 
       });
     } else {
-      console.log('User not found, creating new user:', {
-        azureId: userInfo.userId,
-        email: userInfo.email,
-        name: userInfo.name
-      });
-      
       // User doesn't exist, create new user
       const newUser = new User({
         azureId: userInfo.userId,
@@ -351,75 +326,43 @@ router.post('/sync-user', checkConfiguration, async (req, res) => {
       });
 
       // Validate user data
-      console.log('Validating new user data...');
       newUser.validate();
 
       // Check if email is already taken by another user (shouldn't happen with Azure)
-      console.log('Checking for email conflicts...');
       const emailCheck = await userService.getByEmail(newUser.email);
       if (emailCheck.success) {
         console.warn('Email conflict detected:', {
           existingUser: emailCheck.data.id,
           existingAzureId: emailCheck.data.azureId,
-          newAzureId: userInfo.userId,
-          conflictingEmail: newUser.email
+          newAzureId: userInfo.userId
         });
         return res.status(409).json({ 
           error: 'User with this email already exists with different Azure ID',
           details: {
             existingUserId: emailCheck.data.id,
-            conflictingEmail: newUser.email,
-            existingAzureId: emailCheck.data.azureId,
-            newAzureId: userInfo.userId
+            conflictingEmail: newUser.email
           }
         });
       }
 
-      console.log('Creating new user in database...');
       const result = await userService.create(newUser.toJSON());
       if (result.success) {
-        console.log('User created successfully:', {
-          userId: result.data.id,
-          azureId: result.data.azureId,
-          email: result.data.email,
-          name: result.data.name
-        });
+        console.log('User created successfully:', result.data.id);
         res.status(201).json({
           success: true,
           user: result.data,
           created: true
         });
       } else {
-        console.error('Database error creating user:', {
-          error: result.error,
-          userInfo: {
-            azureId: userInfo.userId,
-            email: userInfo.email,
-            name: userInfo.name
-          }
-        });
-        res.status(500).json({ 
-          error: 'Database error creating user',
-          details: result.error,
-          userInfo: {
-            azureId: userInfo.userId,
-            email: userInfo.email,
-            name: userInfo.name
-          }
-        });
+        console.error('Database error creating user:', result.error);
+        res.status(500).json({ error: result.error });
       }
     }
   } catch (error) {
-    console.error('User sync error:', {
-      error: error.message,
-      stack: error.stack,
-      userInfo: req.body?.userInfo,
-      timestamp: new Date().toISOString()
-    });
+    console.error('User sync error:', error);
     res.status(500).json({ 
       error: 'Failed to sync user',
-      details: error.message,
-      timestamp: new Date().toISOString()
+      details: error.message 
     });
   }
 });

@@ -5,6 +5,7 @@ import App from './App.jsx';
 import AuthProvider from './components/auth/AuthProvider.jsx';
 import { msalInstance } from './config/authConfig.js';
 import { extractUserInfo, logAccountInfo } from './utils/authUtils.js';
+import { apiRequest } from './utils/apiConfig.js';
 
 // Import test utilities in development mode
 if (import.meta.env.DEV) {
@@ -33,7 +34,7 @@ msalInstance.initialize().then(() => {
         const userInfo = extractUserInfo(authResult.account, authResult);
         console.log('Extracted user info:', userInfo);
 
-        const response = await fetch('/auth/sync-user', {
+        const response = await apiRequest('auth/sync-user', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

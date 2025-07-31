@@ -3,6 +3,7 @@ import { useMsal } from '@azure/msal-react';
 import ProfileView from './ProfileView';
 import ProfileEdit from './ProfileEdit';
 import { extractUserInfo, validateAndSanitizeHomeAccountId, logAccountInfo } from '../../utils/authUtils';
+import { apiRequest } from '../../utils/apiConfig';
 import './Profile.css';
 
 const Profile = () => {
@@ -47,7 +48,7 @@ const Profile = () => {
       }
 
       // Fetch user profile from backend (user should exist due to sync on login)
-      const response = await fetch(`/api/users/azure/${sanitizedHomeAccountId}`);
+      const response = await apiRequest(`api/users/azure/${sanitizedHomeAccountId}`);
       
       if (response.ok) {
         const userData = await response.json();
@@ -65,7 +66,7 @@ const Profile = () => {
           const userInfo = extractUserInfo(account);
           console.log('Extracted user info for sync:', userInfo);
 
-          const syncResponse = await fetch('/auth/sync-user', {
+          const syncResponse = await apiRequest('auth/sync-user', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -162,7 +163,7 @@ const Profile = () => {
         return { success: true };
       }
 
-      const response = await fetch(`/api/users/${profile.id}`, {
+      const response = await apiRequest(`api/users/${profile.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json'

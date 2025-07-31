@@ -162,6 +162,21 @@ class UserService extends BaseService {
     };
     return this.query(querySpec);
   }
+
+  /**
+   * Batch get users by IDs
+   */
+  async batchGetUsers(userIds) {
+    if (!userIds || userIds.length === 0) {
+      return { success: true, data: [] };
+    }
+
+    const querySpec = {
+      query: `SELECT * FROM c WHERE c.id IN (${userIds.map((_, index) => `@id${index}`).join(', ')})`,
+      parameters: userIds.map((id, index) => ({ name: `@id${index}`, value: id }))
+    };
+    return this.query(querySpec);
+  }
 }
 
 /**

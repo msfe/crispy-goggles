@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useMsal } from '@azure/msal-react';
-import { apiRequest } from '../../utils/apiConfig';
-import { extractUserInfo, validateAndSanitizeHomeAccountId } from '../../utils/authUtils';
+import { UserApiService, FriendshipApiService } from '../../services/apiService';
 import './Friends.css';
 
 const Friends = () => {
@@ -16,54 +15,6 @@ const Friends = () => {
   const [activeTab, setActiveTab] = useState('received'); // Default to received requests as requested
   const [friendsFilter, setFriendsFilter] = useState('');
 
-  // Mock data for development
-  const mockUserId = 'mock-user-id-123';
-  const mockFriends = [
-    {
-      id: 'friendship-1',
-      userId: mockUserId,
-      friendId: 'friend-1',
-      status: 'accepted',
-      createdAt: '2024-01-01T00:00:00.000Z',
-      friend: {
-        id: 'friend-1',
-        name: 'Alice Johnson',
-        email: 'alice@example.com',
-        bio: 'Software developer and tech enthusiast'
-      }
-    },
-    {
-      id: 'friendship-2',
-      userId: mockUserId,
-      friendId: 'friend-2',
-      status: 'accepted',
-      createdAt: '2024-01-02T00:00:00.000Z',
-      friend: {
-        id: 'friend-2',
-        name: 'Bob Wilson',
-        email: 'bob@example.com',
-        bio: 'Designer and creative thinker'
-      }
-    }
-  ];
-
-  const mockPendingRequests = [
-    {
-      id: 'friendship-3',
-      userId: 'friend-3',
-      friendId: mockUserId,
-      requestedBy: 'friend-3',
-      status: 'pending',
-      createdAt: '2024-01-03T00:00:00.000Z',
-      requester: {
-        id: 'friend-3',
-        name: 'Charlie Brown',
-        email: 'charlie@example.com',
-        bio: 'Product manager with a passion for innovation'
-      }
-    }
-  ];
-
   useEffect(() => {
     initializeUser();
   }, [account]);
@@ -76,26 +27,11 @@ const Friends = () => {
 
   const initializeUser = async () => {
     try {
-      if (!account) {
-        setCurrentUserId(mockUserId);
-        return;
-      }
-
-      const sanitizedHomeAccountId = validateAndSanitizeHomeAccountId(account.homeAccountId);
-      if (!sanitizedHomeAccountId) {
-        throw new Error('Invalid account ID');
-      }
-
-      const response = await apiRequest(`/api/users/azure/${sanitizedHomeAccountId}`);
-      if (response.ok) {
-        const userData = await response.json();
-        setCurrentUserId(userData.id);
-      } else {
-        throw new Error('Failed to fetch user data');
-      }
+      const userId = await UserApiService.initializeUser(account);
+      setCurrentUserId(userId);
     } catch (err) {
       console.error('Error initializing user:', err);
-      setCurrentUserId(mockUserId);
+      setError('Failed to initialize user. Please try again.');
     }
   };
 
@@ -104,95 +40,13 @@ const Friends = () => {
     setError(null);
 
     try {
-      if (currentUserId === mockUserId) {
-        // Use mock data in development
-        setFriends(mockFriends);
-        setPendingRequests(mockPendingRequests);
-        // Add mock sent requests for demonstration
-        const mockSentRequests = [
-          {
-            id: 'friendship-sent-1',
-            userId: mockUserId,
-            friendId: 'friend-sent-1',
-            requestedBy: mockUserId,
-            status: 'pending',
-            createdAt: '2024-01-04T00:00:00.000Z',
-            friend: {
-              id: 'friend-sent-1',
-              name: 'Dave Miller',
-              email: 'dave@example.com',
-              bio: 'Marketing specialist and social media expert'
-            }
-          }
-        ];
-        setSentRequests(mockSentRequests);
-        setLoading(false);
-        return;
-      }
-
-      // Fetch all friendships for the user
-      const friendshipsResponse = await apiRequest(`/api/friendships/user/${currentUserId}`);
-      const pendingResponse = await apiRequest(`/api/friendships/pending/${currentUserId}`);
-
-      if (friendshipsResponse.ok && pendingResponse.ok) {
-        const friendshipsData = await friendshipsResponse.json();
-        const pendingData = await pendingResponse.json();
-
-        // Separate accepted friendships from sent requests
-        const acceptedFriendships = friendshipsData.friendships.filter(f => f.status === 'accepted');
-        const sentRequestsList = friendshipsData.friendships.filter(f => 
-          f.status === 'pending' && f.requestedBy === currentUserId
-        );
-
-        // Fetch user details for friends and requests
-        const friendsWithDetails = await Promise.all(
-          acceptedFriendships.map(async (friendship) => {
-            const friendId = friendship.userId === currentUserId ? friendship.friendId : friendship.userId;
-            const userResponse = await apiRequest(`/api/users/${friendId}`);
-            if (userResponse.ok) {
-              const friendData = await userResponse.json();
-              return { ...friendship, friend: friendData };
-            }
-            return friendship;
-          })
-        );
-
-        const pendingWithDetails = await Promise.all(
-          pendingData.requests.map(async (request) => {
-            const requesterResponse = await apiRequest(`/api/users/${request.requestedBy}`);
-            if (requesterResponse.ok) {
-              const requesterData = await requesterResponse.json();
-              return { ...request, requester: requesterData };
-            }
-            return request;
-          })
-        );
-
-        // Fetch user details for sent requests
-        const sentRequestsWithDetails = await Promise.all(
-          sentRequestsList.map(async (request) => {
-            const friendResponse = await apiRequest(`/api/users/${request.friendId}`);
-            if (friendResponse.ok) {
-              const friendData = await friendResponse.json();
-              return { ...request, friend: friendData };
-            }
-            return request;
-          })
-        );
-
-        setFriends(friendsWithDetails);
-        setPendingRequests(pendingWithDetails);
-        setSentRequests(sentRequestsWithDetails);
-      } else {
-        throw new Error('Failed to fetch friendships data');
-      }
+      const data = await FriendshipApiService.getFriendshipsData(currentUserId);
+      setFriends(data.friends);
+      setPendingRequests(data.pendingRequests);
+      setSentRequests(data.sentRequests);
     } catch (err) {
       console.error('Error fetching friendships:', err);
       setError('Failed to load friendships. Please try again.');
-      // Fallback to mock data
-      setFriends(mockFriends);
-      setPendingRequests(mockPendingRequests);
-      setSentRequests([]);
     } finally {
       setLoading(false);
     }
@@ -200,10 +54,12 @@ const Friends = () => {
 
   const respondToFriendRequest = async (friendshipId, status) => {
     try {
-      if (currentUserId === mockUserId) {
-        // Mock response for development
-        console.log(`Mock: ${status} friend request ${friendshipId}`);
+      const result = await FriendshipApiService.respondToFriendRequest(friendshipId, status, currentUserId);
+      
+      if (result.success) {
+        // Update UI state
         setPendingRequests(prev => prev.filter(req => req.id !== friendshipId));
+        
         if (status === 'accepted') {
           // Add to friends list if accepted
           const acceptedRequest = pendingRequests.find(req => req.id === friendshipId);
@@ -219,56 +75,8 @@ const Friends = () => {
             setFriends(prev => [...prev, newFriend]);
           }
         }
-        alert(`Friend request ${status}!`);
-        return;
-      }
-
-      const response = await apiRequest(`/api/friendships/${friendshipId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ status })
-      });
-
-      if (response.ok) {
-        alert(`Friend request ${status}!`);
-        fetchFriendshipsData(); // Refresh data
-      } else {
-        // Handle specific error cases
-        if (response.status === 503) {
-          // Database not configured - fall back to mock behavior
-          console.log(`Database not configured, using mock: ${status} friend request ${friendshipId}`);
-          setPendingRequests(prev => prev.filter(req => req.id !== friendshipId));
-          if (status === 'accepted') {
-            const acceptedRequest = pendingRequests.find(req => req.id === friendshipId);
-            if (acceptedRequest) {
-              const newFriend = {
-                id: `friendship-accepted-${Date.now()}`,
-                userId: currentUserId,
-                friendId: acceptedRequest.requester.id,
-                status: 'accepted',
-                createdAt: new Date().toISOString(),
-                friend: acceptedRequest.requester
-              };
-              setFriends(prev => [...prev, newFriend]);
-            }
-          }
-          alert(`Friend request ${status}!`);
-          return;
-        } else if (response.status === 404) {
-          throw new Error('Friend request not found. It may have already been responded to.');
-        } else {
-          let errorMessage = `Failed to ${status} friend request`;
-          try {
-            const errorData = await response.json();
-            errorMessage = errorData.error || errorMessage;
-          } catch (parseError) {
-            // If we can't parse the error response, use the default message
-            console.warn('Could not parse error response:', parseError);
-          }
-          throw new Error(errorMessage);
-        }
+        
+        alert(result.message);
       }
     } catch (err) {
       console.error(`Error ${status} friend request:`, err);

@@ -29,7 +29,7 @@ Architecture and Technology Stack
 Frontend:
 Framework: React.js for building a dynamic and responsive user interface.
 State Management: Consider using Redux or Context API for state management.
-UI Components: Use libraries like Material-UI or Ant Design for consistent and reusable UI components.
+UI Components: Use Material-UI for consistent and reusable UI components.
 Backend:
 Framework: Node.js with Express.js for handling HTTP requests and building APIs.
 Authentication: Integrate Microsoft Entra External ID for secure authentication and user management.

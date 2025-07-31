@@ -1,9 +1,10 @@
 const express = require('express');
-const { UserService } = require('../services/databaseService');
+const { UserService, FriendshipService } = require('../services/databaseService');
 const { User } = require('../models');
 const router = express.Router();
 
 const userService = new UserService();
+const friendshipService = new FriendshipService();
 
 // Middleware to check if database is configured
 const checkDatabaseConfig = (req, res, next) => {
@@ -537,6 +538,167 @@ router.get('/azure/:azureId', checkDatabaseConfig, async (req, res) => {
       res.json(result.data);
     } else {
       res.status(404).json({ error: result.error });
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+/**
+ * @swagger
+ * /api/users/{userId}/mutual-friends/{currentUserId}:
+ *   get:
+ *     tags: [Users]
+ *     summary: Get mutual friends between two users
+ *     description: Retrieves a list of mutual friends between the specified user and current user
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Target user's unique identifier
+ *         example: user-123-abc
+ *       - in: path
+ *         name: currentUserId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Current user's unique identifier
+ *         example: user-456-def
+ *     responses:
+ *       200:
+ *         description: List of mutual friends
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 mutualFriends:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/User'
+ *                 count:
+ *                   type: integer
+ *                   description: Number of mutual friends
+ *                   example: 5
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
+ *       503:
+ *         $ref: '#/components/responses/ServiceUnavailable'
+ */
+router.get('/:userId/mutual-friends/:currentUserId', checkDatabaseConfig, async (req, res) => {
+  try {
+    const { userId, currentUserId } = req.params;
+
+    // Get friendships for both users
+    const userFriendshipsResult = await friendshipService.getFriendshipsForUser(userId);
+    const currentUserFriendshipsResult = await friendshipService.getFriendshipsForUser(currentUserId);
+
+    if (!userFriendshipsResult.success || !currentUserFriendshipsResult.success) {
+      return res.status(500).json({ error: 'Failed to fetch friendships' });
+    }
+
+    // Extract accepted friend IDs for both users
+    const userFriends = userFriendshipsResult.data
+      .filter(f => f.status === 'accepted')
+      .map(f => f.userId === userId ? f.friendId : f.userId);
+    
+    const currentUserFriends = currentUserFriendshipsResult.data
+      .filter(f => f.status === 'accepted')
+      .map(f => f.userId === currentUserId ? f.friendId : f.userId);
+
+    // Find mutual friends (intersection of both friend lists)
+    const mutualFriendIds = userFriends.filter(id => currentUserFriends.includes(id));
+
+    // Get user details for mutual friends
+    if (mutualFriendIds.length === 0) {
+      return res.json({ mutualFriends: [], count: 0 });
+    }
+
+    const mutualFriendsResult = await userService.batchGetUsers(mutualFriendIds);
+    if (!mutualFriendsResult.success) {
+      return res.status(500).json({ error: 'Failed to fetch mutual friends details' });
+    }
+
+    res.json({
+      mutualFriends: mutualFriendsResult.data,
+      count: mutualFriendsResult.data.length
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+/**
+ * @swagger
+ * /api/users/{userId}/friendship-status/{currentUserId}:
+ *   get:
+ *     tags: [Users]
+ *     summary: Get friendship status between two users
+ *     description: Check the friendship status between the specified user and current user
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Target user's unique identifier
+ *         example: user-123-abc
+ *       - in: path
+ *         name: currentUserId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Current user's unique identifier
+ *         example: user-456-def
+ *     responses:
+ *       200:
+ *         description: Friendship status information
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   enum: [none, pending, accepted, rejected]
+ *                   description: Current friendship status
+ *                   example: accepted
+ *                 friendship:
+ *                   $ref: '#/components/schemas/Friendship'
+ *                   description: Friendship object if one exists
+ *       404:
+ *         description: No friendship found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: none
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
+ *       503:
+ *         $ref: '#/components/responses/ServiceUnavailable'
+ */
+router.get('/:userId/friendship-status/:currentUserId', checkDatabaseConfig, async (req, res) => {
+  try {
+    const { userId, currentUserId } = req.params;
+
+    // Check if friendship exists between the two users
+    const friendshipResult = await friendshipService.checkFriendship(userId, currentUserId);
+    
+    if (friendshipResult.success) {
+      res.json({
+        status: friendshipResult.data.status,
+        friendship: friendshipResult.data
+      });
+    } else {
+      res.json({ status: 'none' });
     }
   } catch (error) {
     res.status(500).json({ error: error.message });

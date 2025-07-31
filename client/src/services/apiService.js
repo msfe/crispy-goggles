@@ -5,7 +5,8 @@ import {
   getMockUserId, 
   MockFriendshipService, 
   MockUserService,
-  initializeMockUser 
+  initializeMockUser,
+  MOCK_CONFIG
 } from './mockService';
 
 /**
@@ -117,6 +118,41 @@ export const UserApiService = {
       }
     }
     return users;
+  },
+
+  /**
+   * Get user by ID
+   */
+  async getUserById(userId, currentUserId = null) {
+    // Always use mock data if mock config is enabled (for development)
+    if (MOCK_CONFIG.ENABLED || shouldUseMockData(currentUserId)) {
+      try {
+        return MockUserService.getById(userId);
+      } catch (mockErr) {
+        // If mock data doesn't have the user, continue to API
+        console.warn('Mock user not found, trying API:', mockErr.message);
+      }
+    }
+
+    try {
+      const response = await apiRequest(`/api/users/${userId}`);
+      if (response.ok) {
+        return await response.json();
+      } else {
+        throw new Error('User not found');
+      }
+    } catch (err) {
+      console.error('Error fetching user by ID:', err);
+      // Fallback to mock data if API fails and we haven't tried it yet
+      if (!MOCK_CONFIG.ENABLED) {
+        try {
+          return MockUserService.getById(userId);
+        } catch (mockErr) {
+          throw err;
+        }
+      }
+      throw err;
+    }
   },
 
   /**

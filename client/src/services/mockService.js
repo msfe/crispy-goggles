@@ -14,37 +14,97 @@ const MOCK_USERS = {
   'friend-1': {
     id: 'friend-1',
     name: 'Alice Johnson',
-    email: 'alice@example.com'
+    email: 'alice@example.com',
+    bio: 'Passionate about technology and coffee. Love hiking on weekends and exploring new places.',
+    contactDetails: {
+      phone: '+1-555-123-4567',
+      location: 'Stockholm, Sweden'
+    },
+    createdAt: '2023-01-15T10:30:00Z',
+    updatedAt: '2024-01-01T15:20:00Z'
   },
   'friend-2': {
     id: 'friend-2',
     name: 'Bob Wilson',
-    email: 'bob@example.com'
+    email: 'bob@example.com',
+    bio: 'Software developer by day, musician by night. Always looking for the next great book to read.',
+    contactDetails: {
+      location: 'Gothenburg, Sweden'
+    },
+    createdAt: '2023-03-20T08:45:00Z',
+    updatedAt: '2023-12-15T12:10:00Z'
   },
   'friend-3': {
     id: 'friend-3',
     name: 'Charlie Brown',
-    email: 'charlie@example.com'
+    email: 'charlie@example.com',
+    bio: 'Photography enthusiast and world traveler. Documenting life one frame at a time.',
+    contactDetails: {
+      phone: '+1-555-987-6543',
+      location: 'Malmö, Sweden',
+      website: 'charliebrown.photography'
+    },
+    createdAt: '2023-05-10T14:20:00Z',
+    updatedAt: '2024-01-10T09:30:00Z'
   },
   'friend-sent-1': {
     id: 'friend-sent-1',
     name: 'Dave Miller',
-    email: 'dave@example.com'
+    email: 'dave@example.com',
+    bio: 'Fitness trainer and nutrition coach. Helping people achieve their health goals.',
+    contactDetails: {
+      phone: '+1-555-456-7890',
+      location: 'Uppsala, Sweden'
+    },
+    createdAt: '2023-07-05T16:10:00Z',
+    updatedAt: '2023-12-20T11:45:00Z'
   },
   'search-1': {
     id: 'search-1',
     name: 'David Miller',
-    email: 'david@example.com'
+    email: 'david@example.com',
+    bio: 'Data scientist and AI researcher. Fascinated by the intersection of technology and society.',
+    contactDetails: {
+      location: 'Linköping, Sweden'
+    },
+    createdAt: '2023-09-12T13:25:00Z',
+    updatedAt: '2024-01-05T08:15:00Z'
   },
   'search-2': {
     id: 'search-2',
     name: 'Emma Davis',
-    email: 'emma@example.com'
+    email: 'emma@example.com',
+    bio: 'UX designer with a passion for creating intuitive and beautiful user experiences.',
+    contactDetails: {
+      phone: '+1-555-234-5678',
+      location: 'Örebro, Sweden',
+      website: 'emmadavis.design'
+    },
+    createdAt: '2023-11-08T10:40:00Z',
+    updatedAt: '2023-12-28T14:20:00Z'
   },
   'search-3': {
     id: 'search-3',
     name: 'Michael Johnson',
-    email: 'michael@example.com'
+    email: 'michael@example.com',
+    bio: 'Environmental engineer working on sustainable solutions for a better future.',
+    contactDetails: {
+      location: 'Västerås, Sweden'
+    },
+    createdAt: '2023-06-18T09:55:00Z',
+    updatedAt: '2024-01-03T16:30:00Z'
+  },
+  [MOCK_CONFIG.MOCK_USER_ID]: {
+    id: MOCK_CONFIG.MOCK_USER_ID,
+    name: 'Current User',
+    email: 'current@example.com',
+    bio: 'This is your profile! You can edit this bio and other details from your profile page.',
+    contactDetails: {
+      phone: '+1-555-000-0000',
+      location: 'Stockholm, Sweden'
+    },
+    createdAt: '2023-01-01T00:00:00Z',
+    updatedAt: '2024-01-01T00:00:00Z'
   }
 };
 
@@ -179,6 +239,17 @@ export const MockFriendshipService = {
  * Mock user search operations
  */
 export const MockUserService = {
+  /**
+   * Get user by ID
+   */
+  getById: (userId) => {
+    const user = MOCK_USERS[userId];
+    if (!user) {
+      throw new Error('User not found');
+    }
+    return user;
+  },
+
   /**
    * Search for users
    */

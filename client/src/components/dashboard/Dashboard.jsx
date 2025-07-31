@@ -9,6 +9,7 @@ import Footer from './Footer';
 import DatabaseStatus from '../database/DatabaseStatus';
 import Profile from '../Profile';
 import Friends, { FriendSearchWrapper } from '../Friends';
+import UserProfilePage from '../UserProfile';
 import './Dashboard.css';
 
 const Dashboard = () => {
@@ -82,6 +83,7 @@ const Dashboard = () => {
                 />
               } />
               <Route path="/profile" element={<Profile />} />
+              <Route path="/user/:userId" element={<UserProfilePage />} />
               <Route path="/friends" element={<Friends />} />
               <Route path="/friends/search" element={<FriendSearchWrapper />} />
               <Route path="/groups" element={<div className="coming-soon">Groups feature coming soon...</div>} />
@@ -127,6 +129,7 @@ const Dashboard = () => {
               />
             } />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/user/:userId" element={<UserProfilePage />} />
             <Route path="/friends" element={<Friends />} />
             <Route path="/friends/search" element={<FriendSearchWrapper />} />
             <Route path="/groups" element={<div className="coming-soon">Groups feature coming soon...</div>} />

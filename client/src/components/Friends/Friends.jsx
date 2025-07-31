@@ -348,9 +348,6 @@ const Friends = () => {
                     <div className="friend-info">
                       <h3>{request.requester?.name}</h3>
                       <p className="friend-email">{request.requester?.email}</p>
-                      {request.requester?.bio && (
-                        <p className="friend-bio">{request.requester.bio}</p>
-                      )}
                       <p className="request-date">
                         Requested on {new Date(request.createdAt).toLocaleDateString()}
                       </p>
@@ -390,9 +387,6 @@ const Friends = () => {
                     <div className="friend-info">
                       <h3>{request.friend?.name}</h3>
                       <p className="friend-email">{request.friend?.email}</p>
-                      {request.friend?.bio && (
-                        <p className="friend-bio">{request.friend.bio}</p>
-                      )}
                       <p className="request-date">
                         Sent on {new Date(request.createdAt).toLocaleDateString()}
                       </p>
@@ -441,9 +435,6 @@ const Friends = () => {
                 <div className="friend-info">
                   <h3>{friendship.friend?.name}</h3>
                   <p className="friend-email">{friendship.friend?.email}</p>
-                  {friendship.friend?.bio && (
-                    <p className="friend-bio">{friendship.friend.bio}</p>
-                  )}
                   <p className="friendship-date">
                     Friends since {new Date(friendship.createdAt).toLocaleDateString()}
                   </p>

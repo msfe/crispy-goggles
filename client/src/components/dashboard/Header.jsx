@@ -1,11 +1,12 @@
 import React, { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useMsal } from "@azure/msal-react";
 
 const Header = ({ onNotificationsToggle, notificationCount }) => {
   const { instance } = useMsal();
   const [searchQuery, setSearchQuery] = useState("");
   const location = useLocation();
+  const navigate = useNavigate();
 
   const handleLogout = () => {
     instance.logoutRedirect({
@@ -16,8 +17,16 @@ const Header = ({ onNotificationsToggle, notificationCount }) => {
 
   const handleSearch = (e) => {
     e.preventDefault();
-    // Placeholder for search functionality
-    console.log("Search query:", searchQuery);
+    if (!searchQuery.trim()) return;
+    
+    // Check if we're on the Friends page to handle friend search
+    if (location.pathname === '/friends') {
+      // Navigate to friend search results
+      navigate(`/friends/search?q=${encodeURIComponent(searchQuery)}`);
+    } else {
+      // Default search functionality for groups/events
+      console.log("Search query:", searchQuery);
+    }
   };
 
   return (
@@ -53,7 +62,7 @@ const Header = ({ onNotificationsToggle, notificationCount }) => {
         <form className="header-search" onSubmit={handleSearch}>
           <input
             type="text"
-            placeholder="Search groups or events..."
+            placeholder={location.pathname === '/friends' ? "Search for people..." : "Search groups or events..."}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="search-input"

@@ -11,8 +11,6 @@ const Friends = () => {
   const [friends, setFriends] = useState([]);
   const [pendingRequests, setPendingRequests] = useState([]);
   const [sentRequests, setSentRequests] = useState([]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [searchResults, setSearchResults] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('friends');
@@ -170,96 +168,28 @@ const Friends = () => {
     }
   };
 
-  const handleSearch = async () => {
-    if (!searchTerm.trim()) {
-      setSearchResults([]);
-      return;
-    }
-
-    try {
-      if (currentUserId === mockUserId) {
-        // Mock search results
-        const mockResults = [
-          {
-            id: 'search-1',
-            name: 'David Miller',
-            email: 'david@example.com',
-            bio: 'Frontend developer'
-          },
-          {
-            id: 'search-2',
-            name: 'Emma Davis',
-            email: 'emma@example.com',
-            bio: 'UX designer'
-          }
-        ].filter(user => 
-          user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          user.email.toLowerCase().includes(searchTerm.toLowerCase())
-        );
-        setSearchResults(mockResults);
-        return;
-      }
-
-      const response = await apiRequest(`/api/users/search/${encodeURIComponent(searchTerm)}`);
-      if (response.ok) {
-        const data = await response.json();
-        // Filter out current user and existing friends
-        const filteredResults = data.users.filter(user => 
-          user.id !== currentUserId && 
-          !friends.some(f => f.friend?.id === user.id) &&
-          !pendingRequests.some(r => r.requester?.id === user.id) &&
-          !sentRequests.some(s => s.friendId === user.id)
-        );
-        setSearchResults(filteredResults);
-      }
-    } catch (err) {
-      console.error('Error searching users:', err);
-    }
-  };
-
-  const sendFriendRequest = async (userId) => {
-    try {
-      if (currentUserId === mockUserId) {
-        // Mock successful request
-        alert(`Friend request sent to user ${userId}!`);
-        setSearchResults(prev => prev.filter(user => user.id !== userId));
-        return;
-      }
-
-      const response = await apiRequest('/api/friendships', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          userId: currentUserId,
-          friendId: userId
-        })
-      });
-
-      if (response.ok) {
-        alert('Friend request sent successfully!');
-        setSearchResults(prev => prev.filter(user => user.id !== userId));
-        fetchFriendshipsData(); // Refresh data
-      } else {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to send friend request');
-      }
-    } catch (err) {
-      console.error('Error sending friend request:', err);
-      alert('Failed to send friend request. Please try again.');
-    }
-  };
-
   const respondToFriendRequest = async (friendshipId, status) => {
     try {
       if (currentUserId === mockUserId) {
-        // Mock response
-        alert(`Friend request ${status}!`);
+        // Mock response for development
+        console.log(`Mock: ${status} friend request ${friendshipId}`);
         setPendingRequests(prev => prev.filter(req => req.id !== friendshipId));
         if (status === 'accepted') {
-          fetchFriendshipsData(); // Refresh to show new friend
+          // Add to friends list if accepted
+          const acceptedRequest = pendingRequests.find(req => req.id === friendshipId);
+          if (acceptedRequest) {
+            const newFriend = {
+              id: `friendship-accepted-${Date.now()}`,
+              userId: currentUserId,
+              friendId: acceptedRequest.requester.id,
+              status: 'accepted',
+              createdAt: new Date().toISOString(),
+              friend: acceptedRequest.requester
+            };
+            setFriends(prev => [...prev, newFriend]);
+          }
         }
+        alert(`Friend request ${status}!`);
         return;
       }
 
@@ -275,12 +205,19 @@ const Friends = () => {
         alert(`Friend request ${status}!`);
         fetchFriendshipsData(); // Refresh data
       } else {
-        const errorData = await response.json();
-        throw new Error(errorData.error || `Failed to ${status} friend request`);
+        // Handle specific error cases
+        if (response.status === 503) {
+          throw new Error('Database not configured. Using development mode.');
+        } else if (response.status === 404) {
+          throw new Error('Friend request not found. It may have already been responded to.');
+        } else {
+          const errorData = await response.json();
+          throw new Error(errorData.error || `Failed to ${status} friend request`);
+        }
       }
     } catch (err) {
       console.error(`Error ${status} friend request:`, err);
-      alert(`Failed to ${status} friend request. Please try again.`);
+      alert(`Failed to ${status} friend request: ${err.message}`);
     }
   };
 
@@ -327,12 +264,6 @@ const Friends = () => {
         >
           Friend Requests ({pendingRequests.length})
         </button>
-        <button 
-          className={`tab-button ${activeTab === 'search' ? 'active' : ''}`}
-          onClick={() => setActiveTab('search')}
-        >
-          Find Friends
-        </button>
       </div>
 
       <div className="friends-content">
@@ -340,7 +271,7 @@ const Friends = () => {
           <div className="friends-list">
             {friends.length === 0 ? (
               <div className="empty-state">
-                <p>You don't have any friends yet. Use the "Find Friends" tab to connect with people!</p>
+                <p>You don't have any friends yet. Use the search bar in the top navigation to find and connect with people!</p>
               </div>
             ) : (
               friends.map((friendship) => (
@@ -403,55 +334,6 @@ const Friends = () => {
                 </div>
               ))
             )}
-          </div>
-        )}
-
-        {activeTab === 'search' && (
-          <div className="search-section">
-            <div className="search-box">
-              <input
-                type="text"
-                placeholder="Search for people by name or email..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-                className="search-input"
-              />
-              <button onClick={handleSearch} className="search-button">
-                Search
-              </button>
-            </div>
-
-            <div className="search-results">
-              {searchResults.length === 0 && searchTerm && (
-                <div className="empty-state">
-                  <p>No users found matching "{searchTerm}".</p>
-                </div>
-              )}
-              
-              {searchResults.map((user) => (
-                <div key={user.id} className="user-card">
-                  <div className="friend-avatar">
-                    {getUserInitials(user.name)}
-                  </div>
-                  <div className="friend-info">
-                    <h3>{user.name}</h3>
-                    <p className="friend-email">{user.email}</p>
-                    {user.bio && (
-                      <p className="friend-bio">{user.bio}</p>
-                    )}
-                  </div>
-                  <div className="user-actions">
-                    <button 
-                      onClick={() => sendFriendRequest(user.id)}
-                      className="add-friend-button"
-                    >
-                      Add Friend
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
           </div>
         )}
       </div>

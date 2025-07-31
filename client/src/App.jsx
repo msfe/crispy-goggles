@@ -46,6 +46,14 @@ function App() {
               <LoginForm showSignUp={showSignUp} setShowSignUp={setShowSignUp} />
             )}
           </div>
+          {/* Development Mode Toggle */}
+          {import.meta.env.DEV && (
+            <div className="DevMode-toggle">
+              <button onClick={() => setDevMode(!devMode)}>
+                {devMode ? 'Disable Dev Mode' : 'Enable Dev Mode'}
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>

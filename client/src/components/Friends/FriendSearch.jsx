@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useMsal } from '@azure/msal-react';
 import { UserApiService, FriendshipApiService } from '../../services/apiService';
+import { useAlert } from '../Alert';
 import './Friends.css';
 
 const FriendSearch = ({ searchQuery, onBack }) => {
   const { accounts } = useMsal();
   const account = accounts[0];
+  const { showInfo, showError } = useAlert();
   const [currentUserId, setCurrentUserId] = useState(null);
   const [searchResults, setSearchResults] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -83,12 +85,12 @@ const FriendSearch = ({ searchQuery, onBack }) => {
       const result = await UserApiService.sendFriendRequest(currentUserId, userId);
       
       if (result.success) {
-        alert(result.message);
+        showInfo(result.message);
         setSearchResults(prev => prev.filter(user => user.id !== userId));
       }
     } catch (err) {
       console.error('Error sending friend request:', err);
-      alert('Failed to send friend request. Please try again.');
+      showError('Failed to send friend request. Please try again.');
     }
   };
 

@@ -13,7 +13,8 @@ const Friends = () => {
   const [sentRequests, setSentRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [activeTab, setActiveTab] = useState('friends');
+  const [activeTab, setActiveTab] = useState('received'); // Default to received requests as requested
+  const [friendsFilter, setFriendsFilter] = useState('');
 
   // Mock data for development
   const mockUserId = 'mock-user-id-123';
@@ -207,12 +208,37 @@ const Friends = () => {
       } else {
         // Handle specific error cases
         if (response.status === 503) {
-          throw new Error('Database not configured. Using development mode.');
+          // Database not configured - fall back to mock behavior
+          console.log(`Database not configured, using mock: ${status} friend request ${friendshipId}`);
+          setPendingRequests(prev => prev.filter(req => req.id !== friendshipId));
+          if (status === 'accepted') {
+            const acceptedRequest = pendingRequests.find(req => req.id === friendshipId);
+            if (acceptedRequest) {
+              const newFriend = {
+                id: `friendship-accepted-${Date.now()}`,
+                userId: currentUserId,
+                friendId: acceptedRequest.requester.id,
+                status: 'accepted',
+                createdAt: new Date().toISOString(),
+                friend: acceptedRequest.requester
+              };
+              setFriends(prev => [...prev, newFriend]);
+            }
+          }
+          alert(`Friend request ${status}!`);
+          return;
         } else if (response.status === 404) {
           throw new Error('Friend request not found. It may have already been responded to.');
         } else {
-          const errorData = await response.json();
-          throw new Error(errorData.error || `Failed to ${status} friend request`);
+          let errorMessage = `Failed to ${status} friend request`;
+          try {
+            const errorData = await response.json();
+            errorMessage = errorData.error || errorMessage;
+          } catch (parseError) {
+            // If we can't parse the error response, use the default message
+            console.warn('Could not parse error response:', parseError);
+          }
+          throw new Error(errorMessage);
         }
       }
     } catch (err) {
@@ -224,6 +250,15 @@ const Friends = () => {
   const getUserInitials = (name) => {
     return name ? name.split(' ').map(n => n[0]).join('').toUpperCase() : '?';
   };
+
+  const filteredFriends = friends.filter(friendship => {
+    if (!friendsFilter) return true;
+    const friend = friendship.friend;
+    return friend && (
+      friend.name?.toLowerCase().includes(friendsFilter.toLowerCase()) ||
+      friend.email?.toLowerCase().includes(friendsFilter.toLowerCase())
+    );
+  });
 
   if (loading) {
     return (
@@ -253,50 +288,29 @@ const Friends = () => {
 
       <div className="friends-tabs">
         <button 
+          className={`tab-button ${activeTab === 'received' ? 'active' : ''}`}
+          onClick={() => setActiveTab('received')}
+        >
+          Friend Requests ({pendingRequests.length})
+        </button>
+        <button 
+          className={`tab-button ${activeTab === 'sent' ? 'active' : ''}`}
+          onClick={() => setActiveTab('sent')}
+        >
+          My Pending Requests ({sentRequests.length})
+        </button>
+        <button 
           className={`tab-button ${activeTab === 'friends' ? 'active' : ''}`}
           onClick={() => setActiveTab('friends')}
         >
           My Friends ({friends.length})
         </button>
-        <button 
-          className={`tab-button ${activeTab === 'requests' ? 'active' : ''}`}
-          onClick={() => setActiveTab('requests')}
-        >
-          Friend Requests ({pendingRequests.length})
-        </button>
       </div>
 
       <div className="friends-content">
-        {activeTab === 'friends' && (
-          <div className="friends-list">
-            {friends.length === 0 ? (
-              <div className="empty-state">
-                <p>You don't have any friends yet. Use the search bar in the top navigation to find and connect with people!</p>
-              </div>
-            ) : (
-              friends.map((friendship) => (
-                <div key={friendship.id} className="friend-card">
-                  <div className="friend-avatar">
-                    {getUserInitials(friendship.friend?.name)}
-                  </div>
-                  <div className="friend-info">
-                    <h3>{friendship.friend?.name}</h3>
-                    <p className="friend-email">{friendship.friend?.email}</p>
-                    {friendship.friend?.bio && (
-                      <p className="friend-bio">{friendship.friend.bio}</p>
-                    )}
-                    <p className="friendship-date">
-                      Friends since {new Date(friendship.createdAt).toLocaleDateString()}
-                    </p>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-        )}
-
-        {activeTab === 'requests' && (
+        {activeTab === 'received' && (
           <div className="requests-list">
+            <h2>Friend Requests Received</h2>
             {pendingRequests.length === 0 ? (
               <div className="empty-state">
                 <p>No pending friend requests.</p>
@@ -330,6 +344,82 @@ const Friends = () => {
                     >
                       Decline
                     </button>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        )}
+
+        {activeTab === 'sent' && (
+          <div className="requests-list">
+            <h2>My Pending Requests</h2>
+            {sentRequests.length === 0 ? (
+              <div className="empty-state">
+                <p>You haven't sent any friend requests.</p>
+              </div>
+            ) : (
+              sentRequests.map((request) => (
+                <div key={request.id} className="request-card">
+                  <div className="friend-avatar">
+                    {getUserInitials(request.friend?.name)}
+                  </div>
+                  <div className="friend-info">
+                    <h3>{request.friend?.name}</h3>
+                    <p className="friend-email">{request.friend?.email}</p>
+                    {request.friend?.bio && (
+                      <p className="friend-bio">{request.friend.bio}</p>
+                    )}
+                    <p className="request-date">
+                      Sent on {new Date(request.createdAt).toLocaleDateString()}
+                    </p>
+                  </div>
+                  <div className="request-status">
+                    <span className="status-pending">Pending</span>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        )}
+
+        {activeTab === 'friends' && (
+          <div className="friends-list">
+            <div className="friends-header-section">
+              <h2>My Friends</h2>
+              <div className="friends-filter">
+                <input
+                  type="text"
+                  placeholder="Search friends..."
+                  value={friendsFilter}
+                  onChange={(e) => setFriendsFilter(e.target.value)}
+                  className="filter-input"
+                />
+              </div>
+            </div>
+            {filteredFriends.length === 0 ? (
+              <div className="empty-state">
+                {friends.length === 0 ? (
+                  <p>You don't have any friends yet. Use the search bar in the top navigation to find and connect with people!</p>
+                ) : (
+                  <p>No friends match your search criteria.</p>
+                )}
+              </div>
+            ) : (
+              filteredFriends.map((friendship) => (
+                <div key={friendship.id} className="friend-card">
+                  <div className="friend-avatar">
+                    {getUserInitials(friendship.friend?.name)}
+                  </div>
+                  <div className="friend-info">
+                    <h3>{friendship.friend?.name}</h3>
+                    <p className="friend-email">{friendship.friend?.email}</p>
+                    {friendship.friend?.bio && (
+                      <p className="friend-bio">{friendship.friend.bio}</p>
+                    )}
+                    <p className="friendship-date">
+                      Friends since {new Date(friendship.createdAt).toLocaleDateString()}
+                    </p>
                   </div>
                 </div>
               ))

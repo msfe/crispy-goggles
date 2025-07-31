@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useMsal } from '@azure/msal-react';
 import ProfileView from './ProfileView';
 import ProfileEdit from './ProfileEdit';
+import { extractUserInfo, validateAndSanitizeHomeAccountId, logAccountInfo } from '../../utils/authUtils';
+import { apiRequest } from '../../utils/apiConfig';
 import './Profile.css';
 
 const Profile = () => {
@@ -45,48 +47,92 @@ const Profile = () => {
         throw new Error('Invalid homeAccountId');
       }
 
-      // Try to fetch user profile from backend
-      const response = await fetch(`/api/users/azure/${sanitizedHomeAccountId}`);
+      // Fetch user profile from backend (user should exist due to sync on login)
+      const response = await apiRequest(`/api/users/azure/${sanitizedHomeAccountId}`);
       
       if (response.ok) {
         const userData = await response.json();
         setProfile(userData);
       } else if (response.status === 404) {
-        // User doesn't exist in database yet, create with Azure info
-        const newUser = {
-          azureId: account.homeAccountId,
-          email: account.username,
-          name: account.name || account.username.split('@')[0],
-          bio: ''
-        };
+        // If user still doesn't exist, try syncing now
+        console.log('User not found in database, attempting sync...');
         
-        const createResponse = await fetch('/api/users', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(newUser)
-        });
-        
-        if (createResponse.ok) {
-          const createdUser = await createResponse.json();
-          setProfile(createdUser);
-        } else {
-          throw new Error('Failed to create user profile');
+        // Log account info for debugging
+        if (import.meta.env.DEV) {
+          logAccountInfo(account);
+        }
+
+        try {
+          const userInfo = extractUserInfo(account);
+          console.log('Extracted user info for sync:', userInfo);
+
+          const syncResponse = await apiRequest('auth/sync-user', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ userInfo }),
+          });
+
+          if (syncResponse.ok) {
+            const syncResult = await syncResponse.json();
+            console.log('Sync successful:', syncResult);
+            setProfile(syncResult.user);
+          } else {
+            const errorText = await syncResponse.text();
+            console.error('Sync failed:', errorText);
+            
+            // Try to parse error response for better error messages
+            let errorMessage = 'Failed to sync user to database';
+            try {
+              const errorData = JSON.parse(errorText);
+              errorMessage = errorData.error || errorMessage;
+              if (errorData.details) {
+                console.error('Sync error details:', errorData.details);
+              }
+            } catch (e) {
+              // Error response is not JSON
+            }
+            
+            throw new Error(errorMessage);
+          }
+        } catch (syncError) {
+          console.error('Sync error:', syncError);
+          throw syncError;
         }
       } else {
         throw new Error('Failed to fetch profile');
       }
     } catch (err) {
       console.error('Error fetching profile:', err);
-      setError(err.message);
+      
+      // Provide more user-friendly error messages
+      let userFriendlyError = 'Failed to load profile. Please try again.';
+      if (err.message.includes('extract email')) {
+        userFriendlyError = 'There was an issue with your account configuration. Please contact support.';
+      } else if (err.message.includes('sync user')) {
+        userFriendlyError = 'Unable to sync your profile. Please try refreshing the page.';
+      }
+      
+      setError(userFriendlyError);
+      
       // Fallback to basic Azure info
       if (account) {
-        setProfile({
-          name: account.name || account.username.split('@')[0],
-          email: account.username,
-          bio: ''
-        });
+        try {
+          const userInfo = extractUserInfo(account);
+          setProfile({
+            name: userInfo.name,
+            email: userInfo.email,
+            bio: ''
+          });
+        } catch (extractError) {
+          console.error('Failed to extract user info:', extractError);
+          setProfile({
+            name: account.name || 'Unknown User',
+            email: account.username || 'Unknown',
+            bio: ''
+          });
+        }
       } else {
         setProfile(mockProfile);
       }
@@ -117,7 +163,7 @@ const Profile = () => {
         return { success: true };
       }
 
-      const response = await fetch(`/api/users/${profile.id}`, {
+      const response = await apiRequest(`api/users/${profile.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json'

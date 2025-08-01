@@ -28,6 +28,18 @@ const Settings = () => {
       if (import.meta.env.DEV) {
         // Simulate API delay
         await new Promise(resolve => setTimeout(resolve, 500));
+        
+        // Load from localStorage if available
+        const savedSettings = localStorage.getItem(`privacySettings_${mockUserId}`);
+        if (savedSettings) {
+          try {
+            const parsedSettings = JSON.parse(savedSettings);
+            setPrivacySettings(parsedSettings);
+          } catch (error) {
+            console.error('Error parsing saved settings:', error);
+          }
+        }
+        
         setLoading(false);
         return;
       }
@@ -63,6 +75,10 @@ const Settings = () => {
       if (import.meta.env.DEV) {
         // Simulate API delay
         await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // Save to localStorage for development persistence
+        localStorage.setItem(`privacySettings_${mockUserId}`, JSON.stringify(privacySettings));
+        
         setMessage({ type: 'success', text: 'Privacy settings saved successfully!' });
         setSaving(false);
         return;
@@ -91,25 +107,27 @@ const Settings = () => {
 
   const renderSettingCard = (setting, title, description, options) => (
     <div className="setting-card" key={setting}>
-      <div className="setting-header">
-        <h3 className="setting-title">{title}</h3>
+      <h3 className="setting-title">{title}</h3>
+      <div className="setting-content">
         <p className="setting-description">{description}</p>
-      </div>
-      <div className="setting-options">
-        {options.map(option => (
-          <label key={option.value} className="setting-option">
-            <input
-              type="radio"
-              name={setting}
-              value={option.value}
-              checked={privacySettings[setting] === option.value}
-              onChange={(e) => handleSettingChange(setting, e.target.value)}
-              className="setting-radio"
-            />
-            <span className="setting-option-label">{option.label}</span>
-            <span className="setting-option-description">{option.description}</span>
-          </label>
-        ))}
+        <div className="setting-options">
+          {options.map(option => (
+            <label key={option.value} className="setting-option">
+              <input
+                type="radio"
+                name={setting}
+                value={option.value}
+                checked={privacySettings[setting] === option.value}
+                onChange={(e) => handleSettingChange(setting, e.target.value)}
+                className="setting-radio"
+              />
+              <span className="setting-option-content">
+                <span className="setting-option-label">{option.label}</span>
+                <span className="setting-option-description">{option.description}</span>
+              </span>
+            </label>
+          ))}
+        </div>
       </div>
     </div>
   );

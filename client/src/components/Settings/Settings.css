@@ -131,17 +131,18 @@
   transform: translateY(-2px);
 }
 
-.setting-header {
-  margin-bottom: 1.5rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid #e0d7d7;
-}
-
 .setting-title {
   font-size: 1.3rem;
   font-weight: 600;
   color: #333333;
-  margin: 0 0 0.5rem 0;
+  margin: 0 0 1rem 0;
+}
+
+/* Setting Content - Horizontal Layout */
+.setting-content {
+  display: flex;
+  gap: 2rem;
+  align-items: flex-start;
 }
 
 .setting-description {
@@ -149,24 +150,27 @@
   color: #666666;
   margin: 0;
   line-height: 1.4;
+  flex: 0 0 280px; /* Fixed width for description */
 }
 
-/* Setting Options */
+/* Setting Options - Vertical on the right */
 .setting-options {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0.75rem;
 }
 
 .setting-option {
   display: flex;
-  flex-direction: column;
-  padding: 1rem;
+  align-items: flex-start;
+  padding: 0.75rem;
   border: 2px solid #e0d7d7;
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.3s ease;
   background-color: white;
+  gap: 0.75rem;
 }
 
 .setting-option:hover {
@@ -185,11 +189,11 @@
   height: 20px;
   border: 2px solid #b0b0b0;
   border-radius: 50%;
-  margin-right: 0.75rem;
   position: relative;
   flex-shrink: 0;
   cursor: pointer;
   transition: all 0.3s ease;
+  margin-top: 2px; /* Align with text */
 }
 
 .setting-radio:checked {
@@ -209,20 +213,24 @@
   background-color: white;
 }
 
+.setting-option-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
 .setting-option-label {
   font-size: 1rem;
   font-weight: 600;
   color: #333333;
-  margin-bottom: 0.25rem;
-  display: flex;
-  align-items: center;
+  line-height: 1.2;
 }
 
 .setting-option-description {
   font-size: 0.9rem;
   color: #666666;
   line-height: 1.3;
-  margin-left: 2.75rem;
 }
 
 /* Save Actions */
@@ -296,12 +304,21 @@
     font-size: 1.1rem;
   }
 
+  /* Stack content vertically on mobile */
+  .setting-content {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .setting-description {
+    flex: none;
+  }
+
   .setting-option {
     padding: 0.75rem;
   }
 
   .setting-option-description {
-    margin-left: 2.5rem;
     font-size: 0.85rem;
   }
 
@@ -336,8 +353,13 @@
     padding: 0.75rem;
   }
 
+  .setting-content {
+    gap: 0.75rem;
+  }
+
   .setting-option {
     padding: 0.5rem;
+    gap: 0.5rem;
   }
 
   .setting-option-label {
@@ -345,7 +367,6 @@
   }
 
   .setting-option-description {
-    margin-left: 2.25rem;
     font-size: 0.8rem;
   }
 }

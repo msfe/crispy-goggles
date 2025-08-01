@@ -543,4 +543,198 @@ router.get('/azure/:azureId', checkDatabaseConfig, async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/users/{id}/privacy-settings:
+ *   get:
+ *     tags: [Users]
+ *     summary: Get user privacy settings
+ *     description: Retrieves privacy settings for a specific user
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: User unique identifier
+ *         example: user-123-abc
+ *     responses:
+ *       200:
+ *         description: User privacy settings
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 profilePictureVisibility:
+ *                   type: string
+ *                   enum: [friends, friends_of_friends, all_users]
+ *                   example: friends
+ *                 bioVisibility:
+ *                   type: string
+ *                   enum: [friends, friends_of_friends, all_users]
+ *                   example: friends
+ *                 contactDetailsVisibility:
+ *                   type: string
+ *                   enum: [friends, friends_of_friends, all_users]
+ *                   example: friends
+ *                 friendsListVisibility:
+ *                   type: string
+ *                   enum: [friends, friends_of_friends, all_users]
+ *                   example: friends
+ *                 userDiscoverability:
+ *                   type: string
+ *                   enum: [none, friends_of_friends, all_users]
+ *                   example: friends_of_friends
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
+ *       503:
+ *         $ref: '#/components/responses/ServiceUnavailable'
+ */
+router.get('/:id/privacy-settings', checkDatabaseConfig, async (req, res) => {
+  try {
+    const result = await userService.getById(req.params.id);
+    if (result.success) {
+      res.json(result.data.privacySettings || {
+        profilePictureVisibility: 'friends',
+        bioVisibility: 'friends',
+        contactDetailsVisibility: 'friends',
+        friendsListVisibility: 'friends',
+        userDiscoverability: 'friends_of_friends'
+      });
+    } else {
+      res.status(404).json({ error: result.error });
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+/**
+ * @swagger
+ * /api/users/{id}/privacy-settings:
+ *   put:
+ *     tags: [Users]
+ *     summary: Update user privacy settings
+ *     description: Updates privacy settings for a specific user
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: User unique identifier
+ *         example: user-123-abc
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               profilePictureVisibility:
+ *                 type: string
+ *                 enum: [friends, friends_of_friends, all_users]
+ *                 example: friends
+ *               bioVisibility:
+ *                 type: string
+ *                 enum: [friends, friends_of_friends, all_users]
+ *                 example: friends_of_friends
+ *               contactDetailsVisibility:
+ *                 type: string
+ *                 enum: [friends, friends_of_friends, all_users]
+ *                 example: friends
+ *               friendsListVisibility:
+ *                 type: string
+ *                 enum: [friends, friends_of_friends, all_users]
+ *                 example: friends
+ *               userDiscoverability:
+ *                 type: string
+ *                 enum: [none, friends_of_friends, all_users]
+ *                 example: all_users
+ *     responses:
+ *       200:
+ *         description: Privacy settings updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 profilePictureVisibility:
+ *                   type: string
+ *                   enum: [friends, friends_of_friends, all_users]
+ *                 bioVisibility:
+ *                   type: string
+ *                   enum: [friends, friends_of_friends, all_users]
+ *                 contactDetailsVisibility:
+ *                   type: string
+ *                   enum: [friends, friends_of_friends, all_users]
+ *                 friendsListVisibility:
+ *                   type: string
+ *                   enum: [friends, friends_of_friends, all_users]
+ *                 userDiscoverability:
+ *                   type: string
+ *                   enum: [none, friends_of_friends, all_users]
+ *       400:
+ *         $ref: '#/components/responses/BadRequest'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
+ *       503:
+ *         $ref: '#/components/responses/ServiceUnavailable'
+ */
+router.put('/:id/privacy-settings', checkDatabaseConfig, async (req, res) => {
+  try {
+    const privacySettings = req.body;
+    
+    // Validate privacy setting values
+    const validVisibilityOptions = ['friends', 'friends_of_friends', 'all_users'];
+    const validDiscoverabilityOptions = ['none', 'friends_of_friends', 'all_users'];
+    
+    // Validate each setting if provided
+    if (privacySettings.profilePictureVisibility && !validVisibilityOptions.includes(privacySettings.profilePictureVisibility)) {
+      return res.status(400).json({ error: 'Invalid profilePictureVisibility value' });
+    }
+    if (privacySettings.bioVisibility && !validVisibilityOptions.includes(privacySettings.bioVisibility)) {
+      return res.status(400).json({ error: 'Invalid bioVisibility value' });
+    }
+    if (privacySettings.contactDetailsVisibility && !validVisibilityOptions.includes(privacySettings.contactDetailsVisibility)) {
+      return res.status(400).json({ error: 'Invalid contactDetailsVisibility value' });
+    }
+    if (privacySettings.friendsListVisibility && !validVisibilityOptions.includes(privacySettings.friendsListVisibility)) {
+      return res.status(400).json({ error: 'Invalid friendsListVisibility value' });
+    }
+    if (privacySettings.userDiscoverability && !validDiscoverabilityOptions.includes(privacySettings.userDiscoverability)) {
+      return res.status(400).json({ error: 'Invalid userDiscoverability value' });
+    }
+
+    // Get current user to merge privacy settings
+    const userResult = await userService.getById(req.params.id);
+    if (!userResult.success) {
+      return res.status(404).json({ error: userResult.error });
+    }
+
+    const currentUser = userResult.data;
+    const updatedPrivacySettings = {
+      ...currentUser.privacySettings,
+      ...privacySettings
+    };
+
+    const result = await userService.update(req.params.id, {
+      privacySettings: updatedPrivacySettings
+    });
+    
+    if (result.success) {
+      res.json(result.data.privacySettings);
+    } else {
+      res.status(404).json({ error: result.error });
+    }
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
 module.exports = router;

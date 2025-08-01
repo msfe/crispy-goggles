@@ -39,11 +39,17 @@ const FriendSearch = ({ searchQuery, onBack }) => {
   const fetchUserFriendships = async () => {
     try {
       const friendshipData = await FriendshipApiService.getUserFriendships(currentUserId);
-      setFriends(friendshipData.friends);
-      setPendingRequests(friendshipData.pendingRequests);
-      setSentRequests(friendshipData.sentRequests);
+      
+      // Ensure we have valid arrays
+      setFriends(Array.isArray(friendshipData.friends) ? friendshipData.friends : []);
+      setPendingRequests(Array.isArray(friendshipData.pendingRequests) ? friendshipData.pendingRequests : []);
+      setSentRequests(Array.isArray(friendshipData.sentRequests) ? friendshipData.sentRequests : []);
     } catch (err) {
       console.error('Error fetching friendships:', err);
+      // Set empty arrays on error to ensure filtering doesn't break
+      setFriends([]);
+      setPendingRequests([]);
+      setSentRequests([]);
     }
   };
 
@@ -58,23 +64,45 @@ const FriendSearch = ({ searchQuery, onBack }) => {
     
     try {
       // Fetch user friendships to filter results
-      await fetchUserFriendships();
+      const friendshipData = await FriendshipApiService.getUserFriendships(currentUserId);
+      
+      // Ensure we have valid arrays and update state
+      const friendIds = Array.isArray(friendshipData.friends) ? friendshipData.friends : [];
+      const pendingIds = Array.isArray(friendshipData.pendingRequests) ? friendshipData.pendingRequests : [];
+      const sentIds = Array.isArray(friendshipData.sentRequests) ? friendshipData.sentRequests : [];
+      
+      setFriends(friendIds);
+      setPendingRequests(pendingIds);
+      setSentRequests(sentIds);
 
       // Search for users
       const users = await UserApiService.searchUsers(searchQuery, currentUserId);
       
+      // Ensure users is an array
+      if (!Array.isArray(users)) {
+        console.warn('Search API returned non-array response:', users);
+        setSearchResults([]);
+        return;
+      }
+      
       // Filter out current user and existing friends/requests
       const filteredResults = users.filter(user => 
+        user && 
+        user.id && 
         user.id !== currentUserId && 
-        !friends.includes(user.id) &&
-        !pendingRequests.includes(user.id) &&
-        !sentRequests.includes(user.id)
+        !friendIds.includes(user.id) &&
+        !pendingIds.includes(user.id) &&
+        !sentIds.includes(user.id)
       );
       
       setSearchResults(filteredResults);
     } catch (err) {
       console.error('Error searching users:', err);
       setError('Failed to search users. Please try again.');
+      // Set empty arrays on error to ensure safe state
+      setFriends([]);
+      setPendingRequests([]);
+      setSentRequests([]);
     } finally {
       setLoading(false);
     }

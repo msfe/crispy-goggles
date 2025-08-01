@@ -51,7 +51,8 @@ export const UserApiService = {
       const response = await apiRequest(`/api/users/search?q=${encodeURIComponent(searchQuery)}`);
       if (response.ok) {
         const data = await response.json();
-        return data.users || [];
+        // Ensure we always return an array
+        return Array.isArray(data.users) ? data.users : [];
       } else {
         throw new Error('Failed to search users');
       }
@@ -61,7 +62,8 @@ export const UserApiService = {
       if (currentUserId === getMockUserId()) {
         return MockUserService.search(searchQuery);
       }
-      throw err;
+      // Always return an array even on error to prevent downstream issues
+      return [];
     }
   },
 
@@ -307,14 +309,23 @@ export const FriendshipApiService = {
         pendingResponse.json()
       ]);
 
-      const friendIds = friendshipsData.friendships
-        .filter(f => f.status === 'accepted')
-        .map(f => f.userId === currentUserId ? f.friendId : f.userId);
+      // Ensure we have valid data structures
+      const friendships = Array.isArray(friendshipsData.friendships) ? friendshipsData.friendships : [];
+      const requests = Array.isArray(pendingData.requests) ? pendingData.requests : [];
+
+      const friendIds = friendships
+        .filter(f => f && f.status === 'accepted')
+        .map(f => f.userId === currentUserId ? f.friendId : f.userId)
+        .filter(id => id); // Remove any undefined/null IDs
       
-      const pendingIds = pendingData.requests.map(r => r.requestedBy);
-      const sentIds = friendshipsData.friendships
-        .filter(f => f.status === 'pending' && f.requestedBy === currentUserId)
-        .map(f => f.friendId);
+      const pendingIds = requests
+        .map(r => r && r.requestedBy)
+        .filter(id => id); // Remove any undefined/null IDs
+        
+      const sentIds = friendships
+        .filter(f => f && f.status === 'pending' && f.requestedBy === currentUserId)
+        .map(f => f.friendId)
+        .filter(id => id); // Remove any undefined/null IDs
 
       return {
         friends: friendIds,
@@ -323,6 +334,7 @@ export const FriendshipApiService = {
       };
     } catch (err) {
       console.error('Error fetching friendships:', err);
+      // Always return valid arrays to prevent downstream errors
       return { friends: [], pendingRequests: [], sentRequests: [] };
     }
   }

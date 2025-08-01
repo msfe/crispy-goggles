@@ -342,13 +342,21 @@ router.get('/search', checkDatabaseConfig, async (req, res) => {
       return res.status(400).json({ error: 'Search query parameter "q" is required' });
     }
 
+    console.log(`🔍 Searching for users with term: "${searchTerm}"`);
     const result = await userService.search(searchTerm);
+    console.log(`🔍 Search result:`, { success: result.success, dataLength: result.data?.length, error: result.error });
+    
     if (result.success) {
-      res.json({ users: result.data });
+      // Ensure we always return an array, even if result.data is undefined/null
+      const users = Array.isArray(result.data) ? result.data : [];
+      console.log(`🔍 Returning ${users.length} users`);
+      res.json({ users });
     } else {
+      console.error(`🔍 Search failed:`, result.error);
       res.status(500).json({ error: result.error });
     }
   } catch (error) {
+    console.error(`🔍 Search exception:`, error);
     res.status(500).json({ error: error.message });
   }
 });

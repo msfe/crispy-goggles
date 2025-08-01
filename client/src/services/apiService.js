@@ -51,10 +51,26 @@ export const UserApiService = {
       const response = await apiRequest(`/api/users/search?q=${encodeURIComponent(searchQuery)}`);
       if (response.ok) {
         const data = await response.json();
-        // Ensure we always return an array
-        return Array.isArray(data.users) ? data.users : [];
+        console.log('🔍 Search API response:', data);
+        
+        // Handle various response formats defensively
+        if (data && Array.isArray(data.users)) {
+          return data.users;
+        } else if (data && Array.isArray(data)) {
+          // In case the API returns users directly as an array
+          return data;
+        } else if (data && typeof data === 'object') {
+          console.warn('Search API returned unexpected data structure:', data);
+          // Check if the object has any user-like properties
+          if (data.id && data.name) {
+            return [data]; // Single user object
+          }
+        }
+        
+        console.warn('Search API returned empty or invalid data:', data);
+        return [];
       } else {
-        throw new Error('Failed to search users');
+        throw new Error(`Search failed with status ${response.status}`);
       }
     } catch (err) {
       console.error('Error searching users:', err);

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useMsal } from "@azure/msal-react";
 
 const Header = ({ onNotificationsToggle, notificationCount }) => {
@@ -34,28 +34,28 @@ const Header = ({ onNotificationsToggle, notificationCount }) => {
       <div className="header-container">
         {/* Logo */}
         <div className="header-logo">
-          <Link to="/" className="logo-link">
+          <NavLink to="/" className="logo-link">
             <span className="logo-text">Crispy Goggles</span>
-          </Link>
+          </NavLink>
         </div>
 
         {/* Navigation Menu */}
         <nav className="header-nav">
-          <Link to="/profile" className={`nav-link ${location.pathname === '/profile' ? 'active' : ''}`}>
+          <NavLink to="/profile" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
             Profile
-          </Link>
-          <Link to="/friends" className={`nav-link ${location.pathname === '/friends' ? 'active' : ''}`}>
+          </NavLink>
+          <NavLink to="/friends" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
             Friends
-          </Link>
-          <Link to="/groups" className={`nav-link ${location.pathname === '/groups' ? 'active' : ''}`}>
+          </NavLink>
+          <NavLink to="/groups" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
             Groups
-          </Link>
-          <Link to="/events" className={`nav-link ${location.pathname === '/events' ? 'active' : ''}`}>
+          </NavLink>
+          <NavLink to="/events" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
             Events
-          </Link>
-          <Link to="/settings" className={`nav-link ${location.pathname === '/settings' ? 'active' : ''}`}>
+          </NavLink>
+          <NavLink to="/settings" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
             Settings
-          </Link>
+          </NavLink>
         </nav>
 
         {/* Search Bar */}

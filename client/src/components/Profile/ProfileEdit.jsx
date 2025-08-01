@@ -8,6 +8,8 @@ const ProfileEdit = ({ profile, onSave, onCancel }) => {
   });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
+  const [showAddContactInput, setShowAddContactInput] = useState(false);
+  const [newContactFieldName, setNewContactFieldName] = useState('');
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -28,9 +30,30 @@ const ProfileEdit = ({ profile, onSave, onCancel }) => {
   };
 
   const addContactField = () => {
-    const key = prompt('Enter contact field name (e.g., "phone", "website"):');
-    if (key && key.trim()) {
-      handleContactChange(key.trim(), '');
+    setShowAddContactInput(true);
+  };
+
+  const handleAddContactField = () => {
+    const key = newContactFieldName.trim();
+    if (key && !formData.contactDetails.hasOwnProperty(key)) {
+      handleContactChange(key, '');
+      setNewContactFieldName('');
+      setShowAddContactInput(false);
+    }
+  };
+
+  const handleCancelAddContact = () => {
+    setNewContactFieldName('');
+    setShowAddContactInput(false);
+  };
+
+  const handleContactInputKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleAddContactField();
+    } else if (e.key === 'Escape') {
+      e.preventDefault();
+      handleCancelAddContact();
     }
   };
 
@@ -129,13 +152,42 @@ const ProfileEdit = ({ profile, onSave, onCancel }) => {
                 </button>
               </div>
             ))}
-            <button
-              type="button"
-              onClick={addContactField}
-              className="add-contact-button"
-            >
-              + Add Contact Field
-            </button>
+            {showAddContactInput ? (
+              <div className="add-contact-input-row">
+                <input
+                  type="text"
+                  value={newContactFieldName}
+                  onChange={(e) => setNewContactFieldName(e.target.value)}
+                  onKeyDown={handleContactInputKeyDown}
+                  placeholder="Enter field name (e.g., phone, website)"
+                  className="add-contact-input"
+                  autoFocus
+                />
+                <button
+                  type="button"
+                  onClick={handleAddContactField}
+                  className="add-contact-confirm-button"
+                  disabled={!newContactFieldName.trim() || formData.contactDetails.hasOwnProperty(newContactFieldName.trim())}
+                >
+                  Add
+                </button>
+                <button
+                  type="button"
+                  onClick={handleCancelAddContact}
+                  className="add-contact-cancel-button"
+                >
+                  Cancel
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={addContactField}
+                className="add-contact-button"
+              >
+                + Add Contact Field
+              </button>
+            )}
           </div>
           <small className="form-help">
             Add contact information like phone, website, etc. This will only be visible to your friends.

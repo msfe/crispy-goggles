@@ -2,20 +2,57 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import Settings from './Settings';
+import { AlertProvider } from '../Alert';
 
 // Mock fetch for API calls
 global.fetch = vi.fn();
 
+// Mock MSAL
+vi.mock('@azure/msal-react', () => ({
+  useMsal: () => ({
+    accounts: [{ id: 'test-user', name: 'Test User' }]
+  })
+}));
+
+// Mock UserApiService
+vi.mock('../../services/apiService', () => ({
+  UserApiService: {
+    initializeUser: vi.fn().mockResolvedValue('mock-user-123')
+  }
+}));
+
+const renderWithProviders = (component) => {
+  return render(
+    <AlertProvider>
+      {component}
+    </AlertProvider>
+  );
+};
+
 describe('Settings Component', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    // Mock successful API responses
+    global.fetch.mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({
+        profilePictureVisibility: 'friends',
+        bioVisibility: 'friends',
+        contactDetailsVisibility: 'friends',
+        friendsListVisibility: 'friends',
+        userDiscoverability: 'friends_of_friends'
+      })
+    });
   });
 
   it('renders settings page with correct title', async () => {
-    render(<Settings />);
+    renderWithProviders(<Settings />);
     
-    // Initially shows loading
-    expect(screen.getByText('Loading settings...')).toBeInTheDocument();
+    // Initially shows some form of loading
+    expect(
+      screen.queryByText('Initializing user...') || 
+      screen.queryByText('Loading settings...')
+    ).toBeInTheDocument();
     
     // Wait for content to load
     await waitFor(() => {
@@ -24,7 +61,7 @@ describe('Settings Component', () => {
   });
 
   it('displays privacy settings section', async () => {
-    render(<Settings />);
+    renderWithProviders(<Settings />);
     
     await waitFor(() => {
       expect(screen.getByText('Privacy Settings')).toBeInTheDocument();
@@ -34,7 +71,7 @@ describe('Settings Component', () => {
   });
 
   it('shows all required privacy setting cards', async () => {
-    render(<Settings />);
+    renderWithProviders(<Settings />);
     
     await waitFor(() => {
       expect(screen.getByText('Profile Picture Visibility')).toBeInTheDocument();
@@ -47,7 +84,7 @@ describe('Settings Component', () => {
   });
 
   it('has save changes button', async () => {
-    render(<Settings />);
+    renderWithProviders(<Settings />);
     
     await waitFor(() => {
       expect(screen.getByRole('button', { name: 'Save Changes' })).toBeInTheDocument();
@@ -55,7 +92,7 @@ describe('Settings Component', () => {
   });
 
   it('shows radio button options for each setting', async () => {
-    render(<Settings />);
+    renderWithProviders(<Settings />);
     
     await waitFor(() => {
       const radios = screen.getAllByRole('radio');

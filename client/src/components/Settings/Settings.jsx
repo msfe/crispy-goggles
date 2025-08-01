@@ -1,7 +1,14 @@
 import React, { useState, useEffect } from 'react';
+import { useMsal } from '@azure/msal-react';
+import { UserApiService } from '../../services/apiService';
+import { useAlert } from '../Alert';
 import './Settings.css';
 
 const Settings = () => {
+  const { accounts } = useMsal();
+  const account = accounts[0];
+  const { showInfo, showError } = useAlert();
+  const [currentUserId, setCurrentUserId] = useState(null);
   const [privacySettings, setPrivacySettings] = useState({
     profilePictureVisibility: 'friends',
     bioVisibility: 'friends',
@@ -11,49 +18,44 @@ const Settings = () => {
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [message, setMessage] = useState({ type: '', text: '' });
-
-  // Mock user ID for development - in production this would come from auth context
-  const mockUserId = 'user-123-abc';
 
   useEffect(() => {
-    loadPrivacySettings();
-  }, []);
+    initializeUser();
+  }, [account]);
+
+  useEffect(() => {
+    if (currentUserId) {
+      loadPrivacySettings();
+    }
+  }, [currentUserId]);
+
+  const initializeUser = async () => {
+    try {
+      const userId = await UserApiService.initializeUser(account);
+      setCurrentUserId(userId);
+    } catch (err) {
+      console.error('Error initializing user:', err);
+      showError('Failed to initialize user. Please try again.');
+    }
+  };
 
   const loadPrivacySettings = async () => {
     try {
       setLoading(true);
       
-      // Mock API call for development
-      if (import.meta.env.DEV) {
-        // Simulate API delay
-        await new Promise(resolve => setTimeout(resolve, 500));
-        
-        // Load from localStorage if available
-        const savedSettings = localStorage.getItem(`privacySettings_${mockUserId}`);
-        if (savedSettings) {
-          try {
-            const parsedSettings = JSON.parse(savedSettings);
-            setPrivacySettings(parsedSettings);
-          } catch (error) {
-            console.error('Error parsing saved settings:', error);
-          }
-        }
-        
-        setLoading(false);
-        return;
-      }
-
-      const response = await fetch(`/api/users/${mockUserId}/privacy-settings`);
+      const response = await fetch(`/api/users/${currentUserId}/privacy-settings`);
       if (response.ok) {
         const settings = await response.json();
         setPrivacySettings(settings);
+      } else if (response.status === 503) {
+        // Database not configured - show info message but don't treat as error
+        showInfo('Database not configured. Using default settings.');
       } else {
-        setMessage({ type: 'error', text: 'Failed to load privacy settings' });
+        showError('Failed to load privacy settings');
       }
     } catch (error) {
       console.error('Error loading privacy settings:', error);
-      setMessage({ type: 'error', text: 'Failed to load privacy settings' });
+      showError('Failed to load privacy settings');
     } finally {
       setLoading(false);
     }
@@ -69,22 +71,8 @@ const Settings = () => {
   const handleSave = async () => {
     try {
       setSaving(true);
-      setMessage({ type: '', text: '' });
 
-      // Mock API call for development
-      if (import.meta.env.DEV) {
-        // Simulate API delay
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        // Save to localStorage for development persistence
-        localStorage.setItem(`privacySettings_${mockUserId}`, JSON.stringify(privacySettings));
-        
-        setMessage({ type: 'success', text: 'Privacy settings saved successfully!' });
-        setSaving(false);
-        return;
-      }
-
-      const response = await fetch(`/api/users/${mockUserId}/privacy-settings`, {
+      const response = await fetch(`/api/users/${currentUserId}/privacy-settings`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -93,13 +81,16 @@ const Settings = () => {
       });
 
       if (response.ok) {
-        setMessage({ type: 'success', text: 'Privacy settings saved successfully!' });
+        showInfo('Privacy settings saved successfully!');
+      } else if (response.status === 503) {
+        // Database not configured - show warning but don't treat as error
+        showError('Database not configured. Settings could not be saved.');
       } else {
-        setMessage({ type: 'error', text: 'Failed to save privacy settings' });
+        showError('Failed to save privacy settings');
       }
     } catch (error) {
       console.error('Error saving privacy settings:', error);
-      setMessage({ type: 'error', text: 'Failed to save privacy settings' });
+      showError('Failed to save privacy settings');
     } finally {
       setSaving(false);
     }
@@ -138,6 +129,18 @@ const Settings = () => {
         <div className="settings-loading">
           <div className="loading-spinner" role="status" aria-label="Loading settings"></div>
           <p>Loading settings...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show loading state while initializing user
+  if (!currentUserId) {
+    return (
+      <div className="settings-container">
+        <div className="settings-loading">
+          <div className="loading-spinner" role="status" aria-label="Initializing user"></div>
+          <p>Initializing user...</p>
         </div>
       </div>
     );
@@ -187,12 +190,6 @@ const Settings = () => {
           Manage your privacy preferences and control who can see your information.
         </p>
       </div>
-
-      {message.text && (
-        <div className={`settings-message ${message.type}`}>
-          {message.text}
-        </div>
-      )}
 
       <div className="settings-content">
         <div className="settings-section">

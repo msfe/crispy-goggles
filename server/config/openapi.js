@@ -369,6 +369,158 @@ const options = {
               }
             }
           }
+        },
+        Event: {
+          type: 'object',
+          required: ['organizerId', 'title', 'startDate'],
+          properties: {
+            id: {
+              type: 'string',
+              description: 'Unique event identifier',
+              example: 'event-123-abc'
+            },
+            type: {
+              type: 'string',
+              description: 'Type identifier for database partitioning',
+              example: 'event'
+            },
+            organizerId: {
+              type: 'string',
+              description: 'User ID of the event organizer',
+              example: 'user-123-abc'
+            },
+            title: {
+              type: 'string',
+              description: 'Event title',
+              example: 'Stockholm Tech Meetup'
+            },
+            description: {
+              type: 'string',
+              description: 'Event description',
+              example: 'Join us for an evening of networking and tech talks'
+            },
+            location: {
+              type: 'string',
+              description: 'Event location',
+              example: 'Stockholm Convention Center'
+            },
+            startDate: {
+              type: 'string',
+              format: 'date-time',
+              description: 'Event start date and time',
+              example: '2024-02-15T18:00:00Z'
+            },
+            endDate: {
+              type: 'string',
+              format: 'date-time',
+              description: 'Event end date and time',
+              example: '2024-02-15T21:00:00Z'
+            },
+            invitedUserIds: {
+              type: 'array',
+              items: { type: 'string' },
+              description: 'Array of invited user IDs',
+              example: ['user-123-abc', 'user-456-def']
+            },
+            invitedGroupIds: {
+              type: 'array',
+              items: { type: 'string' },
+              description: 'Array of invited group IDs',
+              example: ['group-789-xyz']
+            },
+            rsvps: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  userId: {
+                    type: 'string',
+                    description: 'User ID who RSVPed',
+                    example: 'user-123-abc'
+                  },
+                  status: {
+                    type: 'string',
+                    enum: ['attending', 'not_attending', 'maybe'],
+                    description: 'RSVP status',
+                    example: 'attending'
+                  },
+                  respondedAt: {
+                    type: 'string',
+                    format: 'date-time',
+                    description: 'When the RSVP was made',
+                    example: '2024-02-01T10:30:00Z'
+                  }
+                }
+              },
+              description: 'Array of RSVP responses'
+            },
+            createdAt: {
+              type: 'string',
+              format: 'date-time',
+              description: 'Event creation timestamp',
+              example: '2024-01-15T10:30:00Z'
+            },
+            updatedAt: {
+              type: 'string',
+              format: 'date-time',
+              description: 'Last event update timestamp',
+              example: '2024-01-20T14:22:00Z'
+            }
+          }
+        },
+        Post: {
+          type: 'object',
+          required: ['authorId', 'content'],
+          properties: {
+            id: {
+              type: 'string',
+              description: 'Unique post identifier',
+              example: 'post-123-abc'
+            },
+            type: {
+              type: 'string',
+              description: 'Type identifier for database partitioning',
+              example: 'post'
+            },
+            authorId: {
+              type: 'string',
+              description: 'User ID of the post author',
+              example: 'user-123-abc'
+            },
+            groupId: {
+              type: 'string',
+              description: 'Group ID if this is a group post',
+              example: 'group-789-xyz'
+            },
+            eventId: {
+              type: 'string',
+              description: 'Event ID if this is an event post',
+              example: 'event-456-def'
+            },
+            content: {
+              type: 'string',
+              description: 'Post content',
+              example: 'Looking forward to tonight\'s meetup!'
+            },
+            attachments: {
+              type: 'array',
+              items: { type: 'string' },
+              description: 'Array of attachment URLs',
+              example: ['https://example.com/image.jpg']
+            },
+            createdAt: {
+              type: 'string',
+              format: 'date-time',
+              description: 'Post creation timestamp',
+              example: '2024-01-15T10:30:00Z'
+            },
+            updatedAt: {
+              type: 'string',
+              format: 'date-time',
+              description: 'Last post update timestamp',
+              example: '2024-01-20T14:22:00Z'
+            }
+          }
         }
       },
       responses: {
@@ -438,6 +590,10 @@ const options = {
       {
         name: 'Friendships',
         description: 'Friend request and friendship management operations'
+      },
+      {
+        name: 'Events',
+        description: 'Event management, RSVP, and event wall operations'
       }
     ]
   },

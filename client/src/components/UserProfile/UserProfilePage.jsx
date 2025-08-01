@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useMsal } from '@azure/msal-react';
 import { UserApiService, FriendshipApiService } from '../../services/apiService';
+import { apiRequest } from '../../utils/apiConfig';
 import './UserProfile.css';
 
 const UserProfilePage = () => {
@@ -66,20 +67,46 @@ const UserProfilePage = () => {
         return;
       }
 
-      // Fetch mutual friends and friendship status in parallel
-      const [mutualFriendsResponse, friendshipStatusResponse] = await Promise.all([
-        fetch(`/api/users/${userId}/mutual-friends/${currentUserId}`),
-        fetch(`/api/users/${userId}/friendship-status/${currentUserId}`)
-      ]);
+      // Fetch mutual friends and friendship status with proper error handling
+      try {
+        const [mutualFriendsResponse, friendshipStatusResponse] = await Promise.all([
+          apiRequest(`/api/users/${userId}/mutual-friends/${currentUserId}`),
+          apiRequest(`/api/users/${userId}/friendship-status/${currentUserId}`)
+        ]);
 
-      if (mutualFriendsResponse.ok) {
-        const mutualFriendsData = await mutualFriendsResponse.json();
-        setMutualFriends(mutualFriendsData.mutualFriends || []);
-      }
+        // Handle mutual friends response
+        if (mutualFriendsResponse.ok) {
+          try {
+            const mutualFriendsData = await mutualFriendsResponse.json();
+            setMutualFriends(mutualFriendsData.mutualFriends || []);
+          } catch (parseError) {
+            console.warn('Failed to parse mutual friends response as JSON, using empty array');
+            setMutualFriends([]);
+          }
+        } else if (mutualFriendsResponse.status === 503) {
+          // Database not configured, use empty array
+          console.log('Database not configured for mutual friends, using empty array');
+          setMutualFriends([]);
+        }
 
-      if (friendshipStatusResponse.ok) {
-        const friendshipStatusData = await friendshipStatusResponse.json();
-        setFriendshipStatus(friendshipStatusData.status || 'none');
+        // Handle friendship status response
+        if (friendshipStatusResponse.ok) {
+          try {
+            const friendshipStatusData = await friendshipStatusResponse.json();
+            setFriendshipStatus(friendshipStatusData.status || 'none');
+          } catch (parseError) {
+            console.warn('Failed to parse friendship status response as JSON, using default status');
+            setFriendshipStatus('none');
+          }
+        } else if (friendshipStatusResponse.status === 503) {
+          // Database not configured, use default status
+          console.log('Database not configured for friendship status, using default status');
+          setFriendshipStatus('none');
+        }
+      } catch (apiError) {
+        console.warn('API endpoints not available, using default values:', apiError.message);
+        setMutualFriends([]);
+        setFriendshipStatus('none');
       }
     } catch (err) {
       console.error('Error fetching user profile:', err);

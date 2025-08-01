@@ -7,7 +7,7 @@
   margin: 8px 0;
   border-radius: 8px;
   border: 1px solid transparent;
-  font-family: 'Helvetica Neue', 'Arial', sans-serif;
+  font-family: "Helvetica Neue", "Arial", sans-serif;
   font-size: 16px;
   line-height: 1.5;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -59,15 +59,15 @@
 .alert--info {
   background-color: #c8a2c8;
   border-color: #b89ac4;
-  color: #4ecca3;
+  color: #333333;
 }
 
 .alert--info .alert__icon {
-  color: #4ecca3;
+  color: #333333;
 }
 
 .alert--info .alert__dismiss {
-  color: #4ecca3;
+  color: #333333;
   border-color: #4ecca3;
 }
 
@@ -164,11 +164,11 @@
     margin: 6px 0;
     font-size: 14px;
   }
-  
+
   .alert__icon {
     font-size: 18px;
   }
-  
+
   .alert__dismiss {
     font-size: 18px;
     padding: 2px 6px;
@@ -180,7 +180,7 @@
     padding: 10px 12px;
     gap: 8px;
   }
-  
+
   .alert__message {
     font-size: 14px;
   }

@@ -100,7 +100,7 @@ describe('FriendSearch Component', () => {
     });
   });
 
-  test('filters out current user and existing relationships correctly', async () => {
+  test('includes all users but shows different states for existing relationships', async () => {
     const { UserApiService, FriendshipApiService } = await import('../../services/apiService');
     
     UserApiService.searchUsers.mockResolvedValue([
@@ -119,13 +119,21 @@ describe('FriendSearch Component', () => {
     render(<TestWrapper searchQuery="test" />);
 
     await waitFor(() => {
-      // Should only show the new user
+      // Should show all users except current user
+      expect(screen.getByText('Existing Friend')).toBeInTheDocument();
+      expect(screen.getByText('Pending Request')).toBeInTheDocument();
+      expect(screen.getByText('Sent Request')).toBeInTheDocument();
       expect(screen.getByText('New User')).toBeInTheDocument();
-      expect(screen.getByText('Found 1 user')).toBeInTheDocument();
+      expect(screen.getByText('Found 4 users')).toBeInTheDocument();
+      
+      // Should NOT show current user
       expect(screen.queryByText('Current User')).not.toBeInTheDocument();
-      expect(screen.queryByText('Existing Friend')).not.toBeInTheDocument();
-      expect(screen.queryByText('Pending Request')).not.toBeInTheDocument();
-      expect(screen.queryByText('Sent Request')).not.toBeInTheDocument();
+      
+      // Should show different status indicators
+      expect(screen.getByText('Friends')).toBeInTheDocument(); // for existing friend
+      expect(screen.getByText('Pending')).toBeInTheDocument(); // for pending request
+      expect(screen.getByText('Request Sent')).toBeInTheDocument(); // for sent request
+      expect(screen.getByRole('button', { name: /Add Friend/ })).toBeInTheDocument(); // for new user
     });
   });
 

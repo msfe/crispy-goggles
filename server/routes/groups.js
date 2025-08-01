@@ -282,6 +282,60 @@ router.delete('/:id', checkDatabaseConfig, async (req, res) => {
 
 /**
  * @swagger
+ * /api/groups/search:
+ *   get:
+ *     tags: [Groups]
+ *     summary: Search groups by tags
+ *     description: Searches for groups that contain any of the specified tags
+ *     parameters:
+ *       - in: query
+ *         name: tags
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Comma-separated list of tags to search for
+ *         example: technology,meetup,stockholm
+ *     responses:
+ *       200:
+ *         description: List of matching groups
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 groups:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Group'
+ *       400:
+ *         $ref: '#/components/responses/BadRequest'
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
+ *       503:
+ *         $ref: '#/components/responses/ServiceUnavailable'
+ */
+router.get('/search', checkDatabaseConfig, async (req, res) => {
+  try {
+    const { tags } = req.query;
+    if (!tags) {
+      return res.status(400).json({ error: 'Tags parameter is required' });
+    }
+
+    const tagsArray = tags.split(',').map(tag => tag.trim().toLowerCase());
+    const result = await groupService.searchByTags(tagsArray);
+    
+    if (result.success) {
+      res.json({ groups: result.data });
+    } else {
+      res.status(500).json({ error: result.error });
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+/**
+ * @swagger
  * /api/groups/user/{userId}:
  *   get:
  *     tags: [Groups]

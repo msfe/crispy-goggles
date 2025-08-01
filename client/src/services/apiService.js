@@ -5,6 +5,7 @@ import {
   getMockUserId, 
   MockFriendshipService, 
   MockUserService,
+  MockGroupService,
   initializeMockUser 
 } from './mockService';
 
@@ -150,6 +151,192 @@ export const UserApiService = {
       }
     } catch (err) {
       console.error('Error sending friend request:', err);
+      throw err;
+    }
+  }
+};
+
+/**
+ * Groups API Service
+ */
+export const GroupApiService = {
+  /**
+   * Get all public groups
+   */
+  async getPublicGroups(currentUserId) {
+    if (shouldUseMockData(currentUserId)) {
+      return MockGroupService.getPublicGroups();
+    }
+
+    try {
+      const response = await apiRequest('/api/groups');
+      if (response.ok) {
+        const data = await response.json();
+        return data.groups || [];
+      } else {
+        throw new Error('Failed to fetch public groups');
+      }
+    } catch (err) {
+      console.error('Error fetching public groups:', err);
+      // Fallback to mock data if configured
+      if (currentUserId === getMockUserId()) {
+        return MockGroupService.getPublicGroups();
+      }
+      throw err;
+    }
+  },
+
+  /**
+   * Search groups by tags
+   */
+  async searchByTags(tags, currentUserId) {
+    if (!tags || tags.length === 0) {
+      return [];
+    }
+
+    if (shouldUseMockData(currentUserId)) {
+      return MockGroupService.searchByTags(tags);
+    }
+
+    try {
+      const tagsParam = Array.isArray(tags) ? tags.join(',') : tags;
+      const response = await apiRequest(`/api/groups/search?tags=${encodeURIComponent(tagsParam)}`);
+      if (response.ok) {
+        const data = await response.json();
+        return data.groups || [];
+      } else {
+        throw new Error('Failed to search groups by tags');
+      }
+    } catch (err) {
+      console.error('Error searching groups by tags:', err);
+      // Fallback to mock data if configured
+      if (currentUserId === getMockUserId()) {
+        return MockGroupService.searchByTags(tags);
+      }
+      throw err;
+    }
+  },
+
+  /**
+   * Create a new group
+   */
+  async createGroup(groupData, currentUserId) {
+    if (shouldUseMockData(currentUserId)) {
+      return MockGroupService.createGroup(groupData);
+    }
+
+    try {
+      const response = await apiRequest('/api/groups', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(groupData)
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        return {
+          success: true,
+          message: 'Group created successfully!',
+          data
+        };
+      } else {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to create group');
+      }
+    } catch (err) {
+      console.error('Error creating group:', err);
+      throw err;
+    }
+  },
+
+  /**
+   * Apply for group membership
+   */
+  async applyForMembership(groupId, currentUserId) {
+    if (shouldUseMockData(currentUserId)) {
+      return MockGroupService.applyForMembership(groupId, currentUserId);
+    }
+
+    try {
+      const response = await apiRequest(`/api/groups/${groupId}/apply`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ userId: currentUserId })
+      });
+
+      if (response.ok) {
+        return {
+          success: true,
+          message: 'Membership request submitted!'
+        };
+      } else {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to submit membership request');
+      }
+    } catch (err) {
+      console.error('Error applying for membership:', err);
+      throw err;
+    }
+  },
+
+  /**
+   * Get groups for current user
+   */
+  async getUserGroups(currentUserId) {
+    if (shouldUseMockData(currentUserId)) {
+      return MockGroupService.getUserGroups();
+    }
+
+    try {
+      const response = await apiRequest(`/api/groups/user/${currentUserId}`);
+      if (response.ok) {
+        const data = await response.json();
+        return data.groups || [];
+      } else {
+        throw new Error('Failed to fetch user groups');
+      }
+    } catch (err) {
+      console.error('Error fetching user groups:', err);
+      // Fallback to mock data if configured
+      if (currentUserId === getMockUserId()) {
+        return MockGroupService.getUserGroups();
+      }
+      throw err;
+    }
+  },
+
+  /**
+   * Manage membership requests (for group admins)
+   */
+  async manageMembershipRequest(groupId, userId, action, currentUserId) {
+    if (shouldUseMockData(currentUserId)) {
+      return MockGroupService.manageMembershipRequest(groupId, userId, action);
+    }
+
+    try {
+      const response = await apiRequest(`/api/groups/${groupId}/membership`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ userId, action })
+      });
+
+      if (response.ok) {
+        return {
+          success: true,
+          message: `Membership request ${action}ed successfully!`
+        };
+      } else {
+        const errorData = await response.json();
+        throw new Error(errorData.error || `Failed to ${action} membership request`);
+      }
+    } catch (err) {
+      console.error(`Error ${action}ing membership request:`, err);
       throw err;
     }
   }

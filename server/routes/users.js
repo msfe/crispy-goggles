@@ -57,6 +57,67 @@ router.get('/', checkDatabaseConfig, async (req, res) => {
 
 /**
  * @swagger
+ * /api/users/search:
+ *   get:
+ *     tags: [Users]
+ *     summary: Search users
+ *     description: Searches for users by name or email using query parameter
+ *     parameters:
+ *       - in: query
+ *         name: q
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Search term
+ *         example: john
+ *     responses:
+ *       200:
+ *         description: Search results
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 users:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/User'
+ *       400:
+ *         description: Missing search query
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
+ *       503:
+ *         $ref: '#/components/responses/ServiceUnavailable'
+ */
+router.get('/search', checkDatabaseConfig, async (req, res) => {
+  try {
+    const { q: searchTerm } = req.query;
+    
+    if (!searchTerm) {
+      return res.status(400).json({ error: 'Search query parameter "q" is required' });
+    }
+
+    console.log(`🔍 Searching for users with term: "${searchTerm}"`);
+    const result = await userService.search(searchTerm);
+    console.log(`🔍 Search result:`, { success: result.success, dataLength: result.data?.length, error: result.error });
+    
+    if (result.success) {
+      // Ensure we always return an array, even if result.data is undefined/null
+      const users = Array.isArray(result.data) ? result.data : [];
+      console.log(`🔍 Returning ${users.length} users`);
+      res.json({ users });
+    } else {
+      console.error(`🔍 Search failed:`, result.error);
+      res.status(500).json({ error: result.error });
+    }
+  } catch (error) {
+    console.error(`🔍 Search exception:`, error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+/**
+ * @swagger
  * /api/users/{id}:
  *   get:
  *     tags: [Users]
@@ -296,67 +357,6 @@ router.delete('/:id', checkDatabaseConfig, async (req, res) => {
       res.status(404).json({ error: result.error });
     }
   } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-/**
- * @swagger
- * /api/users/search:
- *   get:
- *     tags: [Users]
- *     summary: Search users
- *     description: Searches for users by name or email using query parameter
- *     parameters:
- *       - in: query
- *         name: q
- *         required: true
- *         schema:
- *           type: string
- *         description: Search term
- *         example: john
- *     responses:
- *       200:
- *         description: Search results
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 users:
- *                   type: array
- *                   items:
- *                     $ref: '#/components/schemas/User'
- *       400:
- *         description: Missing search query
- *       500:
- *         $ref: '#/components/responses/InternalServerError'
- *       503:
- *         $ref: '#/components/responses/ServiceUnavailable'
- */
-router.get('/search', checkDatabaseConfig, async (req, res) => {
-  try {
-    const { q: searchTerm } = req.query;
-    
-    if (!searchTerm) {
-      return res.status(400).json({ error: 'Search query parameter "q" is required' });
-    }
-
-    console.log(`🔍 Searching for users with term: "${searchTerm}"`);
-    const result = await userService.search(searchTerm);
-    console.log(`🔍 Search result:`, { success: result.success, dataLength: result.data?.length, error: result.error });
-    
-    if (result.success) {
-      // Ensure we always return an array, even if result.data is undefined/null
-      const users = Array.isArray(result.data) ? result.data : [];
-      console.log(`🔍 Returning ${users.length} users`);
-      res.json({ users });
-    } else {
-      console.error(`🔍 Search failed:`, result.error);
-      res.status(500).json({ error: result.error });
-    }
-  } catch (error) {
-    console.error(`🔍 Search exception:`, error);
     res.status(500).json({ error: error.message });
   }
 });

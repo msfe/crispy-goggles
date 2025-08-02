@@ -110,7 +110,7 @@ router.get('/:id', checkDatabaseConfig, async (req, res) => {
  *         application/json:
  *           schema:
  *             type: object
- *             required: [name, description, adminId]
+ *             required: [name, description, adminIds]
  *             properties:
  *               name:
  *                 type: string
@@ -118,9 +118,11 @@ router.get('/:id', checkDatabaseConfig, async (req, res) => {
  *               description:
  *                 type: string
  *                 example: A community for technology enthusiasts in Stockholm
- *               adminId:
- *                 type: string
- *                 example: user-123-abc
+ *               adminIds:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 example: [user-123-abc]
  *               tags:
  *                 type: array
  *                 items:

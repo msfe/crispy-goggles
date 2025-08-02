@@ -89,7 +89,7 @@ const Groups = ({ currentUserId }) => {
       const groupData = {
         ...createFormData,
         tags: createFormData.tags.split(',').map(tag => tag.trim()).filter(tag => tag),
-        adminId: currentUserId
+        adminIds: [currentUserId]
       };
 
       const result = await GroupApiService.createGroup(groupData, currentUserId);

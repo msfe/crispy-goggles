@@ -2,11 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useMsal } from '@azure/msal-react';
 import { UserApiService, FriendshipApiService } from '../../services/apiService';
+import { useAlert } from '../Alert';
 import './Friends.css';
 
 const Friends = () => {
   const { accounts } = useMsal();
   const account = accounts[0];
+  const { showInfo, showError } = useAlert();
   const [currentUserId, setCurrentUserId] = useState(null);
   const [friends, setFriends] = useState([]);
   const [pendingRequests, setPendingRequests] = useState([]);
@@ -77,11 +79,11 @@ const Friends = () => {
           }
         }
         
-        alert(result.message);
+        showInfo(result.message);
       }
     } catch (err) {
       console.error(`Error ${status} friend request:`, err);
-      alert(`Failed to ${status} friend request: ${err.message}`);
+      showError(`Failed to ${status} friend request: ${err.message}`);
     }
   };
 

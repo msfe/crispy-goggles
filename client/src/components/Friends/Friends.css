@@ -468,6 +468,39 @@
   font-weight: 500;
 }
 
+/* Relationship Status Indicators */
+.relationship-status {
+  color: #b0b0b0;
+  font-size: 12px;
+  font-style: italic;
+  margin: 4px 0 0 0;
+}
+
+.status-indicator {
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  text-align: center;
+  min-width: 80px;
+}
+
+.status-indicator.friend {
+  background-color: #4ecca3;
+  color: white;
+}
+
+.status-indicator.pending {
+  background-color: #f39c12;
+  color: white;
+}
+
+.status-indicator.sent {
+  background-color: #9c67b1;
+  color: white;
+}
+
 /* Search Section */
 .search-section .search-results {
   display: flex;

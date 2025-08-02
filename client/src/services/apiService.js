@@ -42,7 +42,7 @@ export const EventApiService = {
       }
     } catch (err) {
       console.error('Error fetching events:', err);
-      return [];
+      throw err; // Re-throw the error so the calling code can handle fallback
     }
   },
 

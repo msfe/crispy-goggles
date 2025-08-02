@@ -1,4 +1,4 @@
-const { getContainer, collections } = require('../config/cosmosConfig');
+const { getContainer, collections, isConfigured } = require('../config/cosmosConfig');
 
 /**
  * Base database service class with common CRUD operations
@@ -12,6 +12,9 @@ class BaseService {
    * Get the container for this service
    */
   getContainer() {
+    if (!isConfigured) {
+      throw new Error('Database not configured');
+    }
     return getContainer(this.containerName);
   }
 
@@ -111,12 +114,33 @@ class BaseService {
    * Get all documents (with optional filtering)
    */
   async getAll(filter = {}) {
-    const { conditions = '', parameters = [] } = filter;
-    const querySpec = {
-      query: `SELECT * FROM c${conditions ? ` WHERE ${conditions}` : ''}`,
-      parameters
-    };
-    return this.query(querySpec);
+    // Handle both SQL-style filter {conditions, parameters} and object-style filter
+    if (filter.conditions !== undefined || filter.parameters !== undefined) {
+      // SQL-style filter
+      const { conditions = '', parameters = [] } = filter;
+      const querySpec = {
+        query: `SELECT * FROM c${conditions ? ` WHERE ${conditions}` : ''}`,
+        parameters
+      };
+      return this.query(querySpec);
+    } else {
+      // Object-style filter - build WHERE clause from object properties
+      const filterKeys = Object.keys(filter);
+      if (filterKeys.length === 0) {
+        // No filter, get all
+        const querySpec = { query: 'SELECT * FROM c' };
+        return this.query(querySpec);
+      }
+
+      const conditions = filterKeys.map(key => `c.${key} = @${key}`).join(' AND ');
+      const parameters = filterKeys.map(key => ({ name: `@${key}`, value: filter[key] }));
+      
+      const querySpec = {
+        query: `SELECT * FROM c WHERE ${conditions}`,
+        parameters
+      };
+      return this.query(querySpec);
+    }
   }
 }
 
@@ -432,7 +456,145 @@ class EventService extends BaseService {
   }
 }
 
-module.exports = {
+// Service instances
+const userService = new UserService();
+const friendshipService = new FriendshipService();
+const groupService = new GroupService();
+const postService = new PostService();
+const commentService = new CommentService();
+const eventService = new EventService();
+
+// Container name mapping to service instances
+const serviceMap = {
+  'users': userService,
+  'friendships': friendshipService,
+  'groups': groupService,
+  'posts': postService,
+  'comments': commentService,
+  'events': eventService
+};
+
+/**
+ * Unified database service interface for routes
+ */
+const databaseService = {
+  /**
+   * Get multiple items from a container with optional filtering
+   */
+  async getItems(containerName, filter = {}) {
+    const service = serviceMap[containerName];
+    if (!service) {
+      throw new Error(`Unknown container: ${containerName}`);
+    }
+
+    try {
+      const result = await service.getAll(filter);
+      if (result.success) {
+        return result.data;
+      } else {
+        throw new Error(result.error);
+      }
+    } catch (error) {
+      console.error(`Error getting items from ${containerName}:`, error);
+      throw error;
+    }
+  },
+
+  /**
+   * Get a single item by ID
+   */
+  async getItem(containerName, id) {
+    const service = serviceMap[containerName];
+    if (!service) {
+      throw new Error(`Unknown container: ${containerName}`);
+    }
+
+    try {
+      const result = await service.getById(id);
+      if (result.success) {
+        return result.data;
+      } else if (result.error === 'Document not found') {
+        return null;
+      } else {
+        throw new Error(result.error);
+      }
+    } catch (error) {
+      console.error(`Error getting item ${id} from ${containerName}:`, error);
+      throw error;
+    }
+  },
+
+  /**
+   * Create a new item
+   */
+  async createItem(containerName, data) {
+    const service = serviceMap[containerName];
+    if (!service) {
+      throw new Error(`Unknown container: ${containerName}`);
+    }
+
+    try {
+      const result = await service.create(data);
+      if (result.success) {
+        return result.data;
+      } else {
+        throw new Error(result.error);
+      }
+    } catch (error) {
+      console.error(`Error creating item in ${containerName}:`, error);
+      throw error;
+    }
+  },
+
+  /**
+   * Update an existing item
+   */
+  async updateItem(containerName, id, data) {
+    const service = serviceMap[containerName];
+    if (!service) {
+      throw new Error(`Unknown container: ${containerName}`);
+    }
+
+    try {
+      const result = await service.update(id, data);
+      if (result.success) {
+        return result.data;
+      } else {
+        throw new Error(result.error);
+      }
+    } catch (error) {
+      console.error(`Error updating item ${id} in ${containerName}:`, error);
+      throw error;
+    }
+  },
+
+  /**
+   * Delete an item
+   */
+  async deleteItem(containerName, id) {
+    const service = serviceMap[containerName];
+    if (!service) {
+      throw new Error(`Unknown container: ${containerName}`);
+    }
+
+    try {
+      const result = await service.delete(id);
+      if (result.success) {
+        return true;
+      } else {
+        throw new Error(result.error);
+      }
+    } catch (error) {
+      console.error(`Error deleting item ${id} from ${containerName}:`, error);
+      throw error;
+    }
+  }
+};
+
+module.exports = databaseService;
+
+// Also export the service classes for direct use when needed
+module.exports.services = {
   BaseService,
   UserService,
   FriendshipService,

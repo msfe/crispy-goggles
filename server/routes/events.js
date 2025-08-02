@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { Event, Post, Comment } = require('../models');
 const databaseService = require('../services/databaseService');
+const { isConfigured } = require('../config/cosmosConfig');
 
 /**
  * @swagger
@@ -42,6 +43,13 @@ const databaseService = require('../services/databaseService');
  */
 router.get('/', async (req, res) => {
   try {
+    // Check if database is configured
+    if (!isConfigured) {
+      return res.status(503).json({ 
+        error: 'Database not configured. Please configure Cosmos DB.' 
+      });
+    }
+
     const { organizerId, userId } = req.query;
     
     let queryFilter = { type: 'event' };
@@ -56,14 +64,20 @@ router.get('/', async (req, res) => {
     let filteredEvents = events;
     if (userId) {
       filteredEvents = events.filter(event => 
-        event.invitedUserIds.includes(userId) || 
-        event.rsvps.some(rsvp => rsvp.userId === userId)
+        (event.invitedUserIds && event.invitedUserIds.includes(userId)) || 
+        (event.rsvps && event.rsvps.some(rsvp => rsvp.userId === userId))
       );
     }
     
     res.json(filteredEvents);
   } catch (error) {
     console.error('Error getting events:', error);
+    
+    // Handle specific database connection errors
+    if (error.message.includes('Database not configured') || error.message.includes('not initialized')) {
+      return res.status(503).json({ error: 'Database not configured. Please configure Cosmos DB.' });
+    }
+    
     res.status(500).json({ error: 'Failed to get events' });
   }
 });
@@ -96,6 +110,13 @@ router.get('/', async (req, res) => {
  */
 router.get('/:id', async (req, res) => {
   try {
+    // Check if database is configured
+    if (!isConfigured) {
+      return res.status(503).json({ 
+        error: 'Database not configured. Please configure Cosmos DB.' 
+      });
+    }
+
     const { id } = req.params;
     const event = await databaseService.getItem('events', id);
     
@@ -106,6 +127,12 @@ router.get('/:id', async (req, res) => {
     res.json(event);
   } catch (error) {
     console.error('Error getting event:', error);
+    
+    // Handle specific database connection errors
+    if (error.message.includes('Database not configured') || error.message.includes('not initialized')) {
+      return res.status(503).json({ error: 'Database not configured. Please configure Cosmos DB.' });
+    }
+    
     res.status(500).json({ error: 'Failed to get event' });
   }
 });
@@ -164,6 +191,13 @@ router.get('/:id', async (req, res) => {
  */
 router.post('/', async (req, res) => {
   try {
+    // Check if database is configured
+    if (!isConfigured) {
+      return res.status(503).json({ 
+        error: 'Database not configured. Please configure Cosmos DB.' 
+      });
+    }
+
     const eventData = req.body;
     const event = new Event(eventData);
     
@@ -175,6 +209,11 @@ router.post('/', async (req, res) => {
     res.status(201).json(savedEvent);
   } catch (error) {
     console.error('Error creating event:', error);
+    
+    // Handle specific database connection errors
+    if (error.message.includes('Database not configured') || error.message.includes('not initialized')) {
+      return res.status(503).json({ error: 'Database not configured. Please configure Cosmos DB.' });
+    }
     
     if (error.message.includes('required') || error.message.includes('Invalid')) {
       return res.status(400).json({ error: error.message });
@@ -356,6 +395,13 @@ router.delete('/:id', async (req, res) => {
  */
 router.post('/:id/rsvp', async (req, res) => {
   try {
+    // Check if database is configured
+    if (!isConfigured) {
+      return res.status(503).json({ 
+        error: 'Database not configured. Please configure Cosmos DB.' 
+      });
+    }
+
     const { id } = req.params;
     const { userId, status } = req.body;
     
@@ -381,6 +427,12 @@ router.post('/:id/rsvp', async (req, res) => {
     res.json(savedEvent);
   } catch (error) {
     console.error('Error updating RSVP:', error);
+    
+    // Handle specific database connection errors
+    if (error.message.includes('Database not configured') || error.message.includes('not initialized')) {
+      return res.status(503).json({ error: 'Database not configured. Please configure Cosmos DB.' });
+    }
+    
     res.status(500).json({ error: 'Failed to update RSVP' });
   }
 });

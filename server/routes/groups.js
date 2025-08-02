@@ -1,9 +1,9 @@
 const express = require('express');
-const { GroupService } = require('../services/databaseService');
+const { services } = require('../services/databaseService');
 const { Group } = require('../models');
 const router = express.Router();
 
-const groupService = new GroupService();
+const groupService = new services.GroupService();
 
 // Middleware to check if database is configured
 const checkDatabaseConfig = (req, res, next) => {

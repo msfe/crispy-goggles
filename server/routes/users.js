@@ -1,9 +1,9 @@
 const express = require('express');
-const { UserService } = require('../services/databaseService');
+const { services } = require('../services/databaseService');
 const { User } = require('../models');
 const router = express.Router();
 
-const userService = new UserService();
+const userService = new services.UserService();
 
 // Middleware to check if database is configured
 const checkDatabaseConfig = (req, res, next) => {

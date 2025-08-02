@@ -83,6 +83,40 @@ describe('Data Models', () => {
       group.removeMember('user-1');
       expect(group.memberIds).not.toContain('user-1');
     });
+
+    test('should handle privacy field conversion to isPublic', () => {
+      // Test privacy 'public' -> isPublic: true
+      const publicGroup = new Group({
+        name: 'Public Group',
+        adminIds: ['admin-id'],
+        privacy: 'public'
+      });
+      expect(publicGroup.isPublic).toBe(true);
+
+      // Test privacy 'private' -> isPublic: false
+      const privateGroup = new Group({
+        name: 'Private Group',
+        adminIds: ['admin-id'],
+        privacy: 'private'
+      });
+      expect(privateGroup.isPublic).toBe(false);
+
+      // Test isPublic field takes precedence over privacy
+      const explicitPublic = new Group({
+        name: 'Explicit Group',
+        adminIds: ['admin-id'],
+        privacy: 'private',
+        isPublic: true
+      });
+      expect(explicitPublic.isPublic).toBe(true);
+
+      // Test default behavior (no privacy or isPublic field)
+      const defaultGroup = new Group({
+        name: 'Default Group',
+        adminIds: ['admin-id']
+      });
+      expect(defaultGroup.isPublic).toBe(true);
+    });
   });
 
   describe('Friendship Model', () => {

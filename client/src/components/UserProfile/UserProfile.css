@@ -79,7 +79,7 @@
 
 .user-profile-email {
   font-size: 14px;
-  color: #b0b0b0;
+  color: #666666;
   margin-bottom: 20px;
 }
 
@@ -138,6 +138,19 @@
 .outline-button:hover {
   background-color: #c8a2c8;
   color: #ffffff;
+}
+
+.mutual-friends-button {
+  background-color: #f5f5f5;
+  color: #333333;
+  border: 1px solid #b0b0b0;
+  font-weight: 500;
+}
+
+.mutual-friends-button:hover {
+  background-color: #e0d7d7;
+  border-color: #a861ba;
+  color: #333333;
 }
 
 /* Right Column - Detailed Information */
@@ -304,7 +317,7 @@
 
 .member-since {
   font-size: 12px;
-  color: #b0b0b0;
+  color: #666666;
   margin-top: 10px;
 }
 

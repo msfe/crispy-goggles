@@ -175,18 +175,8 @@ const UserProfilePage = () => {
             Friend Request Sent
           </button>
         )}
-        {friendshipStatus === 'accepted' && (
-          <>
-            <button className="action-button secondary-button">
-              Message
-            </button>
-            <button className="action-button outline-button">
-              View Posts
-            </button>
-          </>
-        )}
         {mutualFriends.length > 0 && (
-          <button className="action-button outline-button">
+          <button className="action-button mutual-friends-button">
             {mutualFriends.length} Mutual Friend{mutualFriends.length !== 1 ? 's' : ''}
           </button>
         )}

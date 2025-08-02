@@ -36,14 +36,32 @@ const FriendSearch = ({ searchQuery, onBack }) => {
     }
   };
 
-  const fetchUserFriendships = async () => {
+  // Helper function to reset friendship states to empty arrays
+  const resetFriendshipStates = () => {
+    setFriends([]);
+    setPendingRequests([]);
+    setSentRequests([]);
+  };
+
+  // Helper function to fetch and update friendship data
+  const fetchAndUpdateFriendships = async () => {
     try {
       const friendshipData = await FriendshipApiService.getUserFriendships(currentUserId);
-      setFriends(friendshipData.friends);
-      setPendingRequests(friendshipData.pendingRequests);
-      setSentRequests(friendshipData.sentRequests);
+      
+      // Ensure we have valid arrays and update state
+      const friendIds = Array.isArray(friendshipData.friends) ? friendshipData.friends : [];
+      const pendingIds = Array.isArray(friendshipData.pendingRequests) ? friendshipData.pendingRequests : [];
+      const sentIds = Array.isArray(friendshipData.sentRequests) ? friendshipData.sentRequests : [];
+      
+      setFriends(friendIds);
+      setPendingRequests(pendingIds);
+      setSentRequests(sentIds);
+      
+      return { friendIds, pendingIds, sentIds };
     } catch (err) {
       console.error('Error fetching friendships:', err);
+      resetFriendshipStates();
+      return { friendIds: [], pendingIds: [], sentIds: [] };
     }
   };
 
@@ -57,24 +75,36 @@ const FriendSearch = ({ searchQuery, onBack }) => {
     setError(null);
     
     try {
-      // Fetch user friendships to filter results
-      await fetchUserFriendships();
+      // Fetch user friendships to filter results  
+      const { friendIds, pendingIds, sentIds } = await fetchAndUpdateFriendships();
 
       // Search for users
       const users = await UserApiService.searchUsers(searchQuery, currentUserId);
       
-      // Filter out current user and existing friends/requests
+      // Ensure users is an array
+      if (!Array.isArray(users)) {
+        console.warn('Search API returned non-array response:', users);
+        setSearchResults([]);
+        return;
+      }
+      
+      // Filter out current user but include all others (including existing friends)
       const filteredResults = users.filter(user => 
-        user.id !== currentUserId && 
-        !friends.includes(user.id) &&
-        !pendingRequests.includes(user.id) &&
-        !sentRequests.includes(user.id)
-      );
+        user && 
+        user.id && 
+        user.id !== currentUserId
+      ).map(user => ({
+        ...user,
+        isFriend: friendIds.includes(user.id),
+        isPending: pendingIds.includes(user.id),
+        isSent: sentIds.includes(user.id)
+      }));
       
       setSearchResults(filteredResults);
     } catch (err) {
       console.error('Error searching users:', err);
       setError('Failed to search users. Please try again.');
+      resetFriendshipStates();
     } finally {
       setLoading(false);
     }
@@ -86,7 +116,10 @@ const FriendSearch = ({ searchQuery, onBack }) => {
       
       if (result.success) {
         showInfo(result.message);
-        setSearchResults(prev => prev.filter(user => user.id !== userId));
+        // Update the user's status to show sent request
+        setSearchResults(prev => prev.map(user => 
+          user.id === userId ? { ...user, isSent: true } : user
+        ));
       }
     } catch (err) {
       console.error('Error sending friend request:', err);
@@ -139,14 +172,25 @@ const FriendSearch = ({ searchQuery, onBack }) => {
                     <div className="friend-info">
                       <h3>{user.name}</h3>
                       <p className="friend-email">{user.email}</p>
+                      {user.isFriend && <span className="relationship-status">Already Friends</span>}
+                      {user.isPending && <span className="relationship-status">Friend Request Received</span>}
+                      {user.isSent && <span className="relationship-status">Friend Request Sent</span>}
                     </div>
                     <div className="user-actions">
-                      <button 
-                        onClick={() => sendFriendRequest(user.id)}
-                        className="add-friend-button"
-                      >
-                        Add Friend
-                      </button>
+                      {user.isFriend ? (
+                        <span className="status-indicator friend">Friends</span>
+                      ) : user.isPending ? (
+                        <span className="status-indicator pending">Pending</span>
+                      ) : user.isSent ? (
+                        <span className="status-indicator sent">Request Sent</span>
+                      ) : (
+                        <button 
+                          onClick={() => sendFriendRequest(user.id)}
+                          className="add-friend-button"
+                        >
+                          Add Friend
+                        </button>
+                      )}
                     </div>
                   </div>
                 ))}

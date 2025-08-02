@@ -10,6 +10,7 @@ import DatabaseStatus from '../database/DatabaseStatus';
 import Profile from '../Profile';
 import Friends, { FriendSearchWrapper } from '../Friends';
 import Groups from '../Groups';
+import Settings from '../Settings';
 import './Dashboard.css';
 
 const Dashboard = () => {
@@ -87,7 +88,7 @@ const Dashboard = () => {
               <Route path="/friends/search" element={<FriendSearchWrapper />} />
               <Route path="/groups" element={<Groups currentUserId={mockAccount.homeAccountId} />} />
               <Route path="/events" element={<div className="coming-soon">Events feature coming soon...</div>} />
-              <Route path="/settings" element={<div className="coming-soon">Settings feature coming soon...</div>} />
+              <Route path="/settings" element={<Settings />} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </div>
@@ -132,7 +133,7 @@ const Dashboard = () => {
             <Route path="/friends/search" element={<FriendSearchWrapper />} />
             <Route path="/groups" element={<Groups currentUserId={account.homeAccountId} />} />
             <Route path="/events" element={<div className="coming-soon">Events feature coming soon...</div>} />
-            <Route path="/settings" element={<div className="coming-soon">Settings feature coming soon...</div>} />
+            <Route path="/settings" element={<Settings />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </div>

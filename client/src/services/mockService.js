@@ -45,6 +45,11 @@ const MOCK_USERS = {
     id: 'search-3',
     name: 'Michael Johnson',
     email: 'michael@example.com'
+  },
+  'search-4': {
+    id: 'search-4',
+    name: 'Mattias Svensson',
+    email: 'mattias@example.com'
   }
 };
 

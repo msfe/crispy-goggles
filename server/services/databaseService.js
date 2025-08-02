@@ -95,8 +95,14 @@ class BaseService {
     try {
       const container = this.getContainer();
       const { resources: items } = await container.items.query(querySpec, options).fetchAll();
-      return { success: true, data: items };
+      
+      // Ensure we always return an array, even if items is undefined/null
+      const data = Array.isArray(items) ? items : [];
+      console.log(`📊 Query executed: ${querySpec.query}, returned ${data.length} items`);
+      
+      return { success: true, data };
     } catch (error) {
+      console.error(`📊 Query failed: ${querySpec.query}`, error);
       return { success: false, error: error.message };
     }
   }
@@ -156,11 +162,15 @@ class UserService extends BaseService {
    * Search users by name or email
    */
   async search(searchTerm) {
+    console.log(`👤 UserService.search called with term: "${searchTerm}"`);
     const querySpec = {
       query: 'SELECT * FROM c WHERE CONTAINS(c.name, @searchTerm) OR CONTAINS(c.email, @searchTerm)',
       parameters: [{ name: '@searchTerm', value: searchTerm }]
     };
-    return this.query(querySpec);
+    console.log(`👤 Executing query:`, querySpec);
+    const result = await this.query(querySpec);
+    console.log(`👤 UserService.search result:`, { success: result.success, dataLength: result.data?.length, error: result.error });
+    return result;
   }
 
   /**

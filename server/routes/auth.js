@@ -301,9 +301,9 @@ router.post('/sync-user', checkConfiguration, async (req, res) => {
       hasUsername: !!userInfo.username
     });
 
-    const { UserService } = require('../services/databaseService');
+    const { services } = require('../services/databaseService');
     const { User } = require('../models');
-    const userService = new UserService();
+    const userService = new services.UserService();
 
     // Check if user already exists by Azure ID
     const existingUser = await userService.getByAzureId(userInfo.userId);

@@ -15,6 +15,7 @@ const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/users');
 const groupRoutes = require('./routes/groups');
 const friendshipRoutes = require('./routes/friendships');
+const eventRoutes = require('./routes/events');
 const databaseRoutes = require('./routes/database');
 
 // Middleware
@@ -120,6 +121,7 @@ app.use('/database', databaseRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/groups', groupRoutes);
 app.use('/api/friendships', friendshipRoutes);
+app.use('/api/events', eventRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

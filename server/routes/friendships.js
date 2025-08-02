@@ -1,9 +1,9 @@
 const express = require('express');
-const { FriendshipService } = require('../services/databaseService');
+const { services } = require('../services/databaseService');
 const { Friendship } = require('../models');
 const router = express.Router();
 
-const friendshipService = new FriendshipService();
+const friendshipService = new services.FriendshipService();
 
 // Middleware to check if database is configured
 const checkDatabaseConfig = (req, res, next) => {

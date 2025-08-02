@@ -151,6 +151,15 @@ router.post('/', checkDatabaseConfig, async (req, res) => {
     const groupData = req.body;
     const group = new Group(groupData);
     
+    // Ensure all admins are also members
+    if (group.adminIds && group.adminIds.length > 0) {
+      group.adminIds.forEach(adminId => {
+        if (!group.memberIds.includes(adminId)) {
+          group.memberIds.push(adminId);
+        }
+      });
+    }
+    
     // Validate group data
     group.validate();
 

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { useMsal } from '@azure/msal-react';
 import { UserApiService, FriendshipApiService } from '../../services/apiService';
 import { useAlert } from '../Alert';
@@ -239,11 +240,15 @@ const Friends = () => {
           ) : (
             filteredFriends.map((friendship) => (
               <div key={friendship.id} className="friend-card">
-                <div className="friend-avatar">
-                  {getUserInitials(friendship.friend?.name)}
-                </div>
+                <Link to={`/user/${friendship.friend?.id}`} className="friend-avatar-link">
+                  <div className="friend-avatar">
+                    {getUserInitials(friendship.friend?.name)}
+                  </div>
+                </Link>
                 <div className="friend-info">
-                  <h3>{friendship.friend?.name}</h3>
+                  <Link to={`/user/${friendship.friend?.id}`} className="friend-name-link">
+                    <h3>{friendship.friend?.name}</h3>
+                  </Link>
                   <p className="friend-email">{friendship.friend?.email}</p>
                   <p className="friendship-date">
                     Friends since {new Date(friendship.createdAt).toLocaleDateString()}

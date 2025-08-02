@@ -1,0 +1,369 @@
+/* User Profile Page Styles */
+.user-profile-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f5f5f5;
+  min-height: 100vh;
+}
+
+.user-profile-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  gap: 15px;
+}
+
+.back-button {
+  background: none;
+  border: 1px solid #b0b0b0;
+  padding: 8px 16px;
+  border-radius: 8px;
+  color: #333333;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.back-button:hover {
+  background-color: #e0d7d7;
+  border-color: #9c67b1;
+}
+
+.user-profile-title {
+  color: #333333;
+  font-size: 28px;
+  font-weight: bold;
+  margin: 0;
+}
+
+.user-profile-content {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 30px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Left Column - Profile Picture and Basic Info */
+.user-profile-left {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.user-profile-avatar {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #a861ba, #c8a2c8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48px;
+  font-weight: bold;
+  color: #ffffff;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 12px rgba(168, 97, 186, 0.3);
+}
+
+.user-profile-name {
+  font-size: 24px;
+  font-weight: bold;
+  color: #333333;
+  margin-bottom: 10px;
+}
+
+.user-profile-email {
+  font-size: 14px;
+  color: #b0b0b0;
+  margin-bottom: 20px;
+}
+
+.user-profile-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+.action-button {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+}
+
+.primary-button {
+  background-color: #a861ba;
+  color: #ffffff;
+}
+
+.primary-button:hover {
+  background-color: #9c67b1;
+  transform: translateY(-1px);
+}
+
+.primary-button:disabled {
+  background-color: #b0b0b0;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.secondary-button {
+  background-color: #4ecca3;
+  color: #ffffff;
+}
+
+.secondary-button:hover {
+  background-color: #45b895;
+  transform: translateY(-1px);
+}
+
+.outline-button {
+  background-color: transparent;
+  color: #a861ba;
+  border: 1px solid #a861ba;
+}
+
+.outline-button:hover {
+  background-color: #c8a2c8;
+  color: #ffffff;
+}
+
+/* Right Column - Detailed Information */
+.user-profile-right {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.profile-section {
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  border-left: 4px solid #a861ba;
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333333;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.bio-text {
+  font-size: 16px;
+  line-height: 1.6;
+  color: #333333;
+  font-style: italic;
+}
+
+.bio-empty {
+  color: #b0b0b0;
+  font-style: italic;
+}
+
+.contact-details {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.contact-item {
+  display: flex;
+  gap: 10px;
+}
+
+.contact-key {
+  font-weight: 600;
+  color: #333333;
+  min-width: 80px;
+}
+
+.contact-value {
+  color: #333333;
+}
+
+.mutual-friends-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 15px;
+}
+
+.mutual-friend-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  border: 1px solid #e0d7d7;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+}
+
+.mutual-friend-card:hover {
+  border-color: #a861ba;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(168, 97, 186, 0.2);
+}
+
+.mutual-friend-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #c8a2c8, #b89ac4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: bold;
+  color: #ffffff;
+  flex-shrink: 0;
+}
+
+.mutual-friend-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.mutual-friend-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333333;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mutual-friends-count {
+  font-size: 14px;
+  color: #b0b0b0;
+  margin-bottom: 15px;
+}
+
+.loading-state, .error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  text-align: center;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #e0d7d7;
+  border-top: 3px solid #a861ba;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.error-message {
+  color: #d73527;
+  font-size: 16px;
+  margin-bottom: 15px;
+}
+
+.retry-button {
+  background-color: #4ecca3;
+  color: #ffffff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.retry-button:hover {
+  background-color: #45b895;
+}
+
+.member-since {
+  font-size: 12px;
+  color: #b0b0b0;
+  margin-top: 10px;
+}
+
+/* Mobile Responsive Design */
+@media (max-width: 768px) {
+  .user-profile-container {
+    padding: 15px;
+  }
+
+  .user-profile-content {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding: 20px;
+  }
+
+  .user-profile-left {
+    text-align: center;
+    border-bottom: 1px solid #e0d7d7;
+    padding-bottom: 20px;
+  }
+
+  .user-profile-avatar {
+    width: 120px;
+    height: 120px;
+    font-size: 40px;
+  }
+
+  .user-profile-actions {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .action-button {
+    flex: 1;
+    min-width: 120px;
+  }
+
+  .mutual-friends-list {
+    grid-template-columns: 1fr;
+  }
+
+  .user-profile-title {
+    font-size: 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .user-profile-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .user-profile-actions {
+    flex-direction: column;
+  }
+
+  .action-button {
+    width: 100%;
+  }
+}

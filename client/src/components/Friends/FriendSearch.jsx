@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { useMsal } from '@azure/msal-react';
 import { UserApiService, FriendshipApiService } from '../../services/apiService';
 import { useAlert } from '../Alert';
@@ -166,17 +167,27 @@ const FriendSearch = ({ searchQuery, onBack }) => {
                 <p className="results-count">Found {searchResults.length} user{searchResults.length !== 1 ? 's' : ''}</p>
                 {searchResults.map((user) => (
                   <div key={user.id} className="user-card">
-                    <div className="friend-avatar">
-                      {getUserInitials(user.name)}
-                    </div>
+                    <Link to={`/user/${user.id}`} className="friend-avatar-link">
+                      <div className="friend-avatar">
+                        {getUserInitials(user.name)}
+                      </div>
+                    </Link>
                     <div className="friend-info">
-                      <h3>{user.name}</h3>
+                      <Link to={`/user/${user.id}`} className="friend-name-link">
+                        <h3>{user.name}</h3>
+                      </Link>
                       <p className="friend-email">{user.email}</p>
                       {user.isFriend && <span className="relationship-status">Already Friends</span>}
                       {user.isPending && <span className="relationship-status">Friend Request Received</span>}
                       {user.isSent && <span className="relationship-status">Friend Request Sent</span>}
                     </div>
                     <div className="user-actions">
+                      <Link 
+                        to={`/user/${user.id}`}
+                        className="view-profile-button"
+                      >
+                        View Profile
+                      </Link>
                       {user.isFriend ? (
                         <span className="status-indicator friend">Friends</span>
                       ) : user.isPending ? (

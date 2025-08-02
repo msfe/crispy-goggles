@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { useAlert } from '../Alert/useAlert';
+import { EventApiService } from '../../services/apiService';
+import { getMockUserId } from '../../services/mockService';
 
 const EventForm = ({ event = null, onEventCreated, onCancel }) => {
   const isEditing = !!event;
@@ -113,28 +115,26 @@ const EventForm = ({ event = null, onEventCreated, onCancel }) => {
     setLoading(true);
 
     try {
-      // In real implementation, this would call the API
+      // Prepare event data for API
       const eventData = {
         ...formData,
-        organizerId: 'current-user-123', // This would come from auth context
+        organizerId: getMockUserId(), // In real app, this would come from auth context
         startDate: new Date(formData.startDate).toISOString(),
         endDate: formData.endDate ? new Date(formData.endDate).toISOString() : null,
       };
 
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
+      let savedEvent;
       if (isEditing) {
-        eventData.id = event.id;
+        savedEvent = await EventApiService.updateEvent(event.id, eventData);
         showSuccess('Event updated successfully!');
       } else {
-        eventData.id = `event-${Date.now()}`;
+        savedEvent = await EventApiService.createEvent(eventData);
         showSuccess('Event created successfully!');
       }
 
-      onEventCreated?.(eventData);
+      onEventCreated?.(savedEvent);
     } catch (error) {
-      showError(`Failed to ${isEditing ? 'update' : 'create'} event. Please try again.`);
+      showError(error.message || `Failed to ${isEditing ? 'update' : 'create'} event. Please try again.`);
     } finally {
       setLoading(false);
     }

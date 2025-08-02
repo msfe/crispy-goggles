@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAlert } from '../Alert/useAlert';
+import { EventApiService } from '../../services/apiService';
+import { getMockUserId } from '../../services/mockService';
 import EventRSVP from './EventRSVP';
 
 const EventList = ({ filter = 'my-events', onEventClick }) => {
@@ -9,7 +11,7 @@ const EventList = ({ filter = 'my-events', onEventClick }) => {
   const { showError, showSuccess } = useAlert();
 
   // Mock current user ID - in real app this would come from auth context
-  const currentUserId = 'current-user-123';
+  const currentUserId = getMockUserId();
 
   useEffect(() => {
     loadEvents();
@@ -20,35 +22,42 @@ const EventList = ({ filter = 'my-events', onEventClick }) => {
     setError(null);
     
     try {
-      // In real implementation, this would call the API
-      // For now, using mock data to demonstrate functionality
-      const mockEvents = generateMockEvents();
+      let events = [];
+      
+      // Try to fetch real events from API first
+      try {
+        events = await EventApiService.getEvents();
+      } catch (apiError) {
+        console.warn('Failed to fetch events from API, using mock data:', apiError);
+        // Fall back to mock data if API fails
+        events = generateMockEvents();
+      }
       
       // Filter events based on active tab
-      let filteredEvents = mockEvents;
+      let filteredEvents = events;
       
       switch (filter) {
         case 'my-events':
-          filteredEvents = mockEvents.filter(event => 
+          filteredEvents = events.filter(event => 
             event.organizerId === currentUserId || 
-            event.rsvps.some(rsvp => rsvp.userId === currentUserId)
+            (event.rsvps && event.rsvps.some(rsvp => rsvp.userId === currentUserId))
           );
           break;
         case 'discover':
-          filteredEvents = mockEvents.filter(event => 
+          filteredEvents = events.filter(event => 
             event.organizerId !== currentUserId &&
-            !event.invitedUserIds.includes(currentUserId) &&
-            !event.rsvps.some(rsvp => rsvp.userId === currentUserId)
+            (!event.invitedUserIds || !event.invitedUserIds.includes(currentUserId)) &&
+            (!event.rsvps || !event.rsvps.some(rsvp => rsvp.userId === currentUserId))
           );
           break;
         case 'invitations':
-          filteredEvents = mockEvents.filter(event => 
-            event.invitedUserIds.includes(currentUserId) &&
-            !event.rsvps.some(rsvp => rsvp.userId === currentUserId)
+          filteredEvents = events.filter(event => 
+            event.invitedUserIds && event.invitedUserIds.includes(currentUserId) &&
+            (!event.rsvps || !event.rsvps.some(rsvp => rsvp.userId === currentUserId))
           );
           break;
         default:
-          filteredEvents = mockEvents;
+          filteredEvents = events;
       }
       
       setEvents(filteredEvents);
@@ -137,32 +146,57 @@ const EventList = ({ filter = 'my-events', onEventClick }) => {
   };
 
   const getUserRSVP = (event) => {
-    return event.rsvps.find(rsvp => rsvp.userId === currentUserId);
+    return event.rsvps && event.rsvps.find(rsvp => rsvp.userId === currentUserId);
   };
 
   const getAttendeeCount = (event) => {
-    return event.rsvps.filter(rsvp => rsvp.status === 'attending').length;
+    return event.rsvps ? event.rsvps.filter(rsvp => rsvp.status === 'attending').length : 0;
   };
 
   const handleRSVPChange = async (eventId, status) => {
     try {
-      // In real implementation, this would call the API
-      setEvents(prevEvents => 
-        prevEvents.map(event => {
-          if (event.id === eventId) {
-            const updatedRsvps = event.rsvps.filter(rsvp => rsvp.userId !== currentUserId);
-            updatedRsvps.push({
-              userId: currentUserId,
-              status,
-              respondedAt: new Date().toISOString()
-            });
-            return { ...event, rsvps: updatedRsvps };
-          }
-          return event;
-        })
-      );
-      
-      showSuccess(`RSVP updated to "${status}"`);
+      // Try to update RSVP via API
+      try {
+        await EventApiService.rsvpToEvent(eventId, currentUserId, status);
+        
+        // Update local state
+        setEvents(prevEvents => 
+          prevEvents.map(event => {
+            if (event.id === eventId) {
+              const updatedRsvps = (event.rsvps || []).filter(rsvp => rsvp.userId !== currentUserId);
+              updatedRsvps.push({
+                userId: currentUserId,
+                status,
+                respondedAt: new Date().toISOString()
+              });
+              return { ...event, rsvps: updatedRsvps };
+            }
+            return event;
+          })
+        );
+        
+        showSuccess(`RSVP updated to "${status}"`);
+      } catch (apiError) {
+        console.warn('Failed to update RSVP via API, updating locally:', apiError);
+        
+        // Fall back to local state update if API fails
+        setEvents(prevEvents => 
+          prevEvents.map(event => {
+            if (event.id === eventId) {
+              const updatedRsvps = (event.rsvps || []).filter(rsvp => rsvp.userId !== currentUserId);
+              updatedRsvps.push({
+                userId: currentUserId,
+                status,
+                respondedAt: new Date().toISOString()
+              });
+              return { ...event, rsvps: updatedRsvps };
+            }
+            return event;
+          })
+        );
+        
+        showSuccess(`RSVP updated to "${status}" (locally)`);
+      }
     } catch (err) {
       showError('Failed to update RSVP. Please try again.');
     }

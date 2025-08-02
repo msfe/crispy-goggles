@@ -9,6 +9,214 @@ import {
 } from './mockService';
 
 /**
+ * Event API Service
+ */
+export const EventApiService = {
+  /**
+   * Get all events with optional filtering
+   */
+  async getEvents(organizerId = null, userId = null) {
+    try {
+      let url = '/api/events';
+      const params = new URLSearchParams();
+      
+      if (organizerId) {
+        params.append('organizerId', organizerId);
+      }
+      
+      if (userId) {
+        params.append('userId', userId);
+      }
+      
+      if (params.toString()) {
+        url += `?${params.toString()}`;
+      }
+      
+      const response = await apiRequest(url);
+      
+      if (response.ok) {
+        const events = await response.json();
+        return Array.isArray(events) ? events : [];
+      } else {
+        throw new Error(`Failed to fetch events: ${response.status}`);
+      }
+    } catch (err) {
+      console.error('Error fetching events:', err);
+      return [];
+    }
+  },
+
+  /**
+   * Get a specific event by ID
+   */
+  async getEvent(eventId) {
+    try {
+      const response = await apiRequest(`/api/events/${eventId}`);
+      
+      if (response.ok) {
+        return await response.json();
+      } else if (response.status === 404) {
+        throw new Error('Event not found');
+      } else {
+        throw new Error(`Failed to fetch event: ${response.status}`);
+      }
+    } catch (err) {
+      console.error('Error fetching event:', err);
+      throw err;
+    }
+  },
+
+  /**
+   * Create a new event
+   */
+  async createEvent(eventData) {
+    try {
+      const response = await apiRequest('/api/events', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(eventData)
+      });
+
+      if (response.ok) {
+        return await response.json();
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || `Failed to create event: ${response.status}`);
+      }
+    } catch (err) {
+      console.error('Error creating event:', err);
+      throw err;
+    }
+  },
+
+  /**
+   * Update an existing event
+   */
+  async updateEvent(eventId, updateData) {
+    try {
+      const response = await apiRequest(`/api/events/${eventId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(updateData)
+      });
+
+      if (response.ok) {
+        return await response.json();
+      } else if (response.status === 404) {
+        throw new Error('Event not found');
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || `Failed to update event: ${response.status}`);
+      }
+    } catch (err) {
+      console.error('Error updating event:', err);
+      throw err;
+    }
+  },
+
+  /**
+   * Delete an event
+   */
+  async deleteEvent(eventId) {
+    try {
+      const response = await apiRequest(`/api/events/${eventId}`, {
+        method: 'DELETE'
+      });
+
+      if (response.ok || response.status === 204) {
+        return true;
+      } else if (response.status === 404) {
+        throw new Error('Event not found');
+      } else {
+        throw new Error(`Failed to delete event: ${response.status}`);
+      }
+    } catch (err) {
+      console.error('Error deleting event:', err);
+      throw err;
+    }
+  },
+
+  /**
+   * RSVP to an event
+   */
+  async rsvpToEvent(eventId, userId, status) {
+    try {
+      const response = await apiRequest(`/api/events/${eventId}/rsvp`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ userId, status })
+      });
+
+      if (response.ok) {
+        return await response.json();
+      } else if (response.status === 404) {
+        throw new Error('Event not found');
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || `Failed to update RSVP: ${response.status}`);
+      }
+    } catch (err) {
+      console.error('Error updating RSVP:', err);
+      throw err;
+    }
+  },
+
+  /**
+   * Get posts for an event
+   */
+  async getEventPosts(eventId) {
+    try {
+      const response = await apiRequest(`/api/events/${eventId}/posts`);
+      
+      if (response.ok) {
+        const posts = await response.json();
+        return Array.isArray(posts) ? posts : [];
+      } else if (response.status === 404) {
+        throw new Error('Event not found');
+      } else {
+        throw new Error(`Failed to fetch event posts: ${response.status}`);
+      }
+    } catch (err) {
+      console.error('Error fetching event posts:', err);
+      return [];
+    }
+  },
+
+  /**
+   * Create a post in an event
+   */
+  async createEventPost(eventId, postData) {
+    try {
+      const response = await apiRequest(`/api/events/${eventId}/posts`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(postData)
+      });
+
+      if (response.ok) {
+        return await response.json();
+      } else if (response.status === 404) {
+        throw new Error('Event not found');
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || `Failed to create post: ${response.status}`);
+      }
+    } catch (err) {
+      console.error('Error creating event post:', err);
+      throw err;
+    }
+  }
+};
+
+/**
  * User API Service
  */
 export const UserApiService = {

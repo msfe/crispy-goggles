@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useMsal } from '@azure/msal-react';
 import { UserApiService, FriendshipApiService } from '../../services/apiService';
+import { MOCK_CONFIG, MockUserService } from '../../services/mockService';
 import { apiRequest } from '../../utils/apiConfig';
 import './UserProfile.css';
 
@@ -55,12 +56,9 @@ const UserProfilePage = () => {
       }
 
       // For mock mode, set some mock mutual friends and friendship status
-      if (!currentUserId || currentUserId === 'mock-user-id-123') {
-        // Mock mutual friends
-        const mockMutualFriends = [
-          { id: 'friend-1', name: 'Alice Johnson' },
-          { id: 'friend-2', name: 'Bob Wilson' }
-        ];
+      if (!currentUserId || currentUserId === MOCK_CONFIG.MOCK_USER_ID) {
+        // Mock mutual friends from mock service
+        const mockMutualFriends = MockUserService.getMockMutualFriends();
         setMutualFriends(mockMutualFriends);
         setFriendshipStatus('none');
         setLoading(false);

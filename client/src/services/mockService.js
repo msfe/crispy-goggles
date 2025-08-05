@@ -282,6 +282,16 @@ export const MockUserService = {
    */
   batchGetUsers: (userIds) => {
     return userIds.map(id => MOCK_USERS[id]).filter(Boolean);
+  },
+
+  /**
+   * Get mock mutual friends for a user
+   */
+  getMockMutualFriends: () => {
+    return [
+      { id: 'friend-1', name: 'Alice Johnson' },
+      { id: 'friend-2', name: 'Bob Wilson' }
+    ];
   }
 };
 

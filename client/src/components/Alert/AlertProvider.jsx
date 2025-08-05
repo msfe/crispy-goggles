@@ -48,6 +48,10 @@ const AlertProvider = ({ children }) => {
     return addAlert({ ...options, type: 'error', message });
   }, [addAlert]);
 
+  const showSuccess = useCallback((message, options = {}) => {
+    return addAlert({ ...options, type: 'success', message });
+  }, [addAlert]);
+
   const value = {
     alerts,
     addAlert,
@@ -56,6 +60,7 @@ const AlertProvider = ({ children }) => {
     showInfo,
     showWarning,
     showError,
+    showSuccess,
   };
 
   return (

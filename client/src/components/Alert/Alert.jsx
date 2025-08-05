@@ -38,6 +38,8 @@ const Alert = ({
         return '⚠️'; // Warning symbol
       case 'error':
         return '❌'; // Error symbol
+      case 'success':
+        return '✅'; // Success symbol
       default:
         return '🛈';
     }

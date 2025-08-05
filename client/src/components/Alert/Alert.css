@@ -118,6 +118,27 @@
   color: #a861ba;
 }
 
+/* Success Alert: Cool Teal background (#4ecca3) with Charcoal Black (#333333) text/icons */
+.alert--success {
+  background-color: #4ecca3;
+  border-color: #4ecca3;
+  color: #333333;
+}
+
+.alert--success .alert__icon {
+  color: #333333;
+}
+
+.alert--success .alert__dismiss {
+  color: #333333;
+  border-color: #333333;
+}
+
+.alert--success .alert__dismiss:hover {
+  background-color: #333333;
+  color: #4ecca3;
+}
+
 /* Alert Icon */
 .alert__icon {
   font-size: 20px;

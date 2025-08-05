@@ -10,6 +10,7 @@ import DatabaseStatus from '../database/DatabaseStatus';
 import Profile from '../Profile';
 import Friends, { FriendSearchWrapper } from '../Friends';
 import Groups from '../Groups';
+import UserProfilePage from '../UserProfile';
 import Settings from '../Settings';
 import './Dashboard.css';
 
@@ -84,6 +85,7 @@ const Dashboard = () => {
                 />
               } />
               <Route path="/profile" element={<Profile />} />
+              <Route path="/user/:userId" element={<UserProfilePage />} />
               <Route path="/friends" element={<Friends />} />
               <Route path="/friends/search" element={<FriendSearchWrapper />} />
               <Route path="/groups" element={<Groups currentUserId={mockAccount.homeAccountId} />} />
@@ -129,6 +131,7 @@ const Dashboard = () => {
               />
             } />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/user/:userId" element={<UserProfilePage />} />
             <Route path="/friends" element={<Friends />} />
             <Route path="/friends/search" element={<FriendSearchWrapper />} />
             <Route path="/groups" element={<Groups currentUserId={account.homeAccountId} />} />

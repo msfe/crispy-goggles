@@ -295,6 +295,125 @@ export const MockUserService = {
   }
 };
 
+// Mock groups data
+const MOCK_GROUPS = {
+  'group-1': {
+    id: 'group-1',
+    name: 'Stockholm Tech Meetup',
+    description: 'A community for technology enthusiasts in Stockholm',
+    tags: ['technology', 'meetup', 'stockholm'],
+    adminIds: ['friend-1'],
+    memberIds: ['friend-1', 'friend-2'],
+    membershipRequests: [],
+    isPublic: true,
+    createdAt: '2024-01-15T10:00:00Z'
+  },
+  'group-2': {
+    id: 'group-2',
+    name: 'React Developers Sweden',
+    description: 'Swedish React developers community',
+    tags: ['react', 'javascript', 'sweden'],
+    adminIds: ['friend-2'],
+    memberIds: ['friend-2', 'friend-3'],
+    membershipRequests: ['mock-user-id-123'],
+    isPublic: true,
+    createdAt: '2024-01-20T14:30:00Z'
+  },
+  'group-3': {
+    id: 'group-3',
+    name: 'Photography Club',
+    description: 'A group for photography enthusiasts',
+    tags: ['photography', 'art', 'creative'],
+    adminIds: ['friend-3'],
+    memberIds: ['friend-3'],
+    membershipRequests: [],
+    isPublic: true,
+    createdAt: '2024-02-01T09:15:00Z'
+  }
+};
+
+/**
+ * Mock Group Service - Simulates group operations
+ */
+export const MockGroupService = {
+  /**
+   * Get all public groups
+   */
+  getPublicGroups: () => {
+    console.log('Mock: Fetching public groups');
+    return Object.values(MOCK_GROUPS);
+  },
+
+  /**
+   * Search groups by tags
+   */
+  searchByTags: (tags) => {
+    console.log(`Mock: Searching groups by tags: ${tags}`);
+    const tagsArray = Array.isArray(tags) ? tags : [tags];
+    const normalizedTags = tagsArray.map(tag => tag.toLowerCase());
+    
+    return Object.values(MOCK_GROUPS).filter(group => 
+      group.tags.some(tag => normalizedTags.includes(tag.toLowerCase()))
+    );
+  },
+
+  /**
+   * Create a new group
+   */
+  createGroup: (groupData) => {
+    console.log('Mock: Creating group', groupData);
+    const newGroup = {
+      id: `group-${Date.now()}`,
+      ...groupData,
+      adminIds: [MOCK_CONFIG.MOCK_USER_ID],
+      memberIds: [MOCK_CONFIG.MOCK_USER_ID],
+      membershipRequests: [],
+      isPublic: groupData.privacy === 'public',
+      createdAt: new Date().toISOString()
+    };
+    
+    return {
+      success: true,
+      message: 'Group created successfully!',
+      data: newGroup
+    };
+  },
+
+  /**
+   * Apply for group membership
+   */
+  applyForMembership: (groupId, userId) => {
+    console.log(`Mock: User ${userId} applying for membership in group ${groupId}`);
+    return {
+      success: true,
+      message: 'Membership request submitted!'
+    };
+  },
+
+  /**
+   * Get groups for current user
+   */
+  getUserGroups: () => {
+    console.log('Mock: Fetching user groups');
+    // Return groups where the mock user is a member or admin
+    return Object.values(MOCK_GROUPS).filter(group => 
+      group.memberIds.includes(MOCK_CONFIG.MOCK_USER_ID) ||
+      group.adminIds.includes(MOCK_CONFIG.MOCK_USER_ID)
+    );
+  },
+
+  /**
+   * Manage membership requests (for group admins)
+   */
+  manageMembershipRequest: (groupId, userId, action) => {
+    console.log(`Mock: ${action}ing membership request for user ${userId} in group ${groupId}`);
+    return {
+      success: true,
+      message: `Membership request ${action}ed successfully!`
+    };
+  }
+};
+
 /**
  * Initialize mock user ID if needed
  */

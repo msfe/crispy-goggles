@@ -110,7 +110,7 @@ router.get('/:id', checkDatabaseConfig, async (req, res) => {
  *         application/json:
  *           schema:
  *             type: object
- *             required: [name, description, adminId]
+ *             required: [name, description, adminIds]
  *             properties:
  *               name:
  *                 type: string
@@ -118,9 +118,11 @@ router.get('/:id', checkDatabaseConfig, async (req, res) => {
  *               description:
  *                 type: string
  *                 example: A community for technology enthusiasts in Stockholm
- *               adminId:
- *                 type: string
- *                 example: user-123-abc
+ *               adminIds:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 example: [user-123-abc]
  *               tags:
  *                 type: array
  *                 items:
@@ -148,6 +150,15 @@ router.post('/', checkDatabaseConfig, async (req, res) => {
   try {
     const groupData = req.body;
     const group = new Group(groupData);
+    
+    // Ensure all admins are also members
+    if (group.adminIds && group.adminIds.length > 0) {
+      group.adminIds.forEach(adminId => {
+        if (!group.memberIds.includes(adminId)) {
+          group.memberIds.push(adminId);
+        }
+      });
+    }
     
     // Validate group data
     group.validate();
@@ -274,6 +285,60 @@ router.delete('/:id', checkDatabaseConfig, async (req, res) => {
       res.json({ message: 'Group deleted successfully' });
     } else {
       res.status(404).json({ error: result.error });
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+/**
+ * @swagger
+ * /api/groups/search:
+ *   get:
+ *     tags: [Groups]
+ *     summary: Search groups by tags
+ *     description: Searches for groups that contain any of the specified tags
+ *     parameters:
+ *       - in: query
+ *         name: tags
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Comma-separated list of tags to search for
+ *         example: technology,meetup,stockholm
+ *     responses:
+ *       200:
+ *         description: List of matching groups
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 groups:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Group'
+ *       400:
+ *         $ref: '#/components/responses/BadRequest'
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
+ *       503:
+ *         $ref: '#/components/responses/ServiceUnavailable'
+ */
+router.get('/search', checkDatabaseConfig, async (req, res) => {
+  try {
+    const { tags } = req.query;
+    if (!tags) {
+      return res.status(400).json({ error: 'Tags parameter is required' });
+    }
+
+    const tagsArray = tags.split(',').map(tag => tag.trim().toLowerCase());
+    const result = await groupService.searchByTags(tagsArray);
+    
+    if (result.success) {
+      res.json({ groups: result.data });
+    } else {
+      res.status(500).json({ error: result.error });
     }
   } catch (error) {
     res.status(500).json({ error: error.message });

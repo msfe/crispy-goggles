@@ -295,6 +295,25 @@ class GroupService extends BaseService {
   }
 
   /**
+   * Search groups by tags (accepts array of tags)
+   */
+  async searchByTags(tagsArray) {
+    if (!tagsArray || tagsArray.length === 0) {
+      return { success: false, error: 'Tags array is required' };
+    }
+
+    // Build query to find groups that contain any of the specified tags
+    const conditions = tagsArray.map((_, index) => `ARRAY_CONTAINS(c.tags, @tag${index})`).join(' OR ');
+    const parameters = tagsArray.map((tag, index) => ({ name: `@tag${index}`, value: tag }));
+
+    const querySpec = {
+      query: `SELECT * FROM c WHERE c.isPublic = true AND (${conditions})`,
+      parameters: parameters
+    };
+    return this.query(querySpec);
+  }
+
+  /**
    * Get groups where user is a member
    */
   async getGroupsForUser(userId) {

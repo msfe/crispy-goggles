@@ -120,7 +120,15 @@ class Group extends BaseModel {
     this.adminIds = data.adminIds || [];
     this.memberIds = data.memberIds || [];
     this.membershipRequests = data.membershipRequests || [];
-    this.isPublic = data.isPublic !== undefined ? data.isPublic : true;
+    
+    // Handle both isPublic boolean and privacy string fields
+    if (data.isPublic !== undefined) {
+      this.isPublic = data.isPublic;
+    } else if (data.privacy !== undefined) {
+      this.isPublic = data.privacy === 'public';
+    } else {
+      this.isPublic = true; // default to public
+    }
   }
 
   validate() {

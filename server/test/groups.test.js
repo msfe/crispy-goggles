@@ -67,7 +67,7 @@ describe('Groups API Routes', () => {
       const groupData = {
         name: 'Test Group',
         description: 'A test group',
-        adminId: 'user-123'
+        adminIds: ['user-123']
       };
 
       const response = await request(app)

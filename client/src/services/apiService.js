@@ -5,7 +5,8 @@ import {
   getMockUserId, 
   MockFriendshipService, 
   MockUserService,
-  initializeMockUser 
+  initializeMockUser,
+  MOCK_CONFIG
 } from './mockService';
 
 /**
@@ -135,6 +136,49 @@ export const UserApiService = {
       }
     }
     return users;
+  },
+
+  /**
+   * Get user by ID
+   */
+  async getUserById(userId, currentUserId = null) {
+    // Use mock data only if we're in pure mock mode (current user is mock user)
+    if (shouldUseMockData(currentUserId)) {
+      try {
+        return MockUserService.getById(userId);
+      } catch (mockErr) {
+        // If mock data doesn't have the user, continue to API
+        console.warn('Mock user not found, trying API:', mockErr.message);
+      }
+    }
+
+    try {
+      const response = await apiRequest(`/api/users/${userId}`);
+      if (response.ok) {
+        return await response.json();
+      } else if (response.status === 503) {
+        // Database not configured, fall back to mock data
+        console.warn('Database not configured, falling back to mock data');
+        try {
+          return MockUserService.getById(userId);
+        } catch (mockErr) {
+          throw new Error('User not found and database not configured');
+        }
+      } else {
+        throw new Error('User not found');
+      }
+    } catch (err) {
+      console.error('Error fetching user by ID:', err);
+      // Fallback to mock data if API fails and we haven't tried mock yet
+      if (!shouldUseMockData(currentUserId)) {
+        try {
+          return MockUserService.getById(userId);
+        } catch (mockErr) {
+          throw err;
+        }
+      }
+      throw err;
+    }
   },
 
   /**
